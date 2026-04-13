@@ -1,0 +1,32 @@
+﻿@page "/Devices/Delete"
+@model ERP_BIEN.Pages.Devices.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar dispositivo";
+}
+
+<link rel="stylesheet" href="~/css/devices.css" />
+
+<div class="page-container">
+
+    <h1 class="page-title">Eliminar dispositivo</h1>
+
+    <div class="delete-box">
+        <p class="delete-warning">
+            ¿Seguro que deseas eliminar este dispositivo?
+        </p>
+
+        <table class="delete-table">
+            <tr><th>Tipo:</th><td>@Model.DeviceType</td></tr>
+            <tr><th>Modelo:</th><td>@Model.Model</td></tr>
+            <tr><th>Nº Serie:</th><td>@Model.SN</td></tr>
+            <tr><th>Estado:</th><td>@Model.Status</td></tr>
+            <tr><th>Empleado:</th><td>@Model.UserName</td></tr>
+        </table>
+
+        <form method="post">
+            <button type="submit" class="btn-delete-confirm">Eliminar</button>
+            <a href="/Devices" class="btn-cancel">Cancelar</a>
+        </form>
+    </div>
+
+</div>

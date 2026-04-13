@@ -1,0 +1,178 @@
+﻿.page-container {
+    width: 95%;
+    margin: 0 auto;
+    padding-top: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.filters-container {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+.filters-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input-text,
+.input-select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 200px;
+}
+
+.btn-filter {
+    background: #0078d4;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-add {
+    background: #28a745;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.devices-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .devices-table th {
+        background: #f0f0f0;
+        padding: 12px;
+        text-align: left;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .devices-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+.btn-view {
+    background: #0078d4;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-right: 6px;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pag-btn {
+    background: #e0e0e0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pag-info {
+    font-size: 14px;
+    color: #555;
+}
+.form-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 60%;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+    .form-row label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.delete-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 60%;
+}
+
+.delete-warning {
+    font-size: 18px;
+    font-weight: 600;
+    color: #b30000;
+    margin-bottom: 20px;
+}
+
+.delete-table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+    .delete-table th {
+        text-align: left;
+        width: 150px;
+        padding: 6px 0;
+        color: #555;
+    }
+
+    .delete-table td {
+        padding: 6px 0;
+    }
+
+.btn-delete-confirm {
+    background: #dc3545;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+

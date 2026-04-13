@@ -1,0 +1,84 @@
+﻿@page "/Licenses"
+@model ERP_BIEN.Pages.Licenses.IndexModel
+@{
+    ViewData["Title"] = "Listado de Licencias";
+}
+
+<link rel="stylesheet" href="~/css/licenses.css" />
+
+<div class="page-container">
+
+    <h1 class="page-title">Listado de Licencias</h1>
+
+    <div class="filters-container">
+        <form method="get" class="filters-form">
+
+            <input type="text" name="Search" value="@Model.Search"
+                   placeholder="Buscar por Empleado Asignado"
+                   class="input-text" />
+
+            <select name="ProductFilter" class="input-select">
+                <option value="">Producto (todos)</option>
+                @foreach (var p in Model.AllProducts)
+                {
+                    <option value="@p" selected="@(Model.ProductFilter == p)">@p</option>
+                }
+            </select>
+
+            <select name="StatusFilter" class="input-select">
+                <option value="">Estado (todos)</option>
+                @foreach (var s in Enum.GetValues(typeof(LicenseStatus)))
+                {
+                    <option value="@s" selected="@(Model.StatusFilter?.ToString() == s.ToString())">@s</option>
+                }
+            </select>
+
+            <button type="submit" class="btn-filter">Filtrar</button>
+
+            <button type="button" class="btn-export">Exportar</button>
+            <button type="button" class="btn-import">Importar CSV</button>
+
+            <a href="/Licenses/Create" class="btn-add">+ Crear Licencia</a>
+        </form>
+    </div>
+
+    <table class="licenses-table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Clave</th>
+                <th>Asignados</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var l in Model.Licenses)
+            {
+                <tr>
+                    <td>@l.Product</td>
+                    <td>@l.Key</td>
+                    <td>@l.AssignedTo</td>
+                    <td>@l.Status</td>
+                    <td>
+                        <a href="/Licenses/Details?id=@l.Id" class="btn-view">Ver</a>
+                        <a href="/Licenses/Delete?id=@l.Id" class="btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <a href="?page=1" class="pag-btn">««</a>
+        <a href="?page=@(Model.CurrentPage > 1 ? Model.CurrentPage - 1 : 1)" class="pag-btn">«</a>
+
+        <span class="pag-info">
+            Página @Model.CurrentPage de @Model.TotalPages
+        </span>
+
+        <a href="?page=@(Model.CurrentPage<Model.TotalPages? Model.CurrentPage + 1 : Model.TotalPages)" class="pag-btn">»</a>
+        <a href="?page=@Model.TotalPages" class="pag-btn">»»</a>
+    </div>
+
+</div>

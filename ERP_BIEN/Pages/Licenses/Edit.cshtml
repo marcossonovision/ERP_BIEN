@@ -1,0 +1,36 @@
+﻿@page "/Licenses/Edit"
+@model ERP_BIEN.Pages.Licenses.EditModel
+
+<link rel="stylesheet" href="~/css/licenses.css" />
+
+<div class="page-container">
+
+    <h1 class="page-title">Editar Licencia</h1>
+
+    <form method="post" class="create-form">
+
+        <input type="hidden" name="Id" value="@Model.License.Id" />
+
+        <label>Producto</label>
+        <input type="text" name="Product" class="input-text" value="@Model.License.Product" required />
+
+        <label>Clave</label>
+        <input type="text" name="Key" class="input-text" value="@Model.License.Key" required />
+
+        <label>Asignado a</label>
+        <input type="text" name="AssignedTo" class="input-text" value="@Model.License.AssignedTo" />
+
+        <label>Estado</label>
+        <select name="Status" class="input-select">
+            @foreach (var s in Enum.GetValues(typeof(LicenseStatus)))
+            {
+                <option value="@s" selected="@(Model.License.Status == (LicenseStatus)s)">@s</option>
+            }
+        </select>
+
+        <button type="submit" class="btn-edit">Guardar cambios</button>
+        <a href="/Licenses" class="btn-cancel">Cancelar</a>
+
+    </form>
+
+</div>

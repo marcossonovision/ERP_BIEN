@@ -1,0 +1,33 @@
+﻿@page "/Users/Details"
+@model ERP_BIEN.Pages.Users.DetailsModel
+
+<link rel="stylesheet" href="~/css/users.css" />
+
+<div class="details-container">
+
+    <div class="details-header">
+        <h1>Detalles del Usuario</h1>
+
+        <div class="details-actions">
+            <a href="/Users/Edit?id=@Model.User.Id" class="btn-edit">Editar</a>
+            <a href="/Users" class="btn-back">Volver</a>
+        </div>
+    </div>
+
+    <div class="details-card">
+
+        <div class="details-row">
+            <span class="details-label">Nombre</span>
+            <span class="details-value">@Model.User.Name</span>
+        </div>
+
+        <div class="details-row">
+            <span class="details-label">Apellidos</span>
+            <span class="details-value">@Model.User.LastName</span>
+        </div>
+
+   
+
+    </div>
+
+</div>

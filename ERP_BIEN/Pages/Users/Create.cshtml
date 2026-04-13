@@ -1,0 +1,31 @@
+﻿@page "/Users/Create"
+@model ERP_BIEN.Pages.Users.CreateModel
+
+<link rel="stylesheet" href="~/css/users.css" />
+
+<div class="edit-container">
+
+    <div class="edit-header">
+        <h1>Crear Usuario</h1>
+        <a href="/Users" class="btn-back">Volver</a>
+    </div>
+
+    <form method="post" class="edit-form">
+
+        <div class="form-group">
+            <label>Nombre</label>
+            <input asp-for="User.Name" class="input-text" />
+        </div>
+
+        <div class="form-group">
+            <label>Apellidos</label>
+            <input asp-for="User.LastName" class="input-text" />
+        </div>
+
+     
+
+        <button type="submit" class="btn-save">Crear</button>
+
+    </form>
+
+</div>

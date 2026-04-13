@@ -1,0 +1,80 @@
+﻿@page
+@model ERP_BIEN.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-header">
+    <h1>Bienvenido, @Model.UserName</h1>
+    <p class="dashboard-subtitle">Accede a los módulos disponibles según tus permisos.</p>
+</div>
+
+<div class="dashboard-grid">
+
+    <a href="/Users" class="dashboard-card">
+        <div class="card-icon">👤</div>
+        <h3>Gestionar Usuarios</h3>
+        <p>Alta, baja y edición de usuarios.</p>
+    </a>
+
+    <a href="/Roles" class="dashboard-card">
+        <div class="card-icon">🛡️</div>
+        <h3>Gestionar Roles</h3>
+        <p>Control de permisos y perfiles.</p>
+    </a>
+
+    <a href="/Devices" class="dashboard-card">
+        <div class="card-icon">💻</div>
+        <h3>Dispositivos</h3>
+        <p>Inventario de equipos y estado.</p>
+    </a>
+
+    <a href="/Licenses" class="dashboard-card">
+        <div class="card-icon">🔑</div>
+        <h3>Licencias</h3>
+        <p>Gestión de licencias de software.</p>
+    </a>
+
+    <a href="/Employees" class="dashboard-card">
+        <div class="card-icon">👥</div>
+        <h3>Empleados</h3>
+        <p>Datos y organización del personal.</p>
+    </a>
+
+    <a href="/Audit" class="dashboard-card">
+        <div class="card-icon">📊</div>
+        <h3>Auditoría</h3>
+        <p>Registro de acciones y cambios.</p>
+    </a>
+
+    <a href="/Import" class="dashboard-card">
+        <div class="card-icon">📥</div>
+        <h3>Importación</h3>
+        <p>Carga masiva de datos.</p>
+    </a>
+
+    <a href="/MyDevices" class="dashboard-card">
+        <div class="card-icon">🖥️</div>
+        <h3>Mis Dispositivos</h3>
+        <p>Tus equipos asignados.</p>
+    </a>
+
+    <a href="/MyLicenses" class="dashboard-card">
+        <div class="card-icon">🧾</div>
+        <h3>Mis Licencias</h3>
+        <p>Software que puedes usar.</p>
+    </a>
+
+    <a href="/Team" class="dashboard-card">
+        <div class="card-icon">👨‍💼</div>
+        <h3>Equipo a tu cargo</h3>
+        <p>Personas que gestionas.</p>
+    </a>
+
+    <a href="/MyData" class="dashboard-card">
+        <div class="card-icon">📄</div>
+        <h3>Mis Datos</h3>
+        <p>Información personal del usuario.</p>
+    </a>
+
+</div>

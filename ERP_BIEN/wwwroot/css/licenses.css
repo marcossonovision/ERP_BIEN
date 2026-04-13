@@ -1,0 +1,282 @@
+﻿/* ============================
+   BOTONES CORPORATIVOS
+   ============================ */
+
+.btn-filter {
+    background: #007bff;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-filter:hover {
+        background: #0069d9;
+    }
+
+.btn-export, .btn-import {
+    background: #6c757d;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-export:hover, .btn-import:hover {
+        background: #5a6268;
+    }
+
+.btn-add {
+    background: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .btn-add:hover {
+        background: #218838;
+    }
+
+.btn-view {
+    color: #007bff;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+    .btn-view:hover {
+        text-decoration: underline;
+    }
+
+.btn-delete {
+    color: #dc3545;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .btn-delete:hover {
+        text-decoration: underline;
+    }
+/* ============================
+   TABLA CORPORATIVA
+   ============================ */
+
+.licenses-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .licenses-table thead {
+        background: #f8f9fa;
+    }
+
+    .licenses-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e5e5e5;
+    }
+
+    .licenses-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e5e5e5;
+        color: #444;
+    }
+
+    .licenses-table tr:hover {
+        background: #f1f1f1;
+        transition: 0.2s;
+    }
+/* ============================
+   FILTROS
+   ============================ */
+
+.filters-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input-text, .input-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 180px;
+}
+/* ============================
+   PAGINACIÓN
+   ============================ */
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pag-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+
+    .pag-btn:hover {
+        background: #e9ecef;
+    }
+
+.pag-info {
+    font-weight: 600;
+}
+/* ============================
+   BOTONES DE ACCIÓN (VER / ELIMINAR)
+   ============================ */
+
+.btn-view {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+    .btn-view:hover {
+        background: #0069d9;
+    }
+
+.btn-delete {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #dc3545;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+    .btn-delete:hover {
+        background: #c82333;
+    }
+.details-box, .delete-box, .create-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 60%;
+}
+
+.details-table th, .delete-table th {
+    text-align: left;
+    width: 150px;
+    padding: 6px 0;
+    color: #555;
+}
+
+.details-table td, .delete-table td {
+    padding: 6px 0;
+}
+
+.btn-back, .btn-cancel {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #6c757d;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.btn-delete-confirm {
+    background: #dc3545;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.btn-view {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .btn-view:hover {
+        background: #0069d9;
+    }
+
+.btn-delete {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #dc3545;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .btn-delete:hover {
+        background: #c82333;
+    }
+
+.btn-edit {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #ffc107;
+    color: #333;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .btn-edit:hover {
+        background: #e0a800;
+    }
+
+.btn-back, .btn-cancel {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #6c757d;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.btn-delete-confirm {
+    background: #dc3545;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}

@@ -1,0 +1,60 @@
+﻿@page "/Devices/Create"
+@model ERP_BIEN.Pages.Devices.CreateModel
+@{
+    ViewData["Title"] = "Añadir nuevo dispositivo";
+}
+
+<link rel="stylesheet" href="~/css/devices.css" />
+
+<div class="page-container">
+
+    <h1 class="page-title">Añadir nuevo dispositivo</h1>
+
+    <form method="post" class="form-container">
+
+        <div class="form-row">
+            <label>Tipo de dispositivo</label>
+            <select asp-for="DeviceType" class="input-select">
+                <option value="">Seleccione...</option>
+                <option value="Computer">Portátil</option>
+                <option value="Screen">Monitor</option>
+                <option value="Phone">Teléfono</option>
+                <option value="Ubikey">Yubikey</option>
+                <option value="DockStation">DockStation</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>Hostname</label>
+            <input asp-for="Hostname" class="input-text" />
+        </div>
+
+        <div class="form-row">
+            <label>Modelo</label>
+            <input asp-for="Model" class="input-text" />
+        </div>
+
+        <div class="form-row">
+            <label>Nº Serie</label>
+            <input asp-for="SN" class="input-text" />
+        </div>
+
+        <div class="form-row">
+            <label>Estado</label>
+            <select asp-for="Status" class="input-select">
+                <option value="BuenEstado">Buen estado</option>
+                <option value="Defectuoso">Defectuoso</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>Comentario</label>
+            <textarea asp-for="Comment" class="input-text"></textarea>
+        </div>
+
+        <button type="submit" class="btn-add">Guardar dispositivo</button>
+        <a href="/Devices" class="btn-cancel">Cancelar</a>
+
+    </form>
+
+</div>

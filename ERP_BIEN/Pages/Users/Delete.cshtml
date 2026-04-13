@@ -1,0 +1,35 @@
+﻿@page "/Users/Delete"
+@model ERP_BIEN.Pages.Users.DeleteModel
+
+<link rel="stylesheet" href="~/css/users.css" />
+
+<div class="details-container">
+
+    <div class="details-header">
+        <h1>Eliminar Usuario</h1>
+        <a href="/Users" class="btn-back">Volver</a>
+    </div>
+
+    <div class="details-card">
+
+        <p class="delete-warning">¿Seguro que deseas eliminar este usuario?</p>
+
+        <div class="details-row">
+            <span class="details-label">Nombre</span>
+            <span class="details-value">@Model.User.Name</span>
+        </div>
+
+        <div class="details-row">
+            <span class="details-label">Apellidos</span>
+            <span class="details-value">@Model.User.LastName</span>
+        </div>
+
+ 
+
+        <form method="post">
+            <button type="submit" class="btn-delete-confirm">Eliminar</button>
+        </form>
+
+    </div>
+
+</div>

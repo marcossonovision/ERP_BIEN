@@ -1,0 +1,84 @@
+﻿@page "/Devices"
+@model ERP_BIEN.Pages.Devices.IndexModel
+@{
+    ViewData["Title"] = "Listado de dispositivos";
+}
+
+<link rel="stylesheet" href="~/css/devices.css" />
+
+<div class="page-container">
+
+    <h1 class="page-title">Listado de dispositivos</h1>
+
+    <div class="filters-container">
+        <form method="get" class="filters-form">
+
+            <input type="text" name="Search" value="@Model.Search"
+                   placeholder="Buscar por Empleado Asignado, Modelo, NºSerie"
+                   class="input-text" />
+
+            <select name="TypeFilter" class="input-select">
+                <option value="">Tipo (todos)</option>
+                <option value="Computer" selected="@(Model.TypeFilter == "Computer")">Portátil</option>
+                <option value="Screen" selected="@(Model.TypeFilter == "Screen")">Monitor</option>
+                <option value="Phone" selected="@(Model.TypeFilter == "Phone")">Teléfono</option>
+                <option value="Ubikey" selected="@(Model.TypeFilter == "Ubikey")">Yubikey</option>
+                <option value="DockStation" selected="@(Model.TypeFilter == "DockStation")">DockStation</option>
+            </select>
+
+            <select name="StatusFilter" class="input-select">
+                <option value="">Estado (todos)</option>
+                @foreach (var s in Enum.GetValues(typeof(ERP_BIEN.Common.Enums.StatusDevice)))
+                {
+                    <option value="@s" selected="@(Model.StatusFilter?.ToString() == s.ToString())">@s</option>
+                }
+            </select>
+
+            <button type="submit" class="btn-filter">Filtrar</button>
+
+            <a href="/Devices/Create" class="btn-add">Añadir nuevo dispositivo</a>
+        </form>
+    </div>
+
+    <table class="devices-table">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Modelo</th>
+                <th>NºSerie</th>
+                <th>Estado</th>
+                <th>Empl_Asignado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model.Devices)
+            {
+                <tr>
+                    <td>@Model.GetDeviceType(d)</td>
+                    <td>@d.Model</td>
+                    <td>@d.SN</td>
+                    <td>@d.Status</td>
+                    <td>@(d.User != null ? d.User.Name + " " + d.User.LastName : "—")</td>
+                    <td>
+                        <a href="/Devices/Details?id=@d.Id" class="btn-view">Ver</a>
+                        <a href="/Devices/Delete?id=@d.Id" class="btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <a href="?page=1" class="pag-btn">««</a>
+        <a href="?page=@(Model.CurrentPage - 1)" class="pag-btn">«</a>
+
+        <span class="pag-info">
+            Página @Model.CurrentPage de @Model.TotalPages
+        </span>
+
+        <a href="?page=@(Model.CurrentPage + 1)" class="pag-btn">»</a>
+        <a href="?page=@Model.TotalPages" class="pag-btn">»»</a>
+    </div>
+
+</div>
