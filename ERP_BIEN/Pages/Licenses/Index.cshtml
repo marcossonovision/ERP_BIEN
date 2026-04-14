@@ -1,84 +1,437 @@
-﻿@page "/Licenses"
+﻿@page
 @model ERP_BIEN.Pages.Licenses.IndexModel
 @{
-    ViewData["Title"] = "Listado de Licencias";
+    ViewData["Title"] = "Gestión de Licencias";
 }
 
-<link rel="stylesheet" href="~/css/licenses.css" />
+<style>
+    .license-row button {
+        pointer-events: auto !important;
+        position: relative;
+        z-index: 10;
+    }
 
-<div class="page-container">
+    .license-row {
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+    }
+</style>
 
-    <h1 class="page-title">Listado de Licencias</h1>
+<h2 class="mb-4">Gestión de Licencias</h2>
 
-    <div class="filters-container">
-        <form method="get" class="filters-form">
+<!-- ========================= -->
+<!-- FILTROS AVANZADOS + BOTONES ARRIBA + CREAR LICENCIA MISMA FILA -->
+<!-- ========================= -->
+<form method="get" class="row g-3 p-3 mb-4 rounded align-items-end"
+      style="background:#eef1f7; border:1px solid #cfd6e4;">
 
-            <input type="text" name="Search" value="@Model.Search"
-                   placeholder="Buscar por Empleado Asignado"
-                   class="input-text" />
+    <!-- BOTONES BUSCAR / LIMPIAR ARRIBA -->
+    <div class="col-12 d-flex justify-content-end gap-2 mb-2">
 
-            <select name="ProductFilter" class="input-select">
-                <option value="">Producto (todos)</option>
-                @foreach (var p in Model.AllProducts)
-                {
-                    <option value="@p" selected="@(Model.ProductFilter == p)">@p</option>
-                }
-            </select>
+        <button class="btn"
+                style="background:#28a745; color:white; font-weight:600; min-width:120px;">
+            Buscar
+        </button>
 
-            <select name="StatusFilter" class="input-select">
-                <option value="">Estado (todos)</option>
-                @foreach (var s in Enum.GetValues(typeof(LicenseStatus)))
-                {
-                    <option value="@s" selected="@(Model.StatusFilter?.ToString() == s.ToString())">@s</option>
-                }
-            </select>
+        <a asp-page="Index"
+               class="btn"
+               style="background:#6c757d; color:white; font-weight:600; min-width:120px;">
+            Limpiar
+        </a>
 
-            <button type="submit" class="btn-filter">Filtrar</button>
-
-            <button type="button" class="btn-export">Exportar</button>
-            <button type="button" class="btn-import">Importar CSV</button>
-
-            <a href="/Licenses/Create" class="btn-add">+ Crear Licencia</a>
-        </form>
     </div>
 
-    <table class="licenses-table">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Clave</th>
-                <th>Asignados</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+    <!-- BUSCAR -->
+    <div class="col-md-3">
+        <label class="form-label fw-bold text-primary">🔍 Buscar</label>
+        <input type="text" name="Search" value="@Model.Search"
+               class="form-control border-primary"
+               placeholder="Código, producto o proveedor..." />
+    </div>
+
+    <!-- PROVEEDOR -->
+    <div class="col-md-2">
+        <label class="form-label fw-bold text-primary">🏢 Proveedor</label>
+        <input type="text" name="SearchProveedor" value="@Model.SearchProveedor"
+               class="form-control border-primary"
+               placeholder="Proveedor..." />
+    </div>
+
+    <!-- PRODUCTO -->
+    <div class="col-md-2">
+        <label class="form-label fw-bold text-primary">📦 Producto</label>
+        <input type="text" name="SearchProducto" value="@Model.SearchProducto"
+               class="form-control border-primary"
+               placeholder="Producto..." />
+    </div>
+
+    <!-- ASIGNADA -->
+    <div class="col-md-2">
+        <label class="form-label fw-bold text-primary">👤 Asignada</label>
+        <select name="SearchAsignada" class="form-control border-primary">
+            <option value="">Todas</option>
+            <option value="true" selected="@(Model.SearchAsignada == "true")">Sí</option>
+            <option value="false" selected="@(Model.SearchAsignada == "false")">No</option>
+        </select>
+    </div>
+
+    <!-- CREAR LICENCIA MISMA FILA -->
+    <div class="col-md-3 d-flex justify-content-end">
+        <button type="button"
+                class="btn"
+                style="background:#4a6cf7; color:white; font-weight:600; width:100%;"
+                data-bs-toggle="modal" data-bs-target="#createModal">
+            + Crear Licencia
+        </button>
+    </div>
+
+</form>
+
+<!-- ========================= -->
+<!-- TABLA -->
+<!-- ========================= -->
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Proveedor</th>
+            <th>Precio</th>
+            <th>Caducidad</th>
+            <th>Asignada</th>
+            <th>Disponible</th>
+            <th>Usuario</th>
+            <th style="width:180px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lic in Model.Licenses)
+        {
+            <tr class="license-row" data-id="@lic.Id">
+
+                <td>@lic.Code</td>
+                <td>@lic.Producto</td>
+                <td>@lic.Proveedor</td>
+                <td>@lic.Price €</td>
+                <td>@(lic.Caducidad?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td>@(lic.Asignada ? "Sí" : "No")</td>
+                <td>@(lic.Disponible ? "Sí" : "No")</td>
+                <td>@lic.User?.Name @lic.User?.LastName</td>
+
+                <td>
+                    <button class="btn btn-sm btn-warning edit-btn" data-id="@lic.Id">Editar</button>
+
+                    <button class="btn btn-sm btn-danger delete-btn"
+                            data-id="@lic.Id"
+                            data-name="@lic.Producto">
+                        Eliminar
+                    </button>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var l in Model.Licenses)
-            {
-                <tr>
-                    <td>@l.Product</td>
-                    <td>@l.Key</td>
-                    <td>@l.AssignedTo</td>
-                    <td>@l.Status</td>
-                    <td>
-                        <a href="/Licenses/Details?id=@l.Id" class="btn-view">Ver</a>
-                        <a href="/Licenses/Delete?id=@l.Id" class="btn-delete">Eliminar</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
-    <div class="pagination">
-        <a href="?page=1" class="pag-btn">««</a>
-        <a href="?page=@(Model.CurrentPage > 1 ? Model.CurrentPage - 1 : 1)" class="pag-btn">«</a>
+@if (!Model.Licenses.Any())
+{
+    <p class="text-muted mt-3">No se encontraron licencias.</p>
+}
 
-        <span class="pag-info">
-            Página @Model.CurrentPage de @Model.TotalPages
-        </span>
+<!-- ========================= -->
+<!-- PAGINACIÓN -->
+<!-- ========================= -->
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
 
-        <a href="?page=@(Model.CurrentPage<Model.TotalPages? Model.CurrentPage + 1 : Model.TotalPages)" class="pag-btn">»</a>
-        <a href="?page=@Model.TotalPages" class="pag-btn">»»</a>
+        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+            <a class="page-link"
+               asp-route-PageNumber="@(Model.PageNumber - 1)"
+               asp-route-Search="@Model.Search"
+               asp-route-SearchProveedor="@Model.SearchProveedor"
+               asp-route-SearchProducto="@Model.SearchProducto"
+               asp-route-SearchAsignada="@Model.SearchAsignada">Anterior</a>
+        </li>
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                <a class="page-link"
+                   asp-route-PageNumber="@i"
+                   asp-route-Search="@Model.Search"
+                   asp-route-SearchProveedor="@Model.SearchProveedor"
+                   asp-route-SearchProducto="@Model.SearchProducto"
+                   asp-route-SearchAsignada="@Model.SearchAsignada">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(Model.PageNumber == Model.TotalPages || Model.TotalPages == 0 ? "disabled" : "")">
+            <a class="page-link"
+               asp-route-PageNumber="@(Model.PageNumber + 1)"
+               asp-route-Search="@Model.Search"
+               asp-route-SearchProveedor="@Model.SearchProveedor"
+               asp-route-SearchProducto="@Model.SearchProducto"
+               asp-route-SearchAsignada="@Model.SearchAsignada">Siguiente</a>
+        </li>
+
+    </ul>
+</nav>
+
+<!-- ========================= -->
+<!-- MODAL: CREAR LICENCIA -->
+<!-- ========================= -->
+<div class="modal fade" id="createModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" asp-page-handler="Create">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Licencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>Código</label>
+                    <input class="form-control" name="Code" required />
+
+                    <label class="mt-2">Producto</label>
+                    <input class="form-control" name="Producto" required />
+
+                    <label class="mt-2">Proveedor</label>
+                    <input class="form-control" name="Proveedor" required />
+
+                    <label class="mt-2">Precio</label>
+                    <input class="form-control" name="Price" required />
+
+                    <label class="mt-2">Caducidad</label>
+                    <input type="date" class="form-control" name="Caducidad" />
+
+                    <label class="mt-2">Asignada</label>
+                    <select class="form-control" name="Asignada">
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+
+                    <label class="mt-2">Disponible</label>
+                    <select class="form-control" name="Disponible">
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+
+                    <label class="mt-2">Usuario asignado</label>
+                    <select class="form-control" name="UserId">
+                        <option value="">-- Sin asignar --</option>
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.Id">@u.Name @u.LastName</option>
+                        }
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary">Crear</button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
-
 </div>
+
+<!-- ========================= -->
+<!-- MODAL: DETALLES -->
+<!-- ========================= -->
+<div class="modal fade" id="detailsModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Licencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <p><strong>Código:</strong> <span id="det-code"></span></p>
+                <p><strong>Producto:</strong> <span id="det-producto"></span></p>
+                <p><strong>Proveedor:</strong> <span id="det-proveedor"></span></p>
+                <p><strong>Precio:</strong> <span id="det-price"></span></p>
+                <p><strong>Caducidad:</strong> <span id="det-caducidad"></span></p>
+                <p><strong>Asignada:</strong> <span id="det-asignada"></span></p>
+                <p><strong>Disponible:</strong> <span id="det-disponible"></span></p>
+                <p><strong>Usuario:</strong> <span id="det-user"></span></p>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-warning" id="openEditFromDetails">Editar</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ========================= -->
+<!-- MODAL: EDITAR -->
+<!-- ========================= -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" asp-page-handler="Edit">
+
+                <input type="hidden" id="edit-id" name="Id" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Licencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>Código</label>
+                    <input class="form-control" id="edit-code" name="Code" required />
+
+                    <label class="mt-2">Producto</label>
+                    <input class="form-control" id="edit-producto" name="Producto" required />
+
+                    <label class="mt-2">Proveedor</label>
+                    <input class="form-control" id="edit-proveedor" name="Proveedor" required />
+
+                    <label class="mt-2">Precio</label>
+                    <input class="form-control" id="edit-price" name="Price" required />
+
+                    <label class="mt-2">Caducidad</label>
+                    <input type="date" class="form-control" id="edit-caducidad" name="Caducidad" />
+
+                    <label class="mt-2">Asignada</label>
+                    <select class="form-control" id="edit-asignada" name="Asignada">
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+
+                    <label class="mt-2">Disponible</label>
+                    <select class="form-control" id="edit-disponible" name="Disponible">
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+
+                    <label class="mt-2">Usuario asignado</label>
+                    <select class="form-control" id="edit-userid" name="UserId">
+                        <option value="">-- Sin asignar --</option>
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.Id">@u.Name @u.LastName</option>
+                        }
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Guardar cambios</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ========================= -->
+<!-- MODAL: ELIMINAR -->
+<!-- ========================= -->
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Delete">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar Licencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="delete-id" name="Id" />
+                    <p>¿Seguro que deseas eliminar la licencia <strong id="delete-name"></strong>?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        document.querySelectorAll(".license-row").forEach(row => {
+            row.addEventListener("click", async (e) => {
+                if (e.target.closest("button")) return;
+                const id = row.dataset.id;
+                await loadDetails(id);
+            });
+        });
+
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                const res = await fetch(`?handler=Details&id=${id}`);
+                const l = await res.json();
+
+                document.getElementById("edit-id").value = l.id;
+                document.getElementById("edit-code").value = l.code;
+                document.getElementById("edit-producto").value = l.producto;
+                document.getElementById("edit-proveedor").value = l.proveedor;
+                document.getElementById("edit-price").value = l.price;
+                document.getElementById("edit-caducidad").value = l.caducidad;
+                document.getElementById("edit-asignada").value = l.asignada;
+                document.getElementById("edit-disponible").value = l.disponible;
+                document.getElementById("edit-userid").value = l.userId;
+
+                new bootstrap.Modal(document.getElementById("editModal")).show();
+            });
+        });
+
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                document.getElementById("delete-id").value = btn.dataset.id;
+                document.getElementById("delete-name").innerText = btn.dataset.name;
+                new bootstrap.Modal(document.getElementById("deleteModal")).show();
+            });
+        });
+
+        async function loadDetails(id) {
+            const res = await fetch(`?handler=Details&id=${id}`);
+            const l = await res.json();
+
+            document.getElementById("det-code").innerText = l.code;
+            document.getElementById("det-producto").innerText = l.producto;
+            document.getElementById("det-proveedor").innerText = l.proveedor;
+            document.getElementById("det-price").innerText = l.price + " €";
+            document.getElementById("det-caducidad").innerText = l.caducidad ?? "—";
+            document.getElementById("det-asignada").innerText = l.asignada ? "Sí" : "No";
+            document.getElementById("det-disponible").innerText = l.disponible ? "Sí" : "No";
+            document.getElementById("det-user").innerText = l.userName ?? "—";
+
+            new bootstrap.Modal(document.getElementById("detailsModal")).show();
+        }
+
+        document.getElementById("openEditFromDetails").addEventListener("click", () => {
+            const detailsModal = bootstrap.Modal.getInstance(document.getElementById("detailsModal"));
+            detailsModal.hide();
+            new bootstrap.Modal(document.getElementById("editModal")).show();
+        });
+
+    </script>
+}

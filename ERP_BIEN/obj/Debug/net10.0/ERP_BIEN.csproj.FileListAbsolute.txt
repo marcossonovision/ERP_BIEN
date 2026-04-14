@@ -342,9 +342,12 @@ C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\Syste
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\linux\lib\net10.0\System.DirectoryServices.Protocols.dll
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\osx\lib\net10.0\System.DirectoryServices.Protocols.dll
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.DirectoryServices.Protocols.dll
-C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\r9ojlce74q-{0}-xjy1tna6kx-xjy1tna6kx.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\re84aciny7-{0}-aot3nnsroj-aot3nnsroj.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\9ymxsozjj4-{0}-euyegthdrs-euyegthdrs.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\ipr1fud6y7-{0}-2z51tiqrnb-2z51tiqrnb.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\Bogus.dll
-C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\7wz9thazox-{0}-pnzi8f0rlj-pnzi8f0rlj.gz
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\7wz9thazox-{0}-jllbkh7ykp-jllbkh7ykp.gz
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\r9ojlce74q-{0}-cfjqw4c0c1-cfjqw4c0c1.gz
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\EPPlus.dll
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\EPPlus.Interfaces.dll
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\Microsoft.IO.RecyclableMemoryStream.dll

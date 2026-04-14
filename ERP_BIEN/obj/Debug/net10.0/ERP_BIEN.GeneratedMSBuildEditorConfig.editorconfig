@@ -54,28 +54,32 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Licenses/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGljZW5zZXNcQ3JlYXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Licenses/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGljZW5zZXNcRGVsZXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Licenses/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGljZW5zZXNcRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Licenses/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGljZW5zZXNcRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Licenses/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGljZW5zZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Roles/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUm9sZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Roles/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUm9sZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Roles/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUm9sZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Roles/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUm9sZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/marcos.gutierrez/source/repos/ERP_BIEN/ERP_BIEN/Pages/Shared/_ValidationScriptsPartial.cshtml]

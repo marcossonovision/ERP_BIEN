@@ -14,27 +14,17 @@ namespace ERP_BIEN.Pages.Users
             _context = context;
         }
 
-        public User User { get; set; }
-
-        public IActionResult OnGet(int id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            User = _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = await _context.Users.FindAsync(id);
 
-            if (User == null)
-                return RedirectToPage("/Users/Index");
-
-            return Page();
-        }
-
-        public IActionResult OnPost(int id)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
-
-            if (user != null)
+            if (user == null)
             {
-                _context.Users.Remove(user);
-                _context.SaveChanges();
+                return RedirectToPage("/Users/Index");
             }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("/Users/Index");
         }

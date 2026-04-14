@@ -38,23 +38,29 @@ public static class DataSeeder
 
         #region ROLES
         // 2. Roles (Campos obligatorios: Code y Name)
+        // AHORA: roles oficiales del ERP
         var roles = new List<Role> {
-            new Role { Code = "ADM", Name = "Administrador" },
-            new Role { Code = "USR", Name = "Usuario" }
+            new Role { Code = "EMP", Name = "Empleado" },
+            new Role { Code = "JEF", Name = "Jefe" },
+            new Role { Code = "RRHH", Name = "RecursosHumanos" },
+            new Role { Code = "ITM", Name = "ITManagement" },
+            new Role { Code = "PM", Name = "ProjectManager" },
+            new Role { Code = "ADM", Name = "SuperAdmin" }
         };
         context.Roles.AddRange(roles);
         context.SaveChanges();
 
+        var empleadoRole = roles.Single(r => r.Code == "EMP");
+        var jefeRole = roles.Single(r => r.Code == "JEF");
+        var rrhhRole = roles.Single(r => r.Code == "RRHH");
+        var itRole = roles.Single(r => r.Code == "ITM");
+        var pmRole = roles.Single(r => r.Code == "PM");
         var adminRole = roles.Single(r => r.Code == "ADM");
-        var userRole = roles.Single(r => r.Code == "USR");
-
         #endregion
 
         #region USERS
         // 1. Evitar duplicados
         if (context.Users.Any()) return;
-
-
 
         // 3. Equipos (Campo obligatorio: Name)
         var teams = new Faker<Team>()
@@ -124,10 +130,6 @@ public static class DataSeeder
         users[0].DomainUser = "L91037361\\marcos.gutierrez";
         context.Users.AddRange(users);
         context.SaveChanges();
-
-
-
-
 
         #endregion
 
@@ -284,7 +286,7 @@ public static class DataSeeder
         // 9. UserRoles
         var userRoles = new List<UserRole>();
 
-        // Asignamos ADM a los primeros 5 usuarios
+        // Asignamos ADM (SuperAdmin) a los primeros 5 usuarios
         foreach (var user in users.Take(5))
         {
             userRoles.Add(new UserRole
@@ -294,19 +296,18 @@ public static class DataSeeder
             });
         }
 
-        // El resto serán USR
+        // El resto serán EMP (Empleado)
         foreach (var user in users.Skip(5))
         {
             userRoles.Add(new UserRole
             {
                 UserId = user.Id,
-                RoleId = userRole.Id
+                RoleId = empleadoRole.Id
             });
         }
 
         context.UserRoles.AddRange(userRoles);
         context.SaveChanges();
-
 
         #endregion
 

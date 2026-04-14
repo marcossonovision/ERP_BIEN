@@ -20,28 +20,20 @@ builder.Services.AddRazorPages();
 #region RECOGER LOS PERMISOS DEL USUARIO
 // Registrar el transformador
 builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
-
 #endregion
 
 //builder.Services.AddAuthentication("Windows").AddNegotiate();
-
 
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
-
-
 var app = builder.Build();
-
 
 //#region CREACION DE DATOS
 //DataSeeder.RellenarDatos(app.Services.CreateScope());
 //#endregion
-
-
-
 
 // 4. Configuración del pipeline HTTP
 if (!app.Environment.IsDevelopment())
@@ -73,4 +65,3 @@ app.MapGet("/", context =>
 app.MapRazorPages();
 
 app.Run();
-
