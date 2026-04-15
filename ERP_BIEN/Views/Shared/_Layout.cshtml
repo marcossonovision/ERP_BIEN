@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SONOVISION</title>
+
+    <!-- Bootstrap + tus estilos -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ERP_BIEN.styles.css" asp-append-version="true" />
+
+    <!-- Estilos del dashboard y layout corporativo -->
+    <link rel="stylesheet" href="~/css/layout.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+
+<body>
+
+    <div class="layout-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                SONOVISION
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="/Dashboard">Dashboard</a>
+                <a href="/Users">Usuarios</a>
+                <a href="/Roles">Roles</a>
+                <a href="/Devices">Dispositivos</a>
+                <a href="/Licenses">Licencias</a>
+                <a href="/Employees">Empleados</a>
+                <a href="/Audit">Auditoría</a>
+                <a href="/Import">Importación</a>
+                <a href="/MyDevices">Mis dispositivos</a>
+                <a href="/MyLicenses">Mis licencias</a>
+                <a href="/Team">Equipo a tu cargo</a>
+                <a href="/MyData">Mis Datos</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-user">
+                    <span class="user-icon">M</span>
+                    <span class="user-name">@User.Identity?.Name</span>
+                </div>
+
+                <a class="logout-btn" href="/Logout">Cerrar sesión</a>
+            </header>
+
+            <!-- PAGE CONTENT -->
+            <section class="page-content">
+                @RenderBody()
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- Scripts originales -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

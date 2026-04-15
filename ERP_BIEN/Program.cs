@@ -1,4 +1,5 @@
 using ERP_BIEN.Data;
+using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +15,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
 
-// 3. Razor Pages
+// 3. ACTIVAR MVC
+builder.Services.AddControllersWithViews();
+
+// 4. Razor Pages (las mantenemos mientras migramos)
 builder.Services.AddRazorPages();
 
-#region RECOGER LOS PERMISOS DEL USUARIO
-// Registrar el transformador
-builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
-#endregion
+// 👉 AÑADIDO: UserService para MVC
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<DeviceService>();
 
-//builder.Services.AddAuthentication("Windows").AddNegotiate();
+
+//#region RECOGER LOS PERMISOS DEL USUARIO
+//builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
+//#endregion
 
 builder.Services.AddAuthorization(options =>
 {
@@ -31,37 +37,41 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-//#region CREACION DE DATOS
-//DataSeeder.RellenarDatos(app.Services.CreateScope());
-//#endregion
-
-// 4. Configuración del pipeline HTTP
+// Configuración del pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error"); // (lo dejo como lo tienes)
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-// 5. Archivos estáticos
+// Archivos estáticos
 app.UseStaticFiles();
 
-// 6. Routing
+// Routing
 app.UseRouting();
 
-// 7. Autenticación y autorización
+// Autenticación y autorización
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 8. Redirección automática al Dashboard
+
+// ✅ CAMBIO CLAVE: Dashboard como ruta por defecto
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}"
+);
+
+
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/Dashboard");
     return Task.CompletedTask;
 });
 
-// 9. Razor Pages
+
+// Razor Pages (lo quitaremos cuando acabemos la migración)
 app.MapRazorPages();
 
 app.Run();

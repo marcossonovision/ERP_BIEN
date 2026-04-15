@@ -258,7 +258,6 @@ C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_B
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
-C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\scopedcss\bundle\ERP_BIEN.styles.css
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\scopedcss\projectbundle\ERP_BIEN.bundle.scp.css
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\iuvewsjssr-{0}-b9sayid5wm-b9sayid5wm.gz
@@ -323,8 +322,6 @@ C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compr
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\385fousk5k-{0}-muycvpuwrr-muycvpuwrr.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\stgx7zxw53-{0}-87fc7y1x7t-87fc7y1x7t.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\5bg8qorrss-{0}-mlv21k5csn-mlv21k5csn.gz
-C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\nymnfsu3ys-{0}-nuyacwyy7r-nuyacwyy7r.gz
-C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\12hci2428x-{0}-nuyacwyy7r-nuyacwyy7r.gz
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\staticwebassets.development.json
@@ -351,3 +348,6 @@ C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compr
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\EPPlus.dll
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\EPPlus.Interfaces.dll
 C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\nymnfsu3ys-{0}-nuyacwyy7r-nuyacwyy7r.gz
+C:\Users\marcos.gutierrez\source\repos\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\12hci2428x-{0}-nuyacwyy7r-nuyacwyy7r.gz

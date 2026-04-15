@@ -1,5 +1,4 @@
-﻿@page "{pageNumber:int?}"
-@model ERP_BIEN.Pages.Users.IndexModel
+﻿@model List<ERP_BIEN.Models.ViewModels.UserViewModel>
 
 <h2 class="mb-4">Gestión de Usuarios</h2>
 
@@ -20,25 +19,25 @@
 <!-- ========================= -->
 <!-- FILTROS + CREAR USUARIO -->
 <!-- ========================= -->
-<form method="get" class="row g-3 p-3 mb-4 rounded" style="background:#f5f5f5; border:1px solid #ddd;">
+<form method="get" asp-action="Index" asp-controller="Users" class="row g-3 p-3 mb-4 rounded" style="background:#f5f5f5; border:1px solid #ddd;">
 
     <div class="col-md-3">
         <label class="form-label fw-bold">🔍 Nombre</label>
-        <input name="SearchName" value="@Model.SearchName" class="form-control" placeholder="Buscar por nombre..." />
+        <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
     </div>
 
     <div class="col-md-3">
         <label class="form-label fw-bold">👤 Usuario</label>
-        <input name="SearchDomain" value="@Model.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
+        <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
     </div>
 
     <div class="col-md-3">
         <label class="form-label fw-bold">🏢 Equipo</label>
-        <select name="SearchTeamId" class="form-control">
+        <select name="searchTeamId" class="form-control">
             <option value="">Todos</option>
-            @foreach (var t in Model.TeamList)
+            @foreach (var t in ViewBag.TeamList)
             {
-                <option value="@t.Value" selected="@(Model.SearchTeamId == t.Value)">
+                <option value="@t.Value" selected="@(ViewBag.SearchTeamId?.ToString() == t.Value)">
                     @t.Text
                 </option>
             }
@@ -47,11 +46,10 @@
 
     <div class="col-md-3 d-flex align-items-end gap-2">
         <button class="btn btn-primary w-100">Buscar</button>
-        <a asp-page="Index" class="btn btn-secondary w-100">Limpiar</a>
-        <a asp-page-handler="ExportExcel" class="btn btn-success w-100">📊 Excel</a>
+        <a asp-action="Index" asp-controller="Users" class="btn btn-secondary w-100">Limpiar</a>
+        <a asp-action="ExportExcel" asp-controller="Users" class="btn btn-success w-100">📊 Excel</a>
     </div>
 
-    <!-- BOTÓN CREAR USUARIO DENTRO DEL CUADRO -->
     <div class="col-12 d-flex justify-content-end mt-2">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
             + Crear Usuario
@@ -73,13 +71,13 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var u in Model.Users)
+        @foreach (var u in Model)
         {
             <tr class="user-row" data-id="@u.Id">
 
                 <td>@u.Name @u.LastName</td>
                 <td>@u.DomainUser</td>
-                <td>@u.Team?.Name</td>
+                <td>@u.TeamName</td>
 
                 <td>
                     <button class="btn btn-sm btn-warning edit-btn" data-id="@u.Id">Editar</button>
@@ -96,31 +94,34 @@
 <!-- ========================= -->
 <nav>
     <ul class="pagination">
-        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+        <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
             <a class="page-link"
-               asp-route-pageNumber="@(Model.PageNumber - 1)"
-               asp-route-SearchName="@Model.SearchName"
-               asp-route-SearchDomain="@Model.SearchDomain"
-               asp-route-SearchTeamId="@Model.SearchTeamId">Anterior</a>
+               asp-action="Index"
+               asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
+               asp-route-searchName="@ViewBag.SearchName"
+               asp-route-searchDomain="@ViewBag.SearchDomain"
+               asp-route-searchTeamId="@ViewBag.SearchTeamId">Anterior</a>
         </li>
 
-        @for (int i = 1; i <= Model.TotalPages; i++)
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
         {
-            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
                 <a class="page-link"
+                   asp-action="Index"
                    asp-route-pageNumber="@i"
-                   asp-route-SearchName="@Model.SearchName"
-                   asp-route-SearchDomain="@Model.SearchDomain"
-                   asp-route-SearchTeamId="@Model.SearchTeamId">@i</a>
+                   asp-route-searchName="@ViewBag.SearchName"
+                   asp-route-searchDomain="@ViewBag.SearchDomain"
+                   asp-route-searchTeamId="@ViewBag.SearchTeamId">@i</a>
             </li>
         }
 
-        <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+        <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
             <a class="page-link"
-               asp-route-pageNumber="@(Model.PageNumber + 1)"
-               asp-route-SearchName="@Model.SearchName"
-               asp-route-SearchDomain="@Model.SearchDomain"
-               asp-route-SearchTeamId="@Model.SearchTeamId">Siguiente</a>
+               asp-action="Index"
+               asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
+               asp-route-searchName="@ViewBag.SearchName"
+               asp-route-searchDomain="@ViewBag.SearchDomain"
+               asp-route-searchTeamId="@ViewBag.SearchTeamId">Siguiente</a>
         </li>
     </ul>
 </nav>
@@ -132,7 +133,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <form method="post" asp-page-handler="Create">
+            <form method="post" asp-action="Create" asp-controller="Users">
 
                 <div class="modal-header">
                     <h5 class="modal-title">Crear Usuario</h5>
@@ -153,7 +154,7 @@
                     <label class="mt-3">Equipo</label>
                     <select name="TeamId" class="form-control">
                         <option value="">-- Sin equipo --</option>
-                        @foreach (var t in Model.TeamList)
+                        @foreach (var t in ViewBag.TeamList)
                         {
                             <option value="@t.Value">@t.Text</option>
                         }
@@ -185,11 +186,9 @@
             </div>
 
             <div class="modal-body">
-
                 <p><strong>Nombre:</strong> <span id="det-name"></span></p>
                 <p><strong>Usuario:</strong> <span id="det-domain"></span></p>
                 <p><strong>Equipo:</strong> <span id="det-team"></span></p>
-
             </div>
 
             <div class="modal-footer">
@@ -208,7 +207,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <form method="post" asp-page-handler="Edit">
+            <form method="post" asp-action="Edit" asp-controller="Users">
 
                 <input type="hidden" name="Id" id="edit-id" />
 
@@ -230,7 +229,7 @@
 
                     <label class="mt-3">Equipo</label>
                     <select name="TeamId" id="edit-team" class="form-control">
-                        @foreach (var t in Model.TeamList)
+                        @foreach (var t in ViewBag.TeamList)
                         {
                             <option value="@t.Value">@t.Text</option>
                         }
@@ -256,7 +255,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <form method="post" asp-page-handler="Delete">
+            <form method="post" asp-action="Delete" asp-controller="Users">
 
                 <input type="hidden" name="Id" id="delete-id" />
 
@@ -284,7 +283,7 @@
     <script>
 
         // ============================
-        // CLICK EN FILA → VER
+        // CLICK EN FILA → VER DETALLES
         // ============================
         document.querySelectorAll(".user-row").forEach(row => {
             row.addEventListener("click", async (e) => {
@@ -304,7 +303,7 @@
                 e.stopPropagation();
 
                 const id = btn.dataset.id;
-                const res = await fetch(`?handler=Details&id=${id}`);
+                const res = await fetch(`/Users/Details/${id}`);
                 const u = await res.json();
 
                 document.getElementById("edit-id").value = u.id;
@@ -332,7 +331,7 @@
         // CARGAR DETALLES
         // ============================
         async function loadDetails(id) {
-            const res = await fetch(`?handler=Details&id=${id}`);
+            const res = await fetch(`/Users/Details/${id}`);
             const u = await res.json();
 
             document.getElementById("det-name").innerText = u.name + " " + u.lastName;
