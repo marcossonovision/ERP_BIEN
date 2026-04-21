@@ -1,0 +1,72 @@
+﻿/* CONTENEDOR PRINCIPAL */
+.mi-info-wrapper {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* TÍTULO */
+.mi-info-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: #1f2933;
+}
+
+/* GRID DE TARJETAS */
+.mi-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+}
+
+/* CARD */
+.mi-info-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 32px;
+    border: 1px solid #e6e8eb;
+}
+
+    /* TÍTULO DE CARD */
+    .mi-info-card h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #6b5fd6; /* tono elegante tipo ejemplo */
+        margin-bottom: 24px;
+    }
+
+/* LISTA DE CAMPOS */
+.mi-info-list {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    row-gap: 14px;
+    column-gap: 24px;
+}
+
+/* LABEL */
+.mi-info-label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* VALUE */
+.mi-info-value {
+    font-size: 14px;
+    color: #111827;
+}
+
+/* TEXTO VACÍO */
+.mi-info-empty {
+    font-size: 14px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .mi-info-grid {
+        grid-template-columns: 1fr;
+    }
+}

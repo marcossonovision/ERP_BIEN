@@ -1,0 +1,95 @@
+﻿@page
+@model ERP_BIEN.Pages.Empleado.IndexModel
+
+<link rel="stylesheet" href="~/css/Empleado/index.css" />
+
+<div class="dashboard-wrapper">
+
+    <section class="header-Empleado">
+        <h1 class="big-title">Empleado</h1>
+    </section>
+
+    <div class="employee-card-modern">
+
+        <div class="emp-header">
+            <img src="~/img/sono_iconography_person - white.png" class="emp-avatar" />
+            <div class="emp-info-main">
+                <h2 class="emp-name">@Model.Empleado.Name @Model.Empleado.LastName</h2>
+                <p class="emp-role">@Model.RolPrincipal · @Model.Empleado.Team?.Name</p>
+            </div>
+        </div>
+
+        <div class="emp-details-grid">
+
+            <div class="detail-row">
+                <span class="icon">📧</span>
+                <span>@(Model.Empleado.PersonalInfo?.Email ?? "Sin correo asignado")</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="icon">🏢</span>
+                <span>@(Model.Empleado.CompanyInfo?.JobTitle ?? "Puesto no asignado")</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="icon">📍</span>
+                <span>@(Model.Empleado.CompanyInfo?.technicalCenter.ToString() ?? "Centro no asignado")</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="icon">📅</span>
+                <span>@(Model.Empleado.CompanyInfo?.EntryDate?.ToString("dd/MM/yyyy") ?? "Sin fecha")</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="icon">🧑‍💻</span>
+                <span>@Model.Empleado.DomainUser</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="separator">
+        <div class="line"></div>
+        <div class="circle"></div>
+        <div class="line"></div>
+    </div>
+
+    <div class="three-cards">
+
+        <!-- Mi Información Personal -->
+        <a asp-page="/Empleado/MiInformacionPersonal" class="card-link">
+            <div class="small-card">
+                <div class="small-icon">
+                    <img src="~/img/sono_iconography_personal data - white.png" />
+                </div>
+                <h3>Mi Información Personal</h3>
+                <p class="small-desc">Consulta y actualiza tus datos básicos</p>
+            </div>
+        </a>
+
+        <!-- Mis Dispositivos -->
+        <a asp-page="/Empleado/MisDispositivos" class="card-link">
+            <div class="small-card">
+                <div class="small-icon">
+                    <img src="~/img/sono_iconography_electronics - white.png" />
+                </div>
+                <h3>Mis Dispositivos</h3>
+                <p class="small-desc">Consulta tus dispositivos</p>
+            </div>
+        </a>
+
+        <!-- Mis Licencias -->
+        <a asp-page="/Empleado/MisLicencias" class="card-link">
+            <div class="small-card">
+                <div class="small-icon">
+                    <img src="~/img/sono_iconography_certificate - white.png" />
+                </div>
+                <h3>Mis Licencias</h3>
+                <p class="small-desc">Consulta tus licencias activas</p>
+            </div>
+        </a>
+
+    </div>
+
+</div>

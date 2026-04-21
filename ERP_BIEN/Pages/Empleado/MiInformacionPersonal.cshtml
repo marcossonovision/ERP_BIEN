@@ -1,0 +1,90 @@
+﻿@page
+@model ERP_BIEN.Pages.Empleado.MiInformacionPersonalModel
+
+<link rel="stylesheet" href="~/css/Empleado/InformacionPersonal.css" />
+
+
+<div class="mi-info-wrapper">
+
+    <div class="mi-info-title">
+        Mi Información
+    </div>
+
+    <div class="mi-info-grid">
+
+        <!-- DATOS PERSONALES -->
+        <div class="mi-info-card">
+            <h3>Datos Personales</h3>
+
+            <div class="mi-info-list">
+                <div class="mi-info-label">Nombre</div>
+                <div class="mi-info-value">@Model.Empleado.Name</div>
+
+                <div class="mi-info-label">Apellidos</div>
+                <div class="mi-info-value">@Model.Empleado.LastName</div>
+
+                <div class="mi-info-label">Email</div>
+                <div class="mi-info-value">@Model.Empleado.PersonalInfo.Email</div>
+
+                <div class="mi-info-label">Teléfono</div>
+                <div class="mi-info-value">@Model.Empleado.PersonalInfo.Phone</div>
+
+                <div class="mi-info-label">DNI</div>
+                <div class="mi-info-value">@Model.Empleado.PersonalInfo.DNI</div>
+
+                <div class="mi-info-label">Fecha Nac.</div>
+                <div class="mi-info-value">
+                    @Model.Empleado.PersonalInfo.DateOfBirth.ToShortDateString()
+                </div>
+
+                <div class="mi-info-label">Dirección</div>
+                <div class="mi-info-value">@Model.Empleado.PersonalInfo.Address</div>
+
+                <div class="mi-info-label">Nacionalidad</div>
+                <div class="mi-info-value">@Model.Empleado.PersonalInfo.Nationality</div>
+
+                <div class="mi-info-label">Estado Civil</div>
+                <div class="mi-info-value">
+                    @(Model.Empleado.PersonalInfo.FamilySituation?.ToString() ?? "—")
+                </div>
+            </div>
+        </div>
+
+        <!-- DATOS LABORALES -->
+        <div class="mi-info-card">
+            <h3>Datos Laborales</h3>
+
+            @if (Model.Empleado.CompanyInfo != null)
+            {
+                <div class="mi-info-list">
+                    <div class="mi-info-label">Fecha Alta</div>
+                    <div class="mi-info-value">
+                        @(Model.Empleado.CompanyInfo.EntryDate?.ToShortDateString() ?? "—")
+                    </div>
+
+                    <div class="mi-info-label">Contrato</div>
+                    <div class="mi-info-value">@Model.Empleado.CompanyInfo.Contract</div>
+
+                    <div class="mi-info-label">Centro</div>
+                    <div class="mi-info-value">@Model.Empleado.CompanyInfo.technicalCenter</div>
+
+                    <div class="mi-info-label">Departamento</div>
+                    <div class="mi-info-value">@Model.Empleado.CompanyInfo.SectorOfActivity</div>
+
+                    <div class="mi-info-label">Perfil</div>
+                    <div class="mi-info-value">@Model.Empleado.CompanyInfo.TypeProfile</div>
+
+                    <div class="mi-info-label">Puesto</div>
+                    <div class="mi-info-value">@Model.Empleado.CompanyInfo.JobTitle</div>
+                </div>
+            }
+            else
+            {
+                <p class="mi-info-empty">
+                    No hay información laboral disponible.
+                </p>
+            }
+        </div>
+
+    </div>
+</div>

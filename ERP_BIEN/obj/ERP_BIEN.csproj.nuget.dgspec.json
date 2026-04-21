@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\ERP_BIEN.csproj": {}
+    "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN_\\ERP_BIEN\\ERP_BIEN.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\ERP_BIEN.csproj": {
+    "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN_\\ERP_BIEN\\ERP_BIEN.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\ERP_BIEN.csproj",
+        "projectUniqueName": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN_\\ERP_BIEN\\ERP_BIEN.csproj",
         "projectName": "ERP_BIEN",
-        "projectPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\ERP_BIEN.csproj",
+        "projectPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN_\\ERP_BIEN\\ERP_BIEN.csproj",
         "packagesPath": "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\obj\\",
+        "outputPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN_\\ERP_BIEN\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

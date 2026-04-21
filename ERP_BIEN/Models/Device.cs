@@ -34,5 +34,18 @@ namespace ERP_BIEN.Models
         public virtual User User { get; set; }
 
 
+        [NotMapped]
+        public string DeviceTypeKey =>
+            this switch
+            {
+                Computer => "computer",
+                Screen => "screen",
+                Phone => "phone",
+                Ubikey => "ubikey",
+                DockStation => "dock",
+                _ => "default"
+            };
+
+
     }
 }

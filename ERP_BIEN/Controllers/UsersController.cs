@@ -23,9 +23,16 @@ namespace ERP_BIEN.Controllers
             string searchDomain = null,
             int? searchTeamId = null)
         {
+            if (pageNumber < 1) pageNumber = 1;
+
             var result = _service.GetPagedUsers(searchName, searchDomain, searchTeamId, pageNumber);
 
-            // Mapeo entidad → ViewModel
+            if (result.TotalPages > 0 && pageNumber > result.TotalPages)
+            {
+                pageNumber = result.TotalPages;
+                result = _service.GetPagedUsers(searchName, searchDomain, searchTeamId, pageNumber);
+            }
+
             var users = result.Users.Select(u => new UserViewModel
             {
                 Id = u.Id,
@@ -36,16 +43,13 @@ namespace ERP_BIEN.Controllers
                 TeamName = u.Team?.Name
             }).ToList();
 
-            // Paginación
             ViewBag.PageNumber = pageNumber;
             ViewBag.TotalPages = result.TotalPages;
 
-            // Filtros
             ViewBag.SearchName = searchName;
             ViewBag.SearchDomain = searchDomain;
             ViewBag.SearchTeamId = searchTeamId;
 
-            // Equipos
             ViewBag.TeamList = _service.GetTeams();
 
             return View(users);
@@ -74,7 +78,12 @@ namespace ERP_BIEN.Controllers
         // CREAR
         // ============================
         [HttpPost]
-        public IActionResult Create(UserViewModel model)
+        public IActionResult Create(
+            UserViewModel model,
+            int pageNumber,
+            string searchName,
+            string searchDomain,
+            int? searchTeamId)
         {
             _service.CreateUser(new User
             {
@@ -84,14 +93,25 @@ namespace ERP_BIEN.Controllers
                 TeamId = model.TeamId
             });
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new
+            {
+                pageNumber,
+                searchName,
+                searchDomain,
+                searchTeamId
+            });
         }
 
         // ============================
         // EDITAR
         // ============================
         [HttpPost]
-        public IActionResult Edit(UserViewModel model)
+        public IActionResult Edit(
+            UserViewModel model,
+            int pageNumber,
+            string searchName,
+            string searchDomain,
+            int? searchTeamId)
         {
             _service.UpdateUser(new User
             {
@@ -102,17 +122,35 @@ namespace ERP_BIEN.Controllers
                 TeamId = model.TeamId
             });
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new
+            {
+                pageNumber,
+                searchName,
+                searchDomain,
+                searchTeamId
+            });
         }
 
         // ============================
         // ELIMINAR
         // ============================
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(
+            int id,
+            int pageNumber,
+            string searchName,
+            string searchDomain,
+            int? searchTeamId)
         {
             _service.DeleteUser(id);
-            return RedirectToAction("Index");
+
+            return RedirectToAction("Index", new
+            {
+                pageNumber,
+                searchName,
+                searchDomain,
+                searchTeamId
+            });
         }
     }
 }

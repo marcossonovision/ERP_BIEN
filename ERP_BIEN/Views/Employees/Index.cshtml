@@ -1,0 +1,337 @@
+@model List<ERP_BIEN.Models.ViewModels.EmployeeViewModel>
+
+<h2 class="mb-4">Gestión de Empleados</h2>
+
+<form method="get" asp-action="Index" asp-controller="Employees" class="card card-body mb-4" id="employeesFiltersForm">
+    <div class="row g-3 align-items-end">
+    <input type="hidden" name="pageNumber" value="1" />
+    <div class="col-md-3">
+        <label class="form-label">Nombre</label>
+        <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Usuario</label>
+        <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Equipo</label>
+        <select name="searchTeamId" class="form-control">
+            <option value="">Todos</option>
+            @foreach (var t in ViewBag.TeamList)
+            {
+                <option value="@t.Value" selected="@(ViewBag.SearchTeamId?.ToString() == t.Value)">
+                    @t.Text
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        <button type="button" class="btn btn-outline-secondary w-100"
+                onclick="window.erpClearFiltersAndSubmit(document.getElementById('employeesFiltersForm'))">
+            Limpiar filtros
+        </button>
+        <a asp-action="ExportExcel"
+           asp-controller="Employees"
+           asp-route-searchName="@ViewBag.SearchName"
+           asp-route-searchDomain="@ViewBag.SearchDomain"
+           asp-route-searchTeamId="@ViewBag.SearchTeamId"
+           class="btn btn-success w-100">📊 Excel</a>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end mt-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+            + Crear Empleado
+        </button>
+    </div>
+    </div>
+</form>
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Equipo</th>
+            <th>Rol</th>
+            <th style="width:150px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr class="employee-row" data-id="@e.Id" style="cursor:pointer;">
+                <td>@e.Name @e.LastName</td>
+                <td>@e.DomainUser</td>
+                <td>@e.TeamName</td>
+                <td>@e.RolPrincipal</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="@e.Id">Editar</button>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="@e.Id">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No se encontraron empleados.</p>
+}
+
+<nav aria-label="Paginación">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(((int)ViewBag.PageNumber) == 1 ? "disabled" : "")">
+            @if (((int)ViewBag.PageNumber) > 1)
+            {
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   Anterior
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Anterior</span>
+            }
+        </li>
+
+        @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+        {
+            var active = i == (int)ViewBag.PageNumber ? "active" : "";
+            <li class="page-item @active">
+                @if (i == (int)ViewBag.PageNumber)
+                {
+                    <span class="page-link">@i</span>
+                }
+                else
+                {
+                    <a class="page-link"
+                       href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                       @i
+                    </a>
+                }
+            </li>
+        }
+
+        <li class="page-item @(((int)ViewBag.PageNumber) == (int)ViewBag.TotalPages || ((int)ViewBag.TotalPages) == 0 ? "disabled" : "")">
+            @if (((int)ViewBag.TotalPages) > 0 && ((int)ViewBag.PageNumber) < (int)ViewBag.TotalPages)
+            {
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   Siguiente
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Siguiente</span>
+            }
+        </li>
+    </ul>
+</nav>
+
+<div class="modal fade" id="createModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-action="Create" asp-controller="Employees">
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Nombre</label>
+                    <input name="Name" class="form-control" required />
+
+                    <label class="mt-3">Apellidos</label>
+                    <input name="LastName" class="form-control" required />
+
+                    <label class="mt-3">Usuario de Dominio</label>
+                    <input name="DomainUser" class="form-control" />
+
+                    <label class="mt-3">Equipo</label>
+                    <select name="TeamId" class="form-control">
+                        <option value="">-- Sin equipo --</option>
+                        @foreach (var t in ViewBag.TeamList)
+                        {
+                            <option value="@t.Value">@t.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nombre:</strong> <span id="det-name"></span></p>
+                <p><strong>Usuario:</strong> <span id="det-domain"></span></p>
+                <p><strong>Equipo:</strong> <span id="det-team"></span></p>
+                <p><strong>Rol:</strong> <span id="det-rol"></span></p>
+                <p><strong>Email:</strong> <span id="det-email"></span></p>
+                <p><strong>Departamento:</strong> <span id="det-dept"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="openEditFromDetails">Editar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-action="Edit" asp-controller="Employees">
+                <input type="hidden" name="Id" id="edit-id" />
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Nombre</label>
+                    <input name="Name" id="edit-name" class="form-control" required />
+
+                    <label class="mt-3">Apellidos</label>
+                    <input name="LastName" id="edit-lastname" class="form-control" required />
+
+                    <label class="mt-3">Usuario de Dominio</label>
+                    <input name="DomainUser" id="edit-domain" class="form-control" />
+
+                    <label class="mt-3">Equipo</label>
+                    <select name="TeamId" id="edit-team" class="form-control">
+                        <option value="">-- Sin equipo --</option>
+                        @foreach (var t in ViewBag.TeamList)
+                        {
+                            <option value="@t.Value">@t.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-warning">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-action="Delete" asp-controller="Employees">
+                <input type="hidden" name="id" id="delete-id" />
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Seguro que deseas eliminar este empleado?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            async function loadDetails(id) {
+                const res = await fetch(`/Employees/Details/${id}`);
+                if (!res.ok) throw new Error('Error fetching details');
+                return await res.json();
+            }
+
+            document.querySelectorAll(".employee-row").forEach(row => {
+                row.addEventListener("click", async (e) => {
+                    if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
+                    const id = row.dataset.id;
+                    if (!id) return;
+                    try {
+                        const u = await loadDetails(id);
+                        document.getElementById("det-name").innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
+                        document.getElementById("det-domain").innerText = u.domainUser ?? '';
+                        document.getElementById("det-team").innerText = u.teamName ?? '—';
+                        document.getElementById("det-rol").innerText = u.rolPrincipal ?? 'Sin Rol';
+                        document.getElementById("det-email").innerText = u.companyEmail ?? '—';
+                        document.getElementById("det-dept").innerText = u.department ?? '—';
+                        new bootstrap.Modal(document.getElementById("detailsModal")).show();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            });
+
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    if (!id) return;
+                    try {
+                        const u = await loadDetails(id);
+                        document.getElementById("edit-id").value = u.id ?? '';
+                        document.getElementById("edit-name").value = u.name ?? '';
+                        document.getElementById("edit-lastname").value = u.lastName ?? '';
+                        document.getElementById("edit-domain").value = u.domainUser ?? '';
+                        document.getElementById("edit-team").value = u.teamId ?? '';
+                        new bootstrap.Modal(document.getElementById("editModal")).show();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            });
+
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    if (!id) return;
+                    document.getElementById("delete-id").value = id;
+                    new bootstrap.Modal(document.getElementById("deleteModal")).show();
+                });
+            });
+
+            const openEditFromDetails = document.getElementById("openEditFromDetails");
+            if (openEditFromDetails) {
+                openEditFromDetails.addEventListener("click", () => {
+                    const detailsEl = document.getElementById("detailsModal");
+                    const editEl = document.getElementById("editModal");
+                    const detailsInstance = detailsEl ? bootstrap.Modal.getInstance(detailsEl) : null;
+                    if (detailsInstance) detailsInstance.hide();
+                    if (editEl) new bootstrap.Modal(editEl).show();
+                });
+            }
+        });
+    </script>
+}

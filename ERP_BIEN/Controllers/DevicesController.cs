@@ -32,6 +32,7 @@ namespace ERP_BIEN.Controllers
             DateTime? useTo = null)
         {
             int pageSize = 10;
+            if (pageNumber < 1) pageNumber = 1;
 
             var (devices, totalPages) = await _service.GetDevicesAsync(
                 pageNumber,
@@ -49,6 +50,13 @@ namespace ERP_BIEN.Controllers
             );
 
             var users = await _service.GetUsersAsync();
+
+            // Clamp para evitar UI inconsistente / páginas vacías
+            if (totalPages > 0 && pageNumber > totalPages)
+            {
+                pageNumber = totalPages;
+                (devices, totalPages) = await _service.GetDevicesAsync(pageNumber, pageSize, deviceTypeFilter, statusFilter, userIdFilter, hostnameFilter, modelFilter, snFilter, manufacturingFrom, manufacturingTo, useFrom, useTo);
+            }
 
             var vm = new DevicesViewModel
             {
@@ -101,7 +109,17 @@ namespace ERP_BIEN.Controllers
             string comment,
             DateTime? useDate,
             int? userId,
-            int pageNumber)
+            int pageNumber,
+            string deviceTypeFilter = null,
+            StatusDevice? statusFilter = null,
+            int? userIdFilter = null,
+            string hostnameFilter = null,
+            string modelFilter = null,
+            string snFilter = null,
+            DateTime? manufacturingFrom = null,
+            DateTime? manufacturingTo = null,
+            DateTime? useFrom = null,
+            DateTime? useTo = null)
         {
             await _service.CreateAsync(
                 deviceType,
@@ -116,7 +134,20 @@ namespace ERP_BIEN.Controllers
                 userId
             );
 
-            return RedirectToAction(nameof(Index), new { pageNumber });
+            return RedirectToAction(nameof(Index), new
+            {
+                pageNumber,
+                DeviceTypeFilter = deviceTypeFilter,
+                StatusFilter = statusFilter,
+                UserIdFilter = userIdFilter,
+                HostnameFilter = hostnameFilter,
+                ModelFilter = modelFilter,
+                SNFilter = snFilter,
+                ManufacturingFrom = manufacturingFrom,
+                ManufacturingTo = manufacturingTo,
+                UseFrom = useFrom,
+                UseTo = useTo
+            });
         }
 
         // ============================================================
@@ -134,7 +165,17 @@ namespace ERP_BIEN.Controllers
             string comment,
             DateTime? useDate,
             int? userId,
-            int pageNumber)
+            int pageNumber,
+            string deviceTypeFilter = null,
+            StatusDevice? statusFilter = null,
+            int? userIdFilter = null,
+            string hostnameFilter = null,
+            string modelFilter = null,
+            string snFilter = null,
+            DateTime? manufacturingFrom = null,
+            DateTime? manufacturingTo = null,
+            DateTime? useFrom = null,
+            DateTime? useTo = null)
         {
             await _service.EditAsync(
                 id,
@@ -149,17 +190,55 @@ namespace ERP_BIEN.Controllers
                 userId
             );
 
-            return RedirectToAction(nameof(Index), new { pageNumber });
+            return RedirectToAction(nameof(Index), new
+            {
+                pageNumber,
+                DeviceTypeFilter = deviceTypeFilter,
+                StatusFilter = statusFilter,
+                UserIdFilter = userIdFilter,
+                HostnameFilter = hostnameFilter,
+                ModelFilter = modelFilter,
+                SNFilter = snFilter,
+                ManufacturingFrom = manufacturingFrom,
+                ManufacturingTo = manufacturingTo,
+                UseFrom = useFrom,
+                UseTo = useTo
+            });
         }
 
         // ============================================================
         // DELETE
         // ============================================================
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, int pageNumber)
+        public async Task<IActionResult> Delete(
+            int id,
+            int pageNumber,
+            string deviceTypeFilter = null,
+            StatusDevice? statusFilter = null,
+            int? userIdFilter = null,
+            string hostnameFilter = null,
+            string modelFilter = null,
+            string snFilter = null,
+            DateTime? manufacturingFrom = null,
+            DateTime? manufacturingTo = null,
+            DateTime? useFrom = null,
+            DateTime? useTo = null)
         {
             await _service.DeleteAsync(id);
-            return RedirectToAction(nameof(Index), new { pageNumber });
+            return RedirectToAction(nameof(Index), new
+            {
+                pageNumber,
+                DeviceTypeFilter = deviceTypeFilter,
+                StatusFilter = statusFilter,
+                UserIdFilter = userIdFilter,
+                HostnameFilter = hostnameFilter,
+                ModelFilter = modelFilter,
+                SNFilter = snFilter,
+                ManufacturingFrom = manufacturingFrom,
+                ManufacturingTo = manufacturingTo,
+                UseFrom = useFrom,
+                UseTo = useTo
+            });
         }
     }
 }

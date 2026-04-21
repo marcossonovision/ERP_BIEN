@@ -1,0 +1,69 @@
+﻿@page
+@model ERP_BIEN.Pages.Empleado.MisLicenciasModel
+
+    <link rel="stylesheet" href="~/css/Empleado/misLicencias.css" />
+
+<h1 class="licenses-title">Mis Licencias</h1>
+
+@if (!Model.Licenses.Any())
+{
+    <p>No tienes licencias asignadas.</p>
+}
+else
+{
+    <div class="licenses-grid">
+        @foreach (var l in Model.Licenses)
+        {
+            string imageKey =
+            l.Producto.ToLower().Contains("visual studio") ? "visualstudio" :
+            l.Producto.ToLower().Contains("365") ? "m365" :
+            l.Producto.ToLower().Contains("adobe") ? "adobe" :
+                                    "default";
+
+            <div class="license-card"
+                 data-producto="@l.Producto"
+                 data-code="@l.Code"
+                 data-proveedor="@l.Proveedor"
+                 data-precio="@l.Price"
+                 data-caducidad="@(l.Caducidad?.ToString("dd/MM/yyyy") ?? "-")"
+                 data-image="@imageKey">
+
+                <!-- Imagen -->
+                <div class="license-image">
+                    
+                </div>
+
+                <!-- Info mínima -->
+                <div class="license-body">
+                    <p class="license-product">@l.Producto</p>
+                    <p class="license-code">@l.Code</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- ===== MODAL ===== -->
+<div id="licenseModal" class="modal-overlay">
+    <div class="modal license-modal">
+        <button class="modal-close">&times;</button>
+
+        <div class="modal-image">
+            <img id="modalImage" alt="Licencia" />
+        </div>
+
+        <h3 id="modalProducto"></h3>
+
+        <div class="modal-info">
+            <p><strong>Código:</strong> <span id="modalCode"></span></p>
+            <p><strong>Proveedor:</strong> <span id="modalProveedor"></span></p>
+            <p><strong>Precio:</strong> <span id="modalPrecio"></span></p>
+            <p><strong>Caducidad:</strong> <span id="modalCaducidad"></span></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Empleado/misLicencias.js"></script>
+}
+

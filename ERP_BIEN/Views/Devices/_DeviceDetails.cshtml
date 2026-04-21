@@ -1,0 +1,42 @@
+@model ERP_BIEN.Models.Device
+@using ERP_BIEN.Models
+
+@{
+    string tipo = Model switch
+    {
+        Computer => "Computer",
+        Phone => "Phone",
+        Screen => "Screen",
+        DockStation => "DockStation",
+        _ => "Device"
+    };
+}
+
+<dl class="row mb-0">
+    <dt class="col-sm-4">Tipo</dt>
+    <dd class="col-sm-8">@tipo</dd>
+
+    <dt class="col-sm-4">Hostname</dt>
+    <dd class="col-sm-8">@Model.Hostname</dd>
+
+    <dt class="col-sm-4">Modelo</dt>
+    <dd class="col-sm-8">@Model.Model</dd>
+
+    <dt class="col-sm-4">SN</dt>
+    <dd class="col-sm-8">@Model.SN</dd>
+
+    <dt class="col-sm-4">Estado</dt>
+    <dd class="col-sm-8">@Model.Status</dd>
+
+    <dt class="col-sm-4">Usuario</dt>
+    <dd class="col-sm-8">@((Model.User != null) ? (Model.User.Name + " " + Model.User.LastName) : "-")</dd>
+
+    <dt class="col-sm-4">Fecha fabricación</dt>
+    <dd class="col-sm-8">@((Model.ManufacturingDate?.ToString("yyyy-MM-dd")) ?? "-")</dd>
+
+    <dt class="col-sm-4">Fecha uso</dt>
+    <dd class="col-sm-8">@((Model.UseDate?.ToString("yyyy-MM-dd")) ?? "-")</dd>
+
+    <dt class="col-sm-4">Comentario</dt>
+    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Comment) ? Model.Comment : "-")</dd>
+</dl>

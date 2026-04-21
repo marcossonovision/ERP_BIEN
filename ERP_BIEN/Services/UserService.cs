@@ -23,6 +23,8 @@ namespace ERP_BIEN.Services
             int pageNumber,
             int pageSize = 10)
         {
+            if (pageNumber < 1) pageNumber = 1;
+
             var query = _context.Users
                 .Include(u => u.Team)
                 .AsQueryable();
@@ -40,6 +42,11 @@ namespace ERP_BIEN.Services
             // TOTAL DE PÁGINAS
             int totalUsers = query.Count();
             int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+
+            if (totalPages > 0 && pageNumber > totalPages)
+            {
+                pageNumber = totalPages;
+            }
 
             // PAGINACIÓN
             var users = query

@@ -10,6 +10,18 @@
     <h2>Gestión de Dispositivos</h2>
 </div>
 
+<style>
+    /* Acciones: mismo tamaño y alineación */
+    .device-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: nowrap;
+    }
+    .device-actions .btn { min-width: 92px; }
+</style>
+
 <!-- FILTROS AVANZADOS -->
 <form method="get" class="card card-body mb-3">
     <div class="row g-2">
@@ -90,8 +102,11 @@
     </div>
 
     <div class="mt-3 d-flex justify-content-between">
-        <button class="btn btn-dark">Filtrar</button>
-        <a asp-action="Index" class="btn btn-outline-secondary">Limpiar filtros</a>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="window.erpClearFiltersAndSubmit(this.closest('form'))">
+            Limpiar filtros
+        </button>
     </div>
 </form>
 
@@ -135,29 +150,39 @@
                 <td>@(d.User != null ? d.User.Name + " " + d.User.LastName : "")</td>
                 <td>@(d.UseDate?.ToString("dd/MM/yyyy") ?? "-")</td>
                 <td>
-                    <button class="btn btn-sm btn-warning"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editModal"
-                            data-id="@d.Id"
-                            data-hostname="@d.Hostname"
-                            data-model="@d.Model"
-                            data-sn="@d.SN"
-                            data-number="@d.NumberOfDevice"
-                            data-manufacturing="@(d.ManufacturingDate?.ToString("yyyy-MM-dd"))"
-                            data-status="@d.Status"
-                            data-comment="@d.Comment"
-                            data-use="@(d.UseDate?.ToString("yyyy-MM-dd"))"
-                            data-userid="@d.UserId">
-                        Editar
-                    </button>
+                    <div class="device-actions">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary btn-details"
+                                data-id="@d.Id">
+                            Detalles
+                        </button>
 
-                    <button class="btn btn-sm btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                            data-id="@d.Id"
-                            data-name="@d.Hostname">
-                        Eliminar
-                    </button>
+                        <button type="button"
+                                class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-id="@d.Id"
+                                data-hostname="@d.Hostname"
+                                data-model="@d.Model"
+                                data-sn="@d.SN"
+                                data-number="@d.NumberOfDevice"
+                                data-manufacturing="@(d.ManufacturingDate?.ToString("yyyy-MM-dd"))"
+                                data-status="@d.Status"
+                                data-comment="@d.Comment"
+                                data-use="@(d.UseDate?.ToString("yyyy-MM-dd"))"
+                                data-userid="@d.UserId">
+                            Editar
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-id="@d.Id"
+                                data-name="@d.Hostname">
+                            Eliminar
+                        </button>
+                    </div>
                 </td>
             </tr>
         }
@@ -170,56 +195,69 @@
 }
 
 <!-- PAGINACIÓN -->
+@{
+    var current = Model.PageNumber;
+    var total = Model.TotalPages;
+    var dt = Model.DeviceTypeFilter;
+    var st = Model.StatusFilter;
+    var uid = Model.UserIdFilter;
+    var hn = Model.HostnameFilter;
+    var md = Model.ModelFilter;
+    var sn = Model.SNFilter;
+}
+
 <nav aria-label="Page navigation" class="mt-3">
     <ul class="pagination justify-content-center">
 
-        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-            <a class="page-link"
-                   asp-action="Index"
-                   asp-route-pageNumber="@(Model.PageNumber - 1)"
-                   asp-route-DeviceTypeFilter="@Model.DeviceTypeFilter"
-                   asp-route-StatusFilter="@Model.StatusFilter"
-                   asp-route-UserIdFilter="@Model.UserIdFilter"
-                   asp-route-HostnameFilter="@Model.HostnameFilter"
-                   asp-route-ModelFilter="@Model.ModelFilter"
-                   asp-route-SNFilter="@Model.SNFilter">
-                Anterior
-            </a>
+        <li class="page-item @(current == 1 ? "disabled" : "")" aria-disabled="@(current == 1)">
+            @if (current > 1)
+            {
+                <a class="page-link"
+                       href="@Url.Action("Index", new { pageNumber = current - 1, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
+                    Anterior
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Anterior</span>
+            }
         </li>
 
-        @for (int i = 1; i <= Model.TotalPages; i++)
+        @for (int i = 1; i <= total; i++)
         {
-            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-pageNumber="@i"
-                       asp-route-DeviceTypeFilter="@Model.DeviceTypeFilter"
-                       asp-route-StatusFilter="@Model.StatusFilter"
-                       asp-route-UserIdFilter="@Model.UserIdFilter"
-                       asp-route-HostnameFilter="@Model.HostnameFilter"
-                       asp-route-ModelFilter="@Model.ModelFilter"
-                       asp-route-SNFilter="@Model.SNFilter">
-                    @i
-                </a>
+            var isActive = i == current;
+            <li class="page-item @(isActive ? "active" : "")" @(isActive ? "aria-current=\"page\"" : "")>
+                @if (isActive)
+                {
+                    <span class="page-link">@i</span>
+                }
+                else
+                {
+                    <a class="page-link"
+                           href="@Url.Action("Index", new { pageNumber = i, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
+                        @i
+                    </a>
+                }
             </li>
         }
 
-        <li class="page-item @(Model.PageNumber == Model.TotalPages || Model.TotalPages == 0 ? "disabled" : "")">
-            <a class="page-link"
-                   asp-action="Index"
-                   asp-route-pageNumber="@(Model.PageNumber + 1)"
-                   asp-route-DeviceTypeFilter="@Model.DeviceTypeFilter"
-                   asp-route-StatusFilter="@Model.StatusFilter"
-                   asp-route-UserIdFilter="@Model.UserIdFilter"
-                   asp-route-HostnameFilter="@Model.HostnameFilter"
-                   asp-route-ModelFilter="@Model.ModelFilter"
-                   asp-route-SNFilter="@Model.SNFilter">
-                Siguiente
-            </a>
+        <li class="page-item @(current >= total || total == 0 ? "disabled" : "")" aria-disabled="@(current >= total || total == 0)">
+            @if (current < total)
+            {
+                <a class="page-link"
+                       href="@Url.Action("Index", new { pageNumber = current + 1, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
+                    Siguiente
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Siguiente</span>
+            }
         </li>
 
     </ul>
 </nav>
+
 
 <!-- CREATE MODAL -->
 <div class="modal fade" id="createModal" tabindex="-1">
@@ -278,6 +316,19 @@
                             <option value="@u.Id">@u.Name @u.LastName</option>
                         }
                     </select>
+
+                    <!-- mantener filtros/paginación -->
+                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
+                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
+                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
+                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
+                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
+                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
+                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
                 </div>
 
                 <div class="modal-footer">
@@ -339,6 +390,19 @@
                             <option value="@u.Id">@u.Name @u.LastName</option>
                         }
                     </select>
+
+                    <!-- mantener filtros/paginación -->
+                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
+                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
+                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
+                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
+                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
+                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
+                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
                 </div>
 
                 <div class="modal-footer">
@@ -363,6 +427,19 @@
                 <div class="modal-body">
                     <input type="hidden" id="delete-id" name="Id" />
                     <p>¿Seguro que deseas eliminar el dispositivo <strong id="delete-name"></strong>?</p>
+
+                    <!-- mantener filtros/paginación -->
+                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
+                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
+                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
+                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
+                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
+                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
+                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
                 </div>
 
                 <div class="modal-footer">
@@ -376,6 +453,28 @@
 
 @section Scripts {
     <script>
+        // DETAILS modal (carga partial HTML)
+        const detailsModalEl = document.getElementById('detailsModal');
+        const detailsBodyEl = document.getElementById('detailsBody');
+        const detailsModal = detailsModalEl ? new bootstrap.Modal(detailsModalEl) : null;
+
+        document.querySelectorAll('.btn-details').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                if (!id || !detailsBodyEl || !detailsModal) return;
+                detailsBodyEl.innerHTML = '<div class="text-center text-muted py-3">Cargando...</div>';
+                detailsModal.show();
+                try {
+                    const res = await fetch(`/Devices/Details/${id}`);
+                    if (!res.ok) throw new Error('Error');
+                    detailsBodyEl.innerHTML = await res.text();
+                } catch {
+                    detailsBodyEl.innerHTML = '<div class="text-danger text-center py-3">Error al cargar detalles</div>';
+                }
+            });
+        });
+
         var editModal = document.getElementById('editModal');
         editModal.addEventListener('show.bs.modal', function (event) {
             var b = event.relatedTarget;
@@ -400,3 +499,21 @@
         });
     </script>
 }
+
+<!-- DETAILS MODAL -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Dispositivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" id="detailsBody">
+                <div class="text-center text-muted py-3">Cargando...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

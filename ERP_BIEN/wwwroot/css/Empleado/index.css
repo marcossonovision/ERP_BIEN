@@ -1,0 +1,239 @@
+﻿/* CONTENEDOR CENTRAL */
+.dashboard-wrapper {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* TITULO */
+.big-title {
+    font-size: 55px;
+    font-weight: 700;
+    color: #00235c;
+    margin-bottom: 8px;
+}
+
+.welcome-text {
+    color: #606060;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+/* TARJETA EMPLEADO */
+.employee-card {
+    width: 700px;
+    margin: 0 auto;
+    background: #fff;
+    border: 2px solid #2b83f6;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Icono + El bloque */
+.employee-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.employee-icon img {
+    width: 65px;
+    height: 65px;
+}
+
+/* Nombre + Rol */
+.employee-main-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.emp-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #0055a5;
+}
+
+.emp-role {
+    font-size: 14px;
+    color: #606060;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #2b83f6;
+    display: inline-block;
+    border-radius: 50%;
+    margin: 0 6px;
+}
+
+/* Detalles del Empleado */
+.employee-details {
+    margin-top: 10px;
+    margin-left: 80px;
+}
+
+.detail-item {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+/* Linea y Punto */
+.separator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 35px 0;
+}
+
+.separator .line {
+    width: 380px;
+    height: 2px;
+    background: #032966;
+}
+
+.separator .circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #032966;
+    background: #fff;
+    margin: 0 18px;
+}
+
+/* Mini Tarjetas */
+.three-cards {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: nowrap;
+    margin-top: 20px;
+}
+
+.small-card {
+    width: 260px;
+    height: 185px;
+    background: #fff;
+    border: 2px solid #2b83f6;
+    border-radius: 15px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: 0.25s ease;
+}
+
+
+.small-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15), 0 0 18px rgba(43, 131, 246, 0.35);
+}
+
+
+.small-icon img {
+    width: 55px;
+    margin-bottom: 10px;
+}
+
+.small-card h3 {
+    font-size: 18px;
+    color: #0055a5;
+    margin-bottom: 4px;
+}
+
+.small-desc {
+    font-size: 13px;
+    color: #666;
+}
+
+
+/* Enlace invisible que envuelve cada card */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-radius: 15px; /* Igual que la card, para mantener el hover perfecto */
+}
+
+.card-link:focus {
+    outline: none;
+}
+
+
+/* === TARJETA MODERNA EMPLEADO === */
+
+.employee-card-modern {
+    width: 700px;
+    background: #ffffff;
+    border: 2px solid #2b83f6;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    font-family: 'Segoe UI';
+}
+
+/* Header con avatar + info */
+.emp-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Avatar */
+.emp-avatar {
+    width: 75px;
+    height: 75px;
+    padding: 10px;
+    border-radius: 50%;
+    background: #2b83f6;
+}
+
+/* Info principal */
+.emp-info-main .emp-name {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #00235c;
+}
+
+.emp-role {
+    margin-top: 4px;
+    font-size: 15px;
+    color: #606060;
+}
+
+/* Detalles en forma de grid vertical */
+.emp-details-grid {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Fila de detalle */
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+}
+
+    /* Iconos */
+.detail-row .icon {
+    width: 22px;
+    font-size: 18px;
+    display: inline-block;
+    text-align: center;
+}

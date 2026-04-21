@@ -14,25 +14,31 @@
         z-index: 1;
         cursor: pointer;
     }
+    .pagination .page-link {
+    pointer-events: auto !important;
+}
+
 </style>
 
 <!-- ========================= -->
 <!-- FILTROS + CREAR USUARIO -->
 <!-- ========================= -->
-<form method="get" asp-action="Index" asp-controller="Users" class="row g-3 p-3 mb-4 rounded" style="background:#f5f5f5; border:1px solid #ddd;">
+<form method="get" asp-action="Index" asp-controller="Users" class="card card-body mb-4" id="usersFiltersForm">
+    <div class="row g-3 align-items-end">
+    <input type="hidden" name="pageNumber" value="1" />
 
     <div class="col-md-3">
-        <label class="form-label fw-bold">🔍 Nombre</label>
+        <label class="form-label">Nombre</label>
         <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
     </div>
 
     <div class="col-md-3">
-        <label class="form-label fw-bold">👤 Usuario</label>
+        <label class="form-label">Usuario</label>
         <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
     </div>
 
     <div class="col-md-3">
-        <label class="form-label fw-bold">🏢 Equipo</label>
+        <label class="form-label">Equipo</label>
         <select name="searchTeamId" class="form-control">
             <option value="">Todos</option>
             @foreach (var t in ViewBag.TeamList)
@@ -45,17 +51,21 @@
     </div>
 
     <div class="col-md-3 d-flex align-items-end gap-2">
-        <button class="btn btn-primary w-100">Buscar</button>
-        <a asp-action="Index" asp-controller="Users" class="btn btn-secondary w-100">Limpiar</a>
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary w-100"
+                onclick="window.erpClearFiltersAndSubmit(document.getElementById('usersFiltersForm'))">
+            Limpiar filtros
+        </button>
         <a asp-action="ExportExcel" asp-controller="Users" class="btn btn-success w-100">📊 Excel</a>
     </div>
 
     <div class="col-12 d-flex justify-content-end mt-2">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
             + Crear Usuario
         </button>
     </div>
 
+    </div>
 </form>
 
 <!-- ========================= -->
@@ -89,42 +99,65 @@
     </tbody>
 </table>
 
+@if (!Model.Any())
+{
+    <p class="text-muted">No se encontraron usuarios.</p>
+}
+
 <!-- ========================= -->
 <!-- PAGINACIÓN -->
 <!-- ========================= -->
-<nav>
-    <ul class="pagination">
-        <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
-            <a class="page-link"
-               asp-action="Index"
-               asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
-               asp-route-searchName="@ViewBag.SearchName"
-               asp-route-searchDomain="@ViewBag.SearchDomain"
-               asp-route-searchTeamId="@ViewBag.SearchTeamId">Anterior</a>
+@* Reemplaza el bloque <nav> existente por este *@
+<nav aria-label="Paginación">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(((int)ViewBag.PageNumber) == 1 ? "disabled" : "")">
+            @if (((int)ViewBag.PageNumber) > 1)
+            {
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   Anterior
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Anterior</span>
+            }
         </li>
 
-        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
         {
-            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
-                <a class="page-link"
-                   asp-action="Index"
-                   asp-route-pageNumber="@i"
-                   asp-route-searchName="@ViewBag.SearchName"
-                   asp-route-searchDomain="@ViewBag.SearchDomain"
-                   asp-route-searchTeamId="@ViewBag.SearchTeamId">@i</a>
+            var active = i == (int)ViewBag.PageNumber ? "active" : "";
+            <li class="page-item @active">
+                @if (i == (int)ViewBag.PageNumber)
+                {
+                    <span class="page-link">@i</span>
+                }
+                else
+                {
+                    <a class="page-link"
+                       href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                       @i
+                    </a>
+                }
             </li>
         }
 
-        <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
-            <a class="page-link"
-               asp-action="Index"
-               asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
-               asp-route-searchName="@ViewBag.SearchName"
-               asp-route-searchDomain="@ViewBag.SearchDomain"
-               asp-route-searchTeamId="@ViewBag.SearchTeamId">Siguiente</a>
+        <li class="page-item @(((int)ViewBag.PageNumber) == (int)ViewBag.TotalPages || ((int)ViewBag.TotalPages) == 0 ? "disabled" : "")">
+            @if (((int)ViewBag.TotalPages) > 0 && ((int)ViewBag.PageNumber) < (int)ViewBag.TotalPages)
+            {
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   Siguiente
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Siguiente</span>
+            }
         </li>
     </ul>
 </nav>
+
 
 <!-- ========================= -->
 <!-- MODAL: CREAR USUARIO -->
@@ -134,6 +167,11 @@
         <div class="modal-content">
 
             <form method="post" asp-action="Create" asp-controller="Users">
+
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
 
                 <div class="modal-header">
                     <h5 class="modal-title">Crear Usuario</h5>
@@ -210,6 +248,10 @@
             <form method="post" asp-action="Edit" asp-controller="Users">
 
                 <input type="hidden" name="Id" id="edit-id" />
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
 
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Usuario</h5>
@@ -258,6 +300,10 @@
             <form method="post" asp-action="Delete" asp-controller="Users">
 
                 <input type="hidden" name="Id" id="delete-id" />
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
 
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar Usuario</h5>
@@ -281,75 +327,208 @@
 
 @section Scripts {
     <script>
+        // Scripts de Usuarios: versión segura, con limpieza y listener manual para Create
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // ============================
-        // CLICK EN FILA → VER DETALLES
-        // ============================
-        document.querySelectorAll(".user-row").forEach(row => {
-            row.addEventListener("click", async (e) => {
+            console.log("Scripts de Usuarios cargados");
 
-                if (e.target.closest("button")) return;
+            // --- LIMPIEZA INICIAL DEFENSIVA (evita backdrops o modales abiertos al cargar)
+            setTimeout(() => {
+                const m = document.getElementById('createModal');
+                if (m && m.classList.contains('show')) {
+                    m.classList.remove('show');
+                    m.style.display = 'none';
+                }
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                document.body.classList.remove('modal-open');
+            }, 100);
 
-                const id = row.dataset.id;
-                await loadDetails(id);
+            // --- CLICK EN FILA → VER DETALLES (delegación por filas)
+            document.querySelectorAll(".user-row").forEach(row => {
+                row.addEventListener("click", async (e) => {
+                    // permitir clicks en botones y elementos que abren modales
+                    if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
+                    const id = row.dataset.id;
+                    if (!id) return;
+                    await loadDetails(id);
+                });
             });
-        });
 
-        // ============================
-        // BOTÓN EDITAR
-        // ============================
-        document.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.addEventListener("click", async (e) => {
-                e.stopPropagation();
+            // --- BOTÓN EDITAR (seguro: solo si existen botones)
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    if (!id) return;
+                    try {
+                        const res = await fetch(`/Users/Details/${id}`);
+                        if (!res.ok) throw new Error('Error fetching details');
+                        const u = await res.json();
 
-                const id = btn.dataset.id;
-                const res = await fetch(`/Users/Details/${id}`);
-                const u = await res.json();
+                        const editId = document.getElementById("edit-id");
+                        const editName = document.getElementById("edit-name");
+                        const editLastname = document.getElementById("edit-lastname");
+                        const editDomain = document.getElementById("edit-domain");
+                        const editTeam = document.getElementById("edit-team");
 
-                document.getElementById("edit-id").value = u.id;
-                document.getElementById("edit-name").value = u.name;
-                document.getElementById("edit-lastname").value = u.lastName;
-                document.getElementById("edit-domain").value = u.domainUser;
-                document.getElementById("edit-team").value = u.teamId;
+                        if (editId) editId.value = u.id ?? '';
+                        if (editName) editName.value = u.name ?? '';
+                        if (editLastname) editLastname.value = u.lastName ?? '';
+                        if (editDomain) editDomain.value = u.domainUser ?? '';
+                        if (editTeam) editTeam.value = u.teamId ?? '';
 
-                new bootstrap.Modal(document.getElementById("editModal")).show();
+                        const editModalEl = document.getElementById("editModal");
+                        if (editModalEl) new bootstrap.Modal(editModalEl).show();
+                    } catch (err) {
+                        console.error('Error al cargar datos para editar:', err);
+                    }
+                });
             });
-        });
 
-        // ============================
-        // BOTÓN ELIMINAR
-        // ============================
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                document.getElementById("delete-id").value = btn.dataset.id;
-                new bootstrap.Modal(document.getElementById("deleteModal")).show();
+            // --- BOTÓN ELIMINAR (seguro: solo si existen botones)
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    if (!id) return;
+                    const deleteIdEl = document.getElementById("delete-id");
+                    if (deleteIdEl) deleteIdEl.value = id;
+                    const deleteModalEl = document.getElementById("deleteModal");
+                    if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+                });
             });
-        });
 
-        // ============================
-        // CARGAR DETALLES
-        // ============================
-        async function loadDetails(id) {
-            const res = await fetch(`/Users/Details/${id}`);
-            const u = await res.json();
+            // --- BOTÓN CREAR USUARIO: listener manual seguro (parche definitivo)
+            const createBtn = document.querySelector('[data-bs-target="#createModal"]');
+            if (createBtn) {
+                createBtn.addEventListener('click', (e) => {
+                    const modalEl = document.getElementById('createModal');
+                    if (modalEl) {
+                        try {
+                            // No bloqueamos el comportamiento estándar (data-bs-toggle).
+                            // Solo aseguramos apertura si hiciera falta.
+                            if (window.bootstrap?.Modal) {
+                                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                            }
+                        } catch (err) {
+                            console.error('No se pudo abrir createModal manualmente:', err);
+                        }
+                    } else {
+                        console.warn('createModal no encontrado en DOM');
+                    }
+                });
+            } else {
+                console.warn('Botón para abrir createModal no encontrado (selector [data-bs-target="#createModal"])');
+            }
 
-            document.getElementById("det-name").innerText = u.name + " " + u.lastName;
-            document.getElementById("det-domain").innerText = u.domainUser;
-            document.getElementById("det-team").innerText = u.teamName ?? "—";
+            // --- FUNCION: CARGAR DETALLES Y MOSTRAR MODAL
+            async function loadDetails(id) {
+                try {
+                    const res = await fetch(`/Users/Details/${id}`);
+                    if (!res.ok) throw new Error('Error fetching details');
+                    const u = await res.json();
 
-            new bootstrap.Modal(document.getElementById("detailsModal")).show();
-        }
+                    const detName = document.getElementById("det-name");
+                    const detDomain = document.getElementById("det-domain");
+                    const detTeam = document.getElementById("det-team");
 
-        // ============================
-        // DESDE DETALLES → EDITAR
-        // ============================
-        document.getElementById("openEditFromDetails").addEventListener("click", () => {
-            const detailsModal = bootstrap.Modal.getInstance(document.getElementById("detailsModal"));
-            detailsModal.hide();
+                    if (detName) detName.innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
+                    if (detDomain) detDomain.innerText = u.domainUser ?? '';
+                    if (detTeam) detTeam.innerText = u.teamName ?? '—';
 
-            new bootstrap.Modal(document.getElementById("editModal")).show();
-        });
+                    const detailsModalEl = document.getElementById("detailsModal");
+                    if (detailsModalEl) new bootstrap.Modal(detailsModalEl).show();
+                } catch (err) {
+                    console.error('Error al cargar detalles:', err);
+                }
+            }
 
+            // --- DESDE DETALLES → EDITAR (solo si existe el botón dentro del modal)
+            const openEditFromDetails = document.getElementById("openEditFromDetails");
+            if (openEditFromDetails) {
+                openEditFromDetails.addEventListener("click", () => {
+                    const detailsModalEl = document.getElementById("detailsModal");
+                    const editModalEl = document.getElementById("editModal");
+
+                    const detailsInstance = detailsModalEl ? bootstrap.Modal.getInstance(detailsModalEl) : null;
+                    if (detailsInstance) detailsInstance.hide();
+
+                    if (editModalEl) new bootstrap.Modal(editModalEl).show();
+                });
+            }
+
+            // --- LIMPIEZA: eliminar backdrops residuales si existieran (defensivo)
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                if (backdrops.length > 0) {
+                    backdrops.forEach(b => b.remove());
+                    document.body.classList.remove('modal-open');
+                    console.log('Backdrops residuales eliminados');
+                }
+            }, 500);
+
+            // --- Asegurar limpieza al cerrar cualquier modal
+            document.addEventListener('hidden.bs.modal', () => {
+                setTimeout(() => {
+                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                    document.body.classList.remove('modal-open');
+                }, 50);
+            });
+
+            // --- BOTÓN LIMPIAR FILTROS (añadido)
+            // Reemplaza el enlace "Limpiar" por: <button type="button" id="clearFiltersBtn" ...>
+            const clearBtn = document.getElementById('clearFiltersBtn') || document.querySelector('[data-action="clear-filters"]');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // eliminar backdrops residuales antes de enviar
+                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                    document.body.classList.remove('modal-open');
+
+                    // localizar el formulario de filtros más cercano
+                    const form = clearBtn.closest('form') || document.querySelector('form#filtersForm') || document.querySelector('form');
+                    if (!form) {
+                        // si no hay form, navegar a la ruta base
+                        window.location.href = window.location.pathname;
+                        return;
+                    }
+
+                    // limpiar inputs de texto y search (sin tocar tokens ocultos)
+                    form.querySelectorAll('input[type="text"], input[type="search"]').forEach(i => {
+                        const name = i.getAttribute('name') || '';
+                        if (!/__RequestVerificationToken/i.test(name)) i.value = '';
+                    });
+
+                    // limpiar selects
+                    form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+
+                    // limpiar checkboxes y radios
+                    form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(c => c.checked = false);
+
+                    // resetear campo de página a 1 si existe
+                    const pageField = form.querySelector('input[name="page"], input[name="pageNumber"], input[name="pagenumber"]');
+                    if (pageField) pageField.value = 1;
+
+                    // asegurar método GET y enviar
+                    form.method = form.method || 'get';
+                    form.submit();
+                });
+            } else {
+                console.warn('Botón Limpiar no encontrado (id="clearFiltersBtn" o [data-action="clear-filters"])');
+            }
+
+            // --- Protección ligera: evitar que handlers globales bloqueen clicks en paginación y limpiar
+            // Este listener en fase de captura detiene la propagación hacia handlers globales en bubble,
+            // evitando que un handler mal diseñado haga preventDefault() y bloquee la acción.
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#clearFiltersBtn') || e.target.closest('.pagination') || e.target.closest('form')) {
+                    // detener la propagación para que handlers globales en bubble no intercepten
+                    e.stopPropagation();
+                }
+            }, true);
+
+        }); // DOMContentLoaded
     </script>
 }

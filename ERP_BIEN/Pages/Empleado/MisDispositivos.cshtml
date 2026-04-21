@@ -1,0 +1,100 @@
+﻿@page
+@model ERP_BIEN.Pages.Empleado.MisDispositivosModel
+
+<link rel="stylesheet" href="~/css/Empleado/misDispositivos.css" />
+
+<div class="devices-wrapper">
+    <h1 class="devices-title">Mis Dispositivos</h1>
+
+    <div class="devices-grid">
+        @foreach (var d in Model.Devices)
+        {
+            <div class="device-card"
+                 data-hostname="@d.Hostname"
+                 data-model="@d.Model"
+                 data-sn="@d.SN"
+                 data-status="@d.Status"
+                 data-usedate="@d.UseDate?.ToString("dd/MM/yyyy")"
+                 data-type="@d.DeviceTypeKey">
+
+                <!-- Imagen según tipo de dispositivo -->
+                <div class="device-image">
+                    <img src="~/img/devices/@(d.DeviceTypeKey).png"
+                         alt="Imagen del dispositivo" />
+                </div>
+
+                <!-- Información visible en la card -->
+                <div class="device-body">
+                    <!-- Tipo visual -->
+                    <p class="device-type">
+                        @d.GetType().Name
+                    </p>
+
+                    <p class="device-model">
+                        @d.Model
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(d.SN))
+                    {
+                        <p class="device-sn">
+                            @d.SN
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div id="deviceModal" class="modal-overlay">
+    <div class="modal">
+        <button class="modal-close">&times;</button>
+
+        <div class="modal-image">
+            <img id="modalImage" alt="Imagen del dispositivo" />
+        </div>
+
+        <h3 id="modalHostname"></h3>
+
+        <ul class="modal-list">
+            <li><strong>Modelo:</strong> <span id="modalModel"></span></li>
+            <li><strong>Nº Serie:</strong> <span id="modalSN"></span></li>
+            <li><strong>Estado:</strong> <span id="modalStatus"></span></li>
+            <li><strong>Asignado:</strong> <span id="modalUseDate"></span></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const cards = document.querySelectorAll('.device-card');
+    const modal = document.getElementById('deviceModal');
+
+    const hostname = document.getElementById('modalHostname');
+    const model = document.getElementById('modalModel');
+    const sn = document.getElementById('modalSN');
+    const status = document.getElementById('modalStatus');
+    const usedate = document.getElementById('modalUseDate');
+    const image = document.getElementById('modalImage');
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            hostname.textContent = card.dataset.hostname;
+            model.textContent = card.dataset.model || '-';
+            sn.textContent = card.dataset.sn || '-';
+            status.textContent = card.dataset.status || '-';
+            usedate.textContent = card.dataset.usedate || '-';
+
+            image.src = `/img/devices/${card.dataset.type}.png`;
+
+            modal.classList.add('show');
+        });
+    });
+
+    document.querySelector('.modal-close').onclick = () =>
+        modal.classList.remove('show');
+
+    modal.onclick = e => {
+        if (e.target === modal) modal.classList.remove('show');
+    };
+</script>

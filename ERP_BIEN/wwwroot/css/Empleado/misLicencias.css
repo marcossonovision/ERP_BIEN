@@ -1,0 +1,131 @@
+﻿/* ===== TÍTULO ===== */
+.licenses-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
+    color: #0f172a;
+}
+
+/* ===== GRID ===== */
+.licenses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 210px);
+    gap: 2.5rem;
+    justify-content: center;
+}
+
+/* ===== CARD ===== */
+.license-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1rem;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+    .license-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    }
+
+/* ===== IMAGE ===== */
+.license-image {
+    height: 120px;
+    background: #f3f4f6;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: .8rem;
+}
+
+    .license-image img {
+        max-width: 75%;
+        max-height: 75%;
+        object-fit: contain;
+    }
+
+/* ===== BODY ===== */
+.license-body {
+    text-align: center;
+}
+
+.license-product {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #0f172a;
+    margin-bottom: .2rem;
+}
+
+.license-code {
+    font-size: .7rem;
+    color: #2563eb;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+}
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+.modal {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    background: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.modal-image {
+    height: 160px;
+    background: #f3f4f6;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+    .modal-image img {
+        max-width: 80%;
+        max-height: 80%;
+    }
+
+.license-modal h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #0f172a;
+}
+
+.modal-info {
+    font-size: .85rem;
+    color: #334155;
+}
+
+    .modal-info p {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: .4rem;
+    }
