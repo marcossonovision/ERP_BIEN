@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Auditoría";
 
-    // Acceso correcto a la QueryString en MVC
     var qUser = Context.Request.Query["user"];
     var qAction = Context.Request.Query["action"];
     var qEntity = Context.Request.Query["entity"];
@@ -28,11 +27,51 @@
             <label class="form-label">Acción</label>
             <select name="action" class="form-select">
                 <option value="">Todas</option>
-                <option value="Create" @(qAction == "Create" ? "selected" : "")>Create</option>
-                <option value="Edit" @(qAction == "Edit" ? "selected" : "")>Edit</option>
-                <option value="Delete" @(qAction == "Delete" ? "selected" : "")>Delete</option>
-                <option value="Assign" @(qAction == "Assign" ? "selected" : "")>Assign</option>
-                <option value="Remove" @(qAction == "Remove" ? "selected" : "")>Remove</option>
+
+                @if (qAction == "Create")
+                {
+                    <option value="Create" selected>Create</option>
+                }
+                else
+                {
+                    <option value="Create">Create</option>
+                }
+
+                @if (qAction == "Edit")
+                {
+                    <option value="Edit" selected>Edit</option>
+                }
+                else
+                {
+                    <option value="Edit">Edit</option>
+                }
+
+                @if (qAction == "Delete")
+                {
+                    <option value="Delete" selected>Delete</option>
+                }
+                else
+                {
+                    <option value="Delete">Delete</option>
+                }
+
+                @if (qAction == "Assign")
+                {
+                    <option value="Assign" selected>Assign</option>
+                }
+                else
+                {
+                    <option value="Assign">Assign</option>
+                }
+
+                @if (qAction == "Remove")
+                {
+                    <option value="Remove" selected>Remove</option>
+                }
+                else
+                {
+                    <option value="Remove">Remove</option>
+                }
             </select>
         </div>
 
@@ -40,10 +79,42 @@
             <label class="form-label">Entidad</label>
             <select name="entity" class="form-select">
                 <option value="">Todas</option>
-                <option value="Employee" @(qEntity == "Employee" ? "selected" : "")>Employee</option>
-                <option value="Device" @(qEntity == "Device" ? "selected" : "")>Device</option>
-                <option value="License" @(qEntity == "License" ? "selected" : "")>License</option>
-                <option value="Role" @(qEntity == "Role" ? "selected" : "")>Role</option>
+
+                @if (qEntity == "Employee")
+                {
+                    <option value="Employee" selected>Employee</option>
+                }
+                else
+                {
+                    <option value="Employee">Employee</option>
+                }
+
+                @if (qEntity == "Device")
+                {
+                    <option value="Device" selected>Device</option>
+                }
+                else
+                {
+                    <option value="Device">Device</option>
+                }
+
+                @if (qEntity == "License")
+                {
+                    <option value="License" selected>License</option>
+                }
+                else
+                {
+                    <option value="License">License</option>
+                }
+
+                @if (qEntity == "Role")
+                {
+                    <option value="Role" selected>Role</option>
+                }
+                else
+                {
+                    <option value="Role">Role</option>
+                }
             </select>
         </div>
 

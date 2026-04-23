@@ -1,59 +1,93 @@
-﻿using ERP_BIEN.Models.ViewModels;
+﻿using ERP_BIEN.Data;
+using ERP_BIEN.Models;
+using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ERP_BIEN.Controllers
 {
-    [Authorize(Policy = "TEAM")] // requiere claim module=TEAM
+    [Authorize(Policy = "TEAM")]
     public class TeamController : Controller
     {
         private readonly TeamService _teamService;
+        private readonly AppDbContext _context;
 
-        public TeamController(TeamService teamService)
+        public TeamController(TeamService teamService, AppDbContext context)
         {
             _teamService = teamService;
+            _context = context;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(int? teamId = null, string? msg = null, string? err = null)
         {
+            // ===== Usuario actual =====
             var domainUser = TeamService.NormalizeDomainUser(User.Identity?.Name);
             var currentUser = await _teamService.GetCurrentUserAsync(domainUser);
-            if (currentUser == null) return Unauthorized();
+            if (currentUser == null)
+                return Unauthorized();
 
+            // ===== Equipos que gestiono =====
             var teams = await _teamService.GetManagedTeamsAsync(currentUser.Id);
 
-            // Si el PM no tiene equipos, mostramos vista vacía con mensaje
+            // ✅ SI NO TENGO EQUIPO → SE CREA AUTOMÁTICAMENTE
             if (teams.Count == 0)
             {
-                return View(new TeamModuleIndexViewModel
+                var newTeam = new Team
                 {
-                    InfoMessage = "No tienes equipos asignados todavía. Pide a RRHH/SuperAdmin que te asigne un equipo o crea uno desde el módulo de equipos (si lo implementas)."
-                });
+                    Name = $"Equipo de {currentUser.Name} {currentUser.LastName}",
+                    ProjectManagerId = currentUser.Id
+                };
+
+                _context.Teams.Add(newTeam);
+                await _context.SaveChangesAsync();
+
+                teams.Add(newTeam);
             }
 
+            // ===== Equipo seleccionado =====
             var selectedTeamId = teamId ?? teams.First().Id;
 
-            var members = await _teamService.GetTeamMembersAsync(selectedTeamId);
-            var candidates = await _teamService.GetCandidatesAsync();
+            // ===== Miembros del equipo =====
+            var members = await _context.Users
+                .Where(u => u.TeamId == selectedTeamId)
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.Name)
+                .ToListAsync();
 
+            // ===== Usuarios disponibles (NO en este equipo) =====
+            var candidates = await _context.Users
+                .Where(u => u.TeamId == null || u.TeamId != selectedTeamId)
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.Name)
+                .ToListAsync();
+
+            // ===== ViewModel =====
             var vm = new TeamModuleIndexViewModel
             {
                 SelectedTeamId = selectedTeamId,
-                ManagedTeams = teams.Select(t => new TeamItemVm { Id = t.Id, Name = t.Name }).ToList(),
+                ManagedTeams = teams.Select(t => new TeamItemVm
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                }).ToList(),
+
                 Members = members.Select(u => new UserItemVm
                 {
                     Id = u.Id,
                     FullName = $"{u.Name} {u.LastName}".Trim(),
                     DomainUser = u.DomainUser ?? ""
                 }).ToList(),
+
                 Candidates = candidates.Select(u => new UserItemVm
                 {
                     Id = u.Id,
                     FullName = $"{u.Name} {u.LastName}".Trim(),
                     DomainUser = u.DomainUser ?? ""
                 }).ToList(),
+
                 InfoMessage = msg,
                 ErrorMessage = err
             };
@@ -61,7 +95,7 @@ namespace ERP_BIEN.Controllers
             return View(vm);
         }
 
-        // Añadir miembro (PM puede; está bajo TEAM y además lo marcamos como operación de escritura)
+        // ===== AÑADIR MIEMBRO =====
         [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -71,18 +105,22 @@ namespace ERP_BIEN.Controllers
             {
                 var domainUser = TeamService.NormalizeDomainUser(User.Identity?.Name);
                 var currentUser = await _teamService.GetCurrentUserAsync(domainUser);
-                if (currentUser == null) return Unauthorized();
+                if (currentUser == null)
+                    return Unauthorized();
 
                 await _teamService.AddMemberAsync(currentUser.Id, selectedTeamId, userId);
-                return RedirectToAction(nameof(Index), new { teamId = selectedTeamId, msg = "Miembro añadido correctamente." });
+
+                return RedirectToAction(nameof(Index),
+                    new { teamId = selectedTeamId, msg = "Miembro añadido correctamente." });
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Index), new { teamId = selectedTeamId, err = ex.Message });
+                return RedirectToAction(nameof(Index),
+                    new { teamId = selectedTeamId, err = ex.Message });
             }
         }
 
-        // Quitar miembro
+        // ===== QUITAR MIEMBRO =====
         [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -92,14 +130,18 @@ namespace ERP_BIEN.Controllers
             {
                 var domainUser = TeamService.NormalizeDomainUser(User.Identity?.Name);
                 var currentUser = await _teamService.GetCurrentUserAsync(domainUser);
-                if (currentUser == null) return Unauthorized();
+                if (currentUser == null)
+                    return Unauthorized();
 
                 await _teamService.RemoveMemberAsync(currentUser.Id, userId);
-                return RedirectToAction(nameof(Index), new { teamId = selectedTeamId, msg = "Miembro eliminado del equipo." });
+
+                return RedirectToAction(nameof(Index),
+                    new { teamId = selectedTeamId, msg = "Miembro eliminado del equipo." });
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Index), new { teamId = selectedTeamId, err = ex.Message });
+                return RedirectToAction(nameof(Index),
+                    new { teamId = selectedTeamId, err = ex.Message });
             }
         }
     }

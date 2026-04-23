@@ -73,6 +73,11 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("TEAM", p =>
         p.RequireClaim("module", "TEAM"));
+
+    // ✅ ESTA ES LA QUE FALTABA
+    options.AddPolicy("WRITE", p =>
+        p.RequireClaim("permission", "WRITE"));
+
 });
 
 

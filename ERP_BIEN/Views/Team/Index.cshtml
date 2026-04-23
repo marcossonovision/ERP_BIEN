@@ -32,9 +32,14 @@ else
                 <select class="form-select" name="teamId" onchange="this.form.submit()">
                     @foreach (var t in Model.ManagedTeams)
                     {
-                        <option value="@t.Id" selected="@(t.Id == Model.SelectedTeamId)">
-                            @t.Name
-                        </option>
+                        if (t.Id == Model.SelectedTeamId)
+                        {
+                            <option value="@t.Id" selected>@t.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
                     }
                 </select>
             </form>
@@ -67,14 +72,18 @@ else
                                 <td>@m.FullName</td>
                                 <td>@m.DomainUser</td>
                                 <td>
-                                    <form method="post" asp-controller="Team" asp-action="RemoveMember">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
-                                        <input type="hidden" name="userId" value="@m.Id" />
-                                        <button class="btn btn-sm btn-outline-danger" type="submit">
-                                            Quitar
-                                        </button>
-                                    </form>
+                                    @* Quitar solo si puede escribir *@
+                                    @if (User.HasClaim("module", "TEAM"))
+                                    {
+                                        <form method="post" asp-controller="Team" asp-action="RemoveMember">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+                                            <input type="hidden" name="userId" value="@m.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Quitar
+                                            </button>
+                                        </form>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -85,28 +94,37 @@ else
 
         <!-- AÑADIR -->
         <div class="col-md-5">
-            <h4>Añadir miembro</h4>
-
-            @if (Model.Candidates.Count == 0)
+            @* SOLO mostrar si el usuario puede escribir *@
+            @if (User.HasClaim("module", "TEAM"))
             {
-                <p>No hay candidatos disponibles (sin equipo).</p>
-            }
-            else
-            {
-                <form method="post" asp-controller="Team" asp-action="AddMember">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+                <h4>Añadir miembro</h4>
 
-                    <label class="form-label">Usuario</label>
-                    <select class="form-select mb-2" name="userId" required>
-                        @foreach (var c in Model.Candidates)
-                        {
-                            <option value="@c.Id">@c.FullName (@c.DomainUser)</option>
-                        }
-                    </select>
+                @if (Model.Candidates.Count == 0)
+                {
+                    <p>No hay candidatos disponibles.</p>
+                }
+                else
+                {
+                    <form method="post" asp-controller="Team" asp-action="AddMember">
+                        @Html.AntiForgeryToken()
 
-                    <button class="btn btn-primary" type="submit">Añadir al equipo</button>
-                </form>
+                        <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+
+                        <label class="form-label">Usuario</label>
+                        <select class="form-select mb-2" name="userId" required>
+                            @foreach (var c in Model.Candidates)
+                            {
+                                <option value="@c.Id">
+                                    @c.FullName (@c.DomainUser)
+                                </option>
+                            }
+                        </select>
+
+                        <button type="submit" class="btn btn-primary">
+                            Añadir al equipo
+                        </button>
+                    </form>
+                }
             }
         </div>
     </div>

@@ -1,7 +1,8 @@
 ﻿namespace WebCoreMVC.Services
 {
     using ERP_BIEN.Data;
-    using ERP_BIEN.Services;          // RoleAccessMatrix si lo tienes aquí, si no, usa el de abajo (Paso 3)
+    using ERP_BIEN.Models;
+    using ERP_BIEN.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.EntityFrameworkCore;
     using System.Security.Claims;
@@ -39,7 +40,6 @@
                 return principal;
             }
 
-            // ✅ Normalizar: dominio\user  |  user@dominio  |  user
             static string Normalize(string input)
             {
                 var s = input.Trim();
@@ -55,7 +55,6 @@
 
             var normalized = Normalize(rawUser);
 
-            // Probamos varias claves por si en BD guardaste distinto formato
             var keys = new[] { rawUser.Trim(), normalized }
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -67,16 +66,23 @@
                     .ThenInclude(ur => ur.Role)
                         .ThenInclude(r => r.RolePermissions)
                             .ThenInclude(rp => rp.Permission)
-                .FirstOrDefaultAsync(u => u.DomainUser != null && keys.Contains(u.DomainUser));
+                .FirstOrDefaultAsync(u =>
+                    u.DomainUser != null &&
+                    keys.Contains(u.DomainUser));
 
             if (user == null)
             {
-                _logger.LogWarning("RBAC: No se encontró usuario en BD. rawUser={RawUser} normalized={Normalized}", rawUser, normalized);
+                _logger.LogWarning(
+                    "RBAC: Usuario no encontrado. rawUser={RawUser} normalized={Normalized}",
+                    rawUser, normalized);
+
                 identity.AddClaim(new Claim(TransformedMarker, "1"));
                 return principal;
             }
 
-            // ===== ROLES =====
+            // =========================
+            // ROLES
+            // =========================
             var roles = user.UserRoles?
                 .Where(ur => ur.Role != null)
                 .Select(ur => ur.Role.Code)
@@ -91,33 +97,35 @@
                     identity.AddClaim(new Claim(identity.RoleClaimType, roleCode));
             }
 
-            // ===== PERMISOS =====
-            const string PermissionClaimType = "permission";
-
-            var permissions = user.UserRoles?
-                .Where(ur => ur.Role != null)
-                .SelectMany(ur => ur.Role.RolePermissions)
-                .Where(rp => rp.Permission != null)
-                .Select(rp => rp.Permission.Code)
-                .Where(pc => !string.IsNullOrWhiteSpace(pc))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList()
-                ?? new List<string>();
-
-            foreach (var permissionCode in permissions)
+            // =========================
+            // PERMISSIONS → permission
+            // =========================
+            foreach (var ur in user.UserRoles ?? Enumerable.Empty<UserRole>())
             {
-                if (!identity.HasClaim(PermissionClaimType, permissionCode))
-                    identity.AddClaim(new Claim(PermissionClaimType, permissionCode));
+                var role = ur.Role;
+                if (role == null) continue;
+
+                foreach (var rp in role.RolePermissions ?? Enumerable.Empty<RolePermission>())
+                {
+                    if (rp.Permission != null &&
+                        !string.IsNullOrWhiteSpace(rp.Permission.Code))
+                    {
+                        if (!identity.HasClaim("permission", rp.Permission.Code))
+                        {
+                            identity.AddClaim(new Claim("permission", rp.Permission.Code));
+                        }
+                    }
+                }
             }
 
-            // ===== MÓDULOS (module) =====
-            const string ModuleClaimType = "module";
-
+            // =========================
+            // MODULES → module
+            // =========================
             var modules = RoleAccessMatrix.GetModulesForRoles(roles);
             foreach (var module in modules)
             {
-                if (!identity.HasClaim(ModuleClaimType, module))
-                    identity.AddClaim(new Claim(ModuleClaimType, module));
+                if (!identity.HasClaim("module", module))
+                    identity.AddClaim(new Claim("module", module));
             }
 
             identity.AddClaim(new Claim(TransformedMarker, "1"));
