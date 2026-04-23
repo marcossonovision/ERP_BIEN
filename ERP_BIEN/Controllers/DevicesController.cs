@@ -2,10 +2,15 @@
 using ERP_BIEN.Models;
 using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP_BIEN.Controllers
 {
+    // ============================
+    // ACCESO AL MÓDULO DEVICES
+    // ============================
+    [Authorize(Policy = "DEVICES")]
     public class DevicesController : Controller
     {
         private readonly DeviceService _service;
@@ -16,7 +21,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================================================
-        // INDEX
+        // INDEX (LECTURA)
         // ============================================================
         public async Task<IActionResult> Index(
             int pageNumber = 1,
@@ -51,11 +56,23 @@ namespace ERP_BIEN.Controllers
 
             var users = await _service.GetUsersAsync();
 
-            // Clamp para evitar UI inconsistente / páginas vacías
             if (totalPages > 0 && pageNumber > totalPages)
             {
                 pageNumber = totalPages;
-                (devices, totalPages) = await _service.GetDevicesAsync(pageNumber, pageSize, deviceTypeFilter, statusFilter, userIdFilter, hostnameFilter, modelFilter, snFilter, manufacturingFrom, manufacturingTo, useFrom, useTo);
+                (devices, totalPages) =
+                    await _service.GetDevicesAsync(
+                        pageNumber,
+                        pageSize,
+                        deviceTypeFilter,
+                        statusFilter,
+                        userIdFilter,
+                        hostnameFilter,
+                        modelFilter,
+                        snFilter,
+                        manufacturingFrom,
+                        manufacturingTo,
+                        useFrom,
+                        useTo);
             }
 
             var vm = new DevicesViewModel
@@ -83,7 +100,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================================================
-        // DETAILS (para abrir modal al pulsar fila)
+        // DETAILS (LECTURA – MODAL)
         // ============================================================
         public async Task<IActionResult> Details(int id)
         {
@@ -95,9 +112,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================================================
-        // CREATE
+        // CREATE (ESCRITURA)
         // ============================================================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             string deviceType,
             string hostname,
@@ -151,9 +170,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================================================
-        // EDIT
+        // EDIT (ESCRITURA)
         // ============================================================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
             string hostname,
@@ -207,9 +228,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================================================
-        // DELETE
+        // DELETE (ESCRITURA)
         // ============================================================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(
             int id,
             int pageNumber,
@@ -225,6 +248,7 @@ namespace ERP_BIEN.Controllers
             DateTime? useTo = null)
         {
             await _service.DeleteAsync(id);
+
             return RedirectToAction(nameof(Index), new
             {
                 pageNumber,

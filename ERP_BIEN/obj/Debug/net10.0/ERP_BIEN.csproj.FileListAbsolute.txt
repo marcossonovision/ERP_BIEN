@@ -704,8 +704,8 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN_\ERP_BIEN\obj\Debug\net10.0\ref\ERP_B
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN_\ERP_BIEN\obj\Debug\net10.0\compressed\r9ojlce74q-{0}-16caf07hlu-16caf07hlu.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\appsettings.json
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.staticwebassets.endpoints.json
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.staticwebassets.runtime.json
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.staticwebassets.endpoints.json
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.exe
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.deps.json
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ERP_BIEN.runtimeconfig.json

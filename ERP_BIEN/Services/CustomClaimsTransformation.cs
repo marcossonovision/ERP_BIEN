@@ -1,17 +1,16 @@
 ﻿namespace WebCoreMVC.Services
 {
     using ERP_BIEN.Data;
+    using ERP_BIEN.Services;          // RoleAccessMatrix si lo tienes aquí, si no, usa el de abajo (Paso 3)
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.EntityFrameworkCore;
     using System.Security.Claims;
-
 
     public class CustomClaimsTransformation : IClaimsTransformation
     {
         private readonly AppDbContext _db;
         private readonly ILogger<CustomClaimsTransformation> _logger;
 
-        // Para evitar consultas repetidas en la misma request, marcamos cuando ya hemos transformado.
         private const string TransformedMarker = "rbac_transformed";
 
         public CustomClaimsTransformation(AppDbContext db, ILogger<CustomClaimsTransformation> logger)
@@ -40,7 +39,27 @@
                 return principal;
             }
 
-            var domainUser = rawUser.Trim();
+            // ✅ Normalizar: dominio\user  |  user@dominio  |  user
+            static string Normalize(string input)
+            {
+                var s = input.Trim();
+
+                if (s.Contains("\\"))
+                    s = s.Split('\\')[1].Trim();
+
+                if (s.Contains("@"))
+                    s = s.Split('@')[0].Trim();
+
+                return s;
+            }
+
+            var normalized = Normalize(rawUser);
+
+            // Probamos varias claves por si en BD guardaste distinto formato
+            var keys = new[] { rawUser.Trim(), normalized }
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
 
             var user = await _db.Users
                 .AsNoTracking()
@@ -48,16 +67,16 @@
                     .ThenInclude(ur => ur.Role)
                         .ThenInclude(r => r.RolePermissions)
                             .ThenInclude(rp => rp.Permission)
-                .FirstOrDefaultAsync(u => u.DomainUser == domainUser);
+                .FirstOrDefaultAsync(u => u.DomainUser != null && keys.Contains(u.DomainUser));
 
             if (user == null)
             {
-                _logger.LogWarning("RBAC: No se encontró usuario en BD para DomainUser={DomainUser}", domainUser);
+                _logger.LogWarning("RBAC: No se encontró usuario en BD. rawUser={RawUser} normalized={Normalized}", rawUser, normalized);
                 identity.AddClaim(new Claim(TransformedMarker, "1"));
                 return principal;
             }
 
-            // ROLES
+            // ===== ROLES =====
             var roles = user.UserRoles?
                 .Where(ur => ur.Role != null)
                 .Select(ur => ur.Role.Code)
@@ -69,12 +88,10 @@
             foreach (var roleCode in roles)
             {
                 if (!identity.HasClaim(identity.RoleClaimType, roleCode))
-                {
                     identity.AddClaim(new Claim(identity.RoleClaimType, roleCode));
-                }
             }
 
-            // PERMISOS
+            // ===== PERMISOS =====
             const string PermissionClaimType = "permission";
 
             var permissions = user.UserRoles?
@@ -90,15 +107,21 @@
             foreach (var permissionCode in permissions)
             {
                 if (!identity.HasClaim(PermissionClaimType, permissionCode))
-                {
                     identity.AddClaim(new Claim(PermissionClaimType, permissionCode));
-                }
+            }
+
+            // ===== MÓDULOS (module) =====
+            const string ModuleClaimType = "module";
+
+            var modules = RoleAccessMatrix.GetModulesForRoles(roles);
+            foreach (var module in modules)
+            {
+                if (!identity.HasClaim(ModuleClaimType, module))
+                    identity.AddClaim(new Claim(ModuleClaimType, module));
             }
 
             identity.AddClaim(new Claim(TransformedMarker, "1"));
             return principal;
         }
-
-
     }
 }

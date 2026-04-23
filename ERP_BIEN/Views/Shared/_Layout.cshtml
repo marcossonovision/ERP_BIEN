@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SONOVISION</title>
 
-    <!-- Bootstrap + tus estilos -->
+    <!-- Bootstrap + estilos base -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ERP_BIEN.styles.css" asp-append-version="true" />
 
-    <!-- Estilos del dashboard y layout corporativo -->
+    <!-- Estilos corporativos -->
     <link rel="stylesheet" href="~/css/layout.css" />
     <link rel="stylesheet" href="~/css/dashboard.css" />
 </head>
@@ -26,39 +26,126 @@
             </div>
 
             <nav class="sidebar-menu">
+
+                <!-- ================= GENERAL ================= -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">General</div>
-                    <a class="sidebar-link" href="/Dashboard"><span class="sidebar-ico">▦</span><span class="sidebar-text">Dashboard</span></a>
+
+                    @if (User.HasClaim("module", "DASHBOARD"))
+                    {
+                        <a class="sidebar-link" href="/Dashboard">
+                            <span class="sidebar-ico">▦</span>
+                            <span class="sidebar-text">Dashboard</span>
+                        </a>
+                    }
                 </div>
 
                 <div class="sidebar-sep"></div>
 
+                <!-- ================= GESTIÓN ================= -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Gestión</div>
-                    <a class="sidebar-link" href="/Users"><span class="sidebar-ico">👤</span><span class="sidebar-text">Usuarios</span></a>
-                    <a class="sidebar-link" href="/Roles"><span class="sidebar-ico">🛡</span><span class="sidebar-text">Roles</span></a>
-                    <a class="sidebar-link" href="/Devices"><span class="sidebar-ico">💻</span><span class="sidebar-text">Dispositivos</span></a>
-                    <a class="sidebar-link" href="/Licenses"><span class="sidebar-ico">🔑</span><span class="sidebar-text">Licencias</span></a>
-                    <a class="sidebar-link" href="/Employees"><span class="sidebar-ico">🏢</span><span class="sidebar-text">Empleados</span></a>
+
+                    @if (User.HasClaim("module", "USERS"))
+                    {
+                        <a class="sidebar-link" href="/Users">
+                            <span class="sidebar-ico">👤</span>
+                            <span class="sidebar-text">Usuarios</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "ROLES"))
+                    {
+                        <a class="sidebar-link" href="/Roles">
+                            <span class="sidebar-ico">🛡</span>
+                            <span class="sidebar-text">Roles</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "DEVICES"))
+                    {
+                        <a class="sidebar-link" href="/Devices">
+                            <span class="sidebar-ico">💻</span>
+                            <span class="sidebar-text">Dispositivos</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "LICENSES"))
+                    {
+                        <a class="sidebar-link" href="/Licenses">
+                            <span class="sidebar-ico">🔑</span>
+                            <span class="sidebar-text">Licencias</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "EMPLOYEES"))
+                    {
+                        <a class="sidebar-link" href="/Employees">
+                            <span class="sidebar-ico">🏢</span>
+                            <span class="sidebar-text">Empleados</span>
+                        </a>
+                    }
                 </div>
 
                 <div class="sidebar-sep"></div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Acciones</div>
-                    <a class="sidebar-link" href="/Audit"><span class="sidebar-ico">🧾</span><span class="sidebar-text">Auditoría</span></a>
-                    <a class="sidebar-link" href="/Import"><span class="sidebar-ico">⭳</span><span class="sidebar-text">Importación</span></a>
-                </div>
+                <!-- ================= ACCIONES ================= -->
+                @if (User.HasClaim("module", "ROLES"))
+                {
+                    <div class="sidebar-section">
+                        <div class="sidebar-section-title">Acciones</div>
 
-                <div class="sidebar-sep"></div>
+                        <a class="sidebar-link" href="/Audit">
+                            <span class="sidebar-ico">🧾</span>
+                            <span class="sidebar-text">Auditoría</span>
+                        </a>
 
+                        <a class="sidebar-link" href="/Import">
+                            <span class="sidebar-ico">⭳</span>
+                            <span class="sidebar-text">Importación</span>
+                        </a>
+                    </div>
+
+                    <div class="sidebar-sep"></div>
+                }
+
+                <!-- ================= MI ÁREA ================= -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Mi área</div>
-                    <a class="sidebar-link" href="/MyDevices"><span class="sidebar-ico">📦</span><span class="sidebar-text">Mis dispositivos</span></a>
-                    <a class="sidebar-link" href="/MyLicenses"><span class="sidebar-ico">🗝</span><span class="sidebar-text">Mis licencias</span></a>
-                    <a class="sidebar-link" href="/Team"><span class="sidebar-ico">👥</span><span class="sidebar-text">Equipo a tu cargo</span></a>
-                    <a class="sidebar-link" href="/MyData"><span class="sidebar-ico">ℹ</span><span class="sidebar-text">Mis Datos</span></a>
+
+                    @if (User.HasClaim("module", "MY_DEVICES"))
+                    {
+                        <a class="sidebar-link" href="/MyDevices">
+                            <span class="sidebar-ico">📦</span>
+                            <span class="sidebar-text">Mis dispositivos</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "MY_LICENSES"))
+                    {
+                        <a class="sidebar-link" href="/MyLicenses">
+                            <span class="sidebar-ico">🗝</span>
+                            <span class="sidebar-text">Mis licencias</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "TEAM"))
+                    {
+                        <a class="sidebar-link" href="/Team">
+                            <span class="sidebar-ico">👥</span>
+                            <span class="sidebar-text">Equipo a tu cargo</span>
+                        </a>
+                    }
+
+                    @if (User.HasClaim("module", "MY_DATA"))
+                    {
+                        <a class="sidebar-link" href="/MyData">
+                            <span class="sidebar-ico">ℹ</span>
+                            <span class="sidebar-text">Mis datos</span>
+                        </a>
+                    }
                 </div>
+
             </nav>
         </aside>
 
@@ -67,9 +154,13 @@
 
             <!-- TOPBAR -->
             <header class="topbar">
-                <button type="button" class="sidebar-toggle" id="erpSidebarToggle" aria-label="Abrir/cerrar menú">
+                <button type="button"
+                        class="sidebar-toggle"
+                        id="erpSidebarToggle"
+                        aria-label="Abrir/cerrar menú">
                     ☰
                 </button>
+
                 <div class="topbar-user">
                     <span class="user-icon">M</span>
                     <span class="user-name">@User.Identity?.Name</span>
@@ -87,44 +178,21 @@
 
     </div>
 
-    <!-- Scripts originales -->
+    <!-- Scripts base -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        // Utilidad corporativa: limpiar filtros y resetear a página 1 (GET)
-        window.erpClearFiltersAndSubmit = function (form) {
-            if (!form) return;
+            (function () {
+                const btn = document.getElementById('erpSidebarToggle');
+                const root = document.documentElement;
+                if (!btn) return;
 
-            // inputs texto/búsqueda/date/number
-            form.querySelectorAll('input').forEach(i => {
-                const t = (i.type || '').toLowerCase();
-                const n = (i.name || '');
-                if (/__RequestVerificationToken/i.test(n)) return;
-                if (t === 'text' || t === 'search' || t === 'date' || t === 'number') i.value = '';
-            });
-
-            // selects => primera opción
-            form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-
-            // reset pageNumber/PageNumber a 1 si existe (cualquier casing)
-            const page = form.querySelector('input[name="pageNumber"], input[name="PageNumber"], input[name="pagenumber"]');
-            if (page) page.value = 1;
-
-            form.submit();
-        };
-
-        // Sidebar toggle (sin cambiar rutas ni controladores)
-        (function () {
-            const btn = document.getElementById('erpSidebarToggle');
-            const root = document.documentElement;
-            if (!btn) return;
-
-            btn.addEventListener('click', () => {
-                root.classList.toggle('sidebar-collapsed');
-            });
-        })();
+                btn.addEventListener('click', () => {
+                    root.classList.toggle('sidebar-collapsed');
+                });
+            })();
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

@@ -1,4 +1,3 @@
-// File: Program.cs
 using ERP_BIEN.Data;
 using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -8,11 +7,16 @@ using WebCoreMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Registrar el DbContext con la cadena de conexión
+// =====================================================
+// 1. DB CONTEXT
+// =====================================================
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Activar SSO (Windows Authentication)
+// =====================================================
+// 2. WINDOWS AUTHENTICATION (SSO)
+// =====================================================
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = NegotiateDefaults.AuthenticationScheme;
@@ -21,79 +25,107 @@ builder.Services.AddAuthentication(options =>
 })
 .AddNegotiate();
 
-// 3. ACTIVAR MVC
+// =====================================================
+// 3. MVC + RAZOR
+// =====================================================
 builder.Services.AddControllersWithViews();
-
-// 4. Razor Pages (las mantenemos mientras migramos)
 builder.Services.AddRazorPages();
 
-// 👉 AÑADIDO: UserService para MVC
+// =====================================================
+// 4. APLICACIÓN / SERVICES
+// =====================================================
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<DeviceService>();
-builder.Services.AddScoped<ERP_BIEN.Services.ILicenseService, ERP_BIEN.Services.LicenseService>();
+builder.Services.AddScoped<ILicenseService, LicenseService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<ERP_BIEN.Services.TeamService>();
 
-// ===== AÑADIDO: Registrar servicio de Roles =====
-builder.Services.AddScoped<ERP_BIEN.Services.IRoleService, ERP_BIEN.Services.RoleService>();
 
-//#region RECOGER LOS PERMISOS DEL USUARIO
-//builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
-//#endregion
+// =====================================================
+// 5. CLAIMS TRANSFORMATION (RBAC)
+// =====================================================
+builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
 
+// =====================================================
+// 6. AUTHORIZATION POLICIES
+// =====================================================
 builder.Services.AddAuthorization(options =>
 {
-    options.FallbackPolicy = options.DefaultPolicy;
+    // Dashboard: cualquier usuario autenticado
+    options.AddPolicy("DASHBOARD", p =>
+        p.RequireAuthenticatedUser());
+
+    options.AddPolicy("USERS", p =>
+        p.RequireClaim("module", "USERS"));
+
+    options.AddPolicy("ROLES", p =>
+        p.RequireClaim("module", "ROLES"));
+
+    options.AddPolicy("EMPLOYEES", p =>
+        p.RequireClaim("module", "EMPLOYEES"));
+
+    options.AddPolicy("DEVICES", p =>
+        p.RequireClaim("module", "DEVICES"));
+
+    options.AddPolicy("LICENSES", p =>
+        p.RequireClaim("module", "LICENSES"));
+
+    options.AddPolicy("TEAM", p =>
+        p.RequireClaim("module", "TEAM"));
 });
+
 
 var app = builder.Build();
 
-// Configuración del pipeline HTTP
+// =====================================================
+// 7. PIPELINE HTTP
+// =====================================================
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error"); // (lo dejo como lo tienes)
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-// Archivos estáticos
 app.UseStaticFiles();
-
-// Routing
 app.UseRouting();
 
-// Autenticación y autorización
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Mapear la ruta plural /Licenses a LicenseController (añadido)
+// =====================================================
+// 8. RUTAS
+// =====================================================
+
+// /Licenses → LicenseController
 app.MapControllerRoute(
     name: "licenses_plural",
     pattern: "Licenses/{action=Index}/{id?}",
     defaults: new { controller = "License" }
 );
 
-// ===== AÑADIDO: Mapear la ruta plural /Roles a RoleController =====
+// /Roles → RoleController
 app.MapControllerRoute(
     name: "roles_plural",
     pattern: "Roles/{action=Index}/{id?}",
     defaults: new { controller = "Role" }
 );
 
-// ✅ CAMBIO CLAVE: Dashboard como ruta por defecto
+// Ruta por defecto → Dashboard
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Dashboard}/{action=Index}/{id?}"
 );
 
-
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/Dashboard");
-    return Task.CompletedTask;
-});
-
-
-// Razor Pages (lo quitaremos cuando acabemos la migración)
 app.MapRazorPages();
+
+// =====================================================
+// 🔥 9. DATA SEEDER (CLAVE)
+// =====================================================
+using (var scope = app.Services.CreateScope())
+{
+    DataSeeder.RellenarDatos(scope);
+}
 
 app.Run();

@@ -15,6 +15,7 @@ namespace ERP_BIEN.Data
 
         public DbSet<PreceptorDetails> PreceptorDetails { get; set; }
         public DbSet<PersonalInformation> PersonalInformation { get; set; }
+        public DbSet<CompanyInformation> CompanyInformation { get; set; }
 
         // ===== LICENCIAS / SOFTWARE =====
         public DbSet<License> Licenses { get; set; }
@@ -40,6 +41,8 @@ namespace ERP_BIEN.Data
 
         public DbSet<Ascendant> Ascendants { get; set; }
         public DbSet<Child> Childs { get; set; }
+        // ===== AUDITORÍA =====
+        public DbSet<AuditLog> AuditLogs { get; set; }   // ⭐ AÑADIDO
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "lSXjZmTmQLw=",
+  "dgSpecHash": "j8I3/tF5ngc=",
   "success": true,
   "projectFilePath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\ERP_BIEN.csproj",
   "expectedPackageFiles": [
@@ -86,7 +86,7 @@
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.entityframeworkcore.design\\10.0.5\\microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512",
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.5\\microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512",
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\10.0.5\\microsoft.entityframeworkcore.sqlserver.10.0.5.nupkg.sha512",
-    "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.5\\microsoft.entityframeworkcore.tools.10.0.5.nupkg.sha512",
+    "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.7\\microsoft.entityframeworkcore.tools.10.0.7.nupkg.sha512",
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.5\\microsoft.extensions.dependencymodel.10.0.5.nupkg.sha512",
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.identity.client\\4.73.1\\microsoft.identity.client.4.73.1.nupkg.sha512",
     "C:\\Users\\marcos.gutierrez\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.73.1\\microsoft.identity.client.extensions.msal.4.73.1.nupkg.sha512",

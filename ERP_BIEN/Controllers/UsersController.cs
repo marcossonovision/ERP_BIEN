@@ -1,10 +1,15 @@
 ﻿using ERP_BIEN.Models;
 using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP_BIEN.Controllers
 {
+    // ============================
+    // ACCESO AL MÓDULO USERS
+    // ============================
+    [Authorize(Policy = "USERS")]
     public class UsersController : Controller
     {
         private readonly UserService _service;
@@ -56,7 +61,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DETALLES (JSON PARA MODALES)
+        // DETAILS (JSON PARA MODALES)
         // ============================
         public IActionResult Details(int id)
         {
@@ -75,9 +80,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // CREAR
+        // POST – CREATE (ESCRITURA)
         // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(
             UserViewModel model,
             int pageNumber,
@@ -103,9 +110,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // EDITAR
+        // POST – EDIT (ESCRITURA)
         // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(
             UserViewModel model,
             int pageNumber,
@@ -132,9 +141,11 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // ELIMINAR
+        // POST – DELETE (ESCRITURA)
         // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(
             int id,
             int pageNumber,

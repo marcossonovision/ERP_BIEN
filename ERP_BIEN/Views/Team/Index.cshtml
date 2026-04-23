@@ -1,0 +1,113 @@
+﻿@model ERP_BIEN.Models.ViewModels.TeamModuleIndexViewModel
+
+@{
+    ViewData["Title"] = "Equipo a tu cargo";
+}
+
+<div class="dashboard-header">
+    <h1>Equipo a tu cargo</h1>
+    <p class="dashboard-subtitle">Gestiona quién forma parte de tu equipo.</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.InfoMessage))
+{
+    <div class="alert alert-info">@Model.InfoMessage</div>
+}
+
+@if (Model.ManagedTeams == null || Model.ManagedTeams.Count == 0)
+{
+    <p>No hay equipos asignados.</p>
+}
+else
+{
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form method="get" asp-controller="Team" asp-action="Index">
+                <label class="form-label">Selecciona equipo</label>
+                <select class="form-select" name="teamId" onchange="this.form.submit()">
+                    @foreach (var t in Model.ManagedTeams)
+                    {
+                        <option value="@t.Id" selected="@(t.Id == Model.SelectedTeamId)">
+                            @t.Name
+                        </option>
+                    }
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- MIEMBROS -->
+        <div class="col-md-7">
+            <h4>Miembros del equipo</h4>
+
+            @if (Model.Members.Count == 0)
+            {
+                <p>No hay miembros asignados.</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th style="width:140px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.Members)
+                        {
+                            <tr>
+                                <td>@m.FullName</td>
+                                <td>@m.DomainUser</td>
+                                <td>
+                                    <form method="post" asp-controller="Team" asp-action="RemoveMember">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+                                        <input type="hidden" name="userId" value="@m.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">
+                                            Quitar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <!-- AÑADIR -->
+        <div class="col-md-5">
+            <h4>Añadir miembro</h4>
+
+            @if (Model.Candidates.Count == 0)
+            {
+                <p>No hay candidatos disponibles (sin equipo).</p>
+            }
+            else
+            {
+                <form method="post" asp-controller="Team" asp-action="AddMember">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+
+                    <label class="form-label">Usuario</label>
+                    <select class="form-select mb-2" name="userId" required>
+                        @foreach (var c in Model.Candidates)
+                        {
+                            <option value="@c.Id">@c.FullName (@c.DomainUser)</option>
+                        }
+                    </select>
+
+                    <button class="btn btn-primary" type="submit">Añadir al equipo</button>
+                </form>
+            }
+        </div>
+    </div>
+}

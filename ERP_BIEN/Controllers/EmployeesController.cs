@@ -1,12 +1,17 @@
-using System.Text;
 using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace ERP_BIEN.Controllers
 {
+    // ============================
+    // ACCESO AL MÓDULO EMPLOYEES
+    // ============================
+    [Authorize(Policy = "EMPLOYEES")]
     public class EmployeesController : Controller
     {
         private readonly EmployeeService _service;
@@ -16,6 +21,9 @@ namespace ERP_BIEN.Controllers
             _service = new EmployeeService(db);
         }
 
+        // ============================
+        // GET – LISTADO
+        // ============================
         public IActionResult Index(
             int pageNumber = 1,
             string? searchName = null,
@@ -46,6 +54,9 @@ namespace ERP_BIEN.Controllers
             return View(employees);
         }
 
+        // ============================
+        // GET – DETAILS (LECTURA)
+        // ============================
         public IActionResult Details(int id)
         {
             var u = _service.GetEmployee(id);
@@ -63,11 +74,15 @@ namespace ERP_BIEN.Controllers
                 teamId = u.TeamId,
                 teamName = u.Team?.Name,
                 rolPrincipal = rol,
-                
             });
         }
 
+        // ============================
+        // POST – CREATE (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(
             EmployeeViewModel model,
             int pageNumber,
@@ -92,7 +107,12 @@ namespace ERP_BIEN.Controllers
             });
         }
 
+        // ============================
+        // POST – EDIT (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(
             EmployeeViewModel model,
             int pageNumber,
@@ -118,7 +138,12 @@ namespace ERP_BIEN.Controllers
             });
         }
 
+        // ============================
+        // POST – DELETE (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(
             int id,
             int pageNumber,
@@ -137,12 +162,21 @@ namespace ERP_BIEN.Controllers
             });
         }
 
+        // ============================
+        // GET – EXPORT EXCEL (LECTURA)
+        // ============================
         public IActionResult ExportExcel(
             string? searchName = null,
             string? searchDomain = null,
             int? searchTeamId = null)
         {
-            var result = _service.GetPagedEmployees(searchName, searchDomain, searchTeamId, pageNumber: 1, pageSize: 100000);
+            var result = _service.GetPagedEmployees(
+                searchName,
+                searchDomain,
+                searchTeamId,
+                pageNumber: 1,
+                pageSize: 100000);
+
             var rows = _service.ToViewModels(result.Users);
 
             var xml = BuildSpreadsheetXml(rows);
@@ -174,7 +208,8 @@ namespace ERP_BIEN.Controllers
   <Worksheet ss:Name=""Employees"">
     <Table>");
 
-            void Cell(string v) => sb.Append($@"<Cell><Data ss:Type=""String"">{EscapeXml(v)}</Data></Cell>");
+            void Cell(string v) =>
+                sb.Append($@"<Cell><Data ss:Type=""String"">{EscapeXml(v)}</Data></Cell>");
 
             sb.Append("<Row>");
             Cell("Nombre");
@@ -200,6 +235,7 @@ namespace ERP_BIEN.Controllers
             sb.Append(@"</Table>
   </Worksheet>
 </Workbook>");
+
             return sb.ToString();
         }
     }

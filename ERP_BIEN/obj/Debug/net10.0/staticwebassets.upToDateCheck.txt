@@ -85,12 +85,10 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\dashboard.css
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\devices.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\Empleado\index.css
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\Empleado\InformacionPersonal.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\Empleado\misDispositivos.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\Empleado\misLicencias.css
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\LICENSE.txt
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\layout.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\licenses.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\site.css
@@ -151,9 +149,11 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery-validatio
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery-validation\LICENSE.md
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.js
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\dashboard.css
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\Empleado\InformacionPersonal.css
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\devices.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.min.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.min.map
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.slim.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.slim.min.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.slim.min.map
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\LICENSE.txt

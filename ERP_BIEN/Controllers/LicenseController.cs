@@ -1,28 +1,38 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using ERP_BIEN.Models;
 using ERP_BIEN.Services;
 using ERP_BIEN.ViewModels;
-using ERP_BIEN.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERP_BIEN.Controllers
 {
+    // ============================
+    // ACCESO AL MÓDULO LICENSES
+    // ============================
+    [Authorize(Policy = "LICENSES")]
     public class LicenseController : Controller
     {
         private readonly ILicenseService _svc;
         public LicenseController(ILicenseService svc) => _svc = svc;
 
+        // ============================
+        // INDEX (LECTURA)
+        // ============================
         public async Task<IActionResult> Index([FromQuery] LicenseQueryParameters qp)
         {
-            // Normalizar valores por seguridad
             qp.PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber;
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
 
             Console.WriteLine($"[LicenseController] PageNumber={qp.PageNumber}, PageSize={qp.PageSize}");
 
             var (items, total) = await _svc.GetPagedAsync(qp);
-            var totalPages = qp.PageSize > 0 ? (int)Math.Ceiling(total / (double)qp.PageSize) : 0;
+            var totalPages = qp.PageSize > 0
+                ? (int)Math.Ceiling(total / (double)qp.PageSize)
+                : 0;
+
             if (totalPages > 0 && qp.PageNumber > totalPages)
             {
                 qp.PageNumber = totalPages;
@@ -45,11 +55,15 @@ namespace ERP_BIEN.Controllers
             return View(vm);
         }
 
+        // ============================
+        // DETAILS (LECTURA – JSON)
+        // ============================
         [HttpGet]
         public async Task<JsonResult> DetailsJson(int id)
         {
             var lic = await _svc.GetByIdAsync(id);
             if (lic == null) return Json(null);
+
             var dto = new
             {
                 id = lic.Id,
@@ -61,16 +75,24 @@ namespace ERP_BIEN.Controllers
                 asignada = lic.Asignada,
                 disponible = lic.Disponible,
                 userId = lic.UserId,
-                userName = lic.User != null ? $"{lic.User.Name} {lic.User.LastName}" : null
+                userName = lic.User != null
+                    ? $"{lic.User.Name} {lic.User.LastName}"
+                    : null
             };
+
             return Json(dto);
         }
 
+        // ============================
+        // CREATE (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LicenseViewModel vm, LicenseQueryParameters qp)
         {
-            if (!ModelState.IsValid) return RedirectToAction(nameof(Index), qp);
+            if (!ModelState.IsValid)
+                return RedirectToAction(nameof(Index), qp);
 
             var lic = new License
             {
@@ -88,14 +110,20 @@ namespace ERP_BIEN.Controllers
             return RedirectToAction(nameof(Index), qp);
         }
 
+        // ============================
+        // EDIT (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LicenseViewModel vm, LicenseQueryParameters qp)
         {
-            if (!ModelState.IsValid) return RedirectToAction(nameof(Index), qp);
+            if (!ModelState.IsValid)
+                return RedirectToAction(nameof(Index), qp);
 
             var lic = await _svc.GetByIdAsync(vm.Id);
-            if (lic == null) return RedirectToAction(nameof(Index), qp);
+            if (lic == null)
+                return RedirectToAction(nameof(Index), qp);
 
             lic.Code = vm.Code?.Trim();
             lic.Producto = vm.Producto?.Trim();
@@ -110,6 +138,10 @@ namespace ERP_BIEN.Controllers
             return RedirectToAction(nameof(Index), qp);
         }
 
+        // ============================
+        // DELETE (ESCRITURA)
+        // ============================
+        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, LicenseQueryParameters qp)

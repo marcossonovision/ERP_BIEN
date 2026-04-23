@@ -1,4 +1,4 @@
-﻿namespace ERP_BIEN.Common.Enums
+﻿/**namespace ERP_BIEN.Common.Enums
 {
     public enum Rol
     {
@@ -8,4 +8,4 @@
         ITManagement,
         Boss
     }
-}
+}*/

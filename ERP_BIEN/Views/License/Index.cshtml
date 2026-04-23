@@ -9,50 +9,51 @@
 <!-- FILTROS -->
 <form method="get" asp-action="Index" asp-controller="License" class="card card-body mb-3">
     <div class="row g-2 align-items-end">
-    <div class="col-auto">
-        <label class="form-label">Búsqueda</label>
-        <input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Buscar código o producto" />
+        <div class="col-auto">
+            <label class="form-label">Búsqueda</label>
+            <input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Buscar código o producto" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Proveedor</label>
+            <input type="text" name="SearchProveedor" value="@Model.SearchProveedor" class="form-control" placeholder="Proveedor" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Producto</label>
+            <input type="text" name="SearchProducto" value="@Model.SearchProducto" class="form-control" placeholder="Producto" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Asignada</label>
+            <select name="SearchAsignada" class="form-select">
+                <option value="" @(string.IsNullOrWhiteSpace(Model.SearchAsignada) ? "selected" : "")>Todas</option>
+                <option value="true" @(Model.SearchAsignada == "true" ? "selected" : "")>Sí</option>
+                <option value="false" @(Model.SearchAsignada == "false" ? "selected" : "")>No</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Page size</label>
+            <select name="PageSize" class="form-select">
+                <option value="5" @(Model.PageSize == 5 ? "selected" : "")>5</option>
+                <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
+                <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <input type="hidden" name="PageNumber" value="1" />
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-secondary"
+                    onclick="window.erpClearFiltersAndSubmit(this.closest('form'))">
+                Limpiar filtros
+            </button>
+        </div>
+        <div class="col-auto ms-auto">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createEditModal">
+                Crear licencia
+            </button>
+        </div>
     </div>
-    <div class="col-auto">
-        <label class="form-label">Proveedor</label>
-        <input type="text" name="SearchProveedor" value="@Model.SearchProveedor" class="form-control" placeholder="Proveedor" />
-    </div>
-    <div class="col-auto">
-        <label class="form-label">Producto</label>
-        <input type="text" name="SearchProducto" value="@Model.SearchProducto" class="form-control" placeholder="Producto" />
-    </div>
-    <div class="col-auto">
-        <label class="form-label">Asignada</label>
-        <select name="SearchAsignada" class="form-select">
-            <option value="" @(string.IsNullOrWhiteSpace(Model.SearchAsignada) ? "selected" : "")>Todas</option>
-            <option value="true" @(Model.SearchAsignada == "true" ? "selected" : "")>Sí</option>
-            <option value="false" @(Model.SearchAsignada == "false" ? "selected" : "")>No</option>
-        </select>
-    </div>
-    <div class="col-auto">
-        <label class="form-label">Page size</label>
-        <select name="PageSize" class="form-select">
-            <option value="5" @(Model.PageSize == 5 ? "selected" : "")>5</option>
-            <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
-            <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
-            <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
-        </select>
-    </div>
-    <div class="col-auto">
-        <input type="hidden" name="PageNumber" value="1" />
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-    </div>
-    <div class="col-auto">
-        <button type="button" class="btn btn-outline-secondary"
-                onclick="window.erpClearFiltersAndSubmit(this.closest('form'))">
-            Limpiar filtros
-        </button>
-    </div>
-    <div class="col-auto ms-auto">
-        <!-- FIX: el modal real es createEditModal -->
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createEditModal">Crear licencia</button>
-    </div>
-</div>
 </form>
 
 <!-- TABLA -->
@@ -90,19 +91,25 @@
                         <td>@(item.Asignada ? "Sí" : "No")</td>
                         <td>@(item.Disponible ? "Sí" : "No")</td>
                         <td class="text-end">
-                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-details" data-id="@item.Id">Detalles</button>
-                            <button type="button" class="btn btn-sm btn-warning me-1 btn-edit" data-id="@item.Id">Editar</button>
-                            <form asp-action="Delete" asp-controller="License" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
-                                <input type="hidden" name="PageSize" value="@Model.PageSize" />
-                                <input type="hidden" name="Search" value="@Model.Search" />
-                                <input type="hidden" name="SearchProveedor" value="@Model.SearchProveedor" />
-                                <input type="hidden" name="SearchProducto" value="@Model.SearchProducto" />
-                                <input type="hidden" name="SearchAsignada" value="@Model.SearchAsignada" />
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Eliminar licencia?');">Eliminar</button>
-                            </form>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-primary me-1 btn-details"
+                                    data-id="@item.Id">
+                                Detalles
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-warning me-1 btn-edit"
+                                    data-id="@item.Id">
+                                Editar
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger btn-delete"
+                                    data-id="@item.Id"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">
+                                Eliminar
+                            </button>
                         </td>
                     </tr>
                 }
@@ -125,7 +132,9 @@
                    asp-route-Search="@Model.Search"
                    asp-route-SearchProveedor="@Model.SearchProveedor"
                    asp-route-SearchProducto="@Model.SearchProducto"
-                   asp-route-SearchAsignada="@Model.SearchAsignada">Anterior</a>
+                   asp-route-SearchAsignada="@Model.SearchAsignada">
+                    Anterior
+                </a>
             }
             else
             {
@@ -144,7 +153,9 @@
                    asp-route-Search="@Model.Search"
                    asp-route-SearchProveedor="@Model.SearchProveedor"
                    asp-route-SearchProducto="@Model.SearchProducto"
-                   asp-route-SearchAsignada="@Model.SearchAsignada">@i</a>
+                   asp-route-SearchAsignada="@Model.SearchAsignada">
+                    @i
+                </a>
             </li>
         }
 
@@ -159,7 +170,9 @@
                    asp-route-Search="@Model.Search"
                    asp-route-SearchProveedor="@Model.SearchProveedor"
                    asp-route-SearchProducto="@Model.SearchProducto"
-                   asp-route-SearchAsignada="@Model.SearchAsignada">Siguiente</a>
+                   asp-route-SearchAsignada="@Model.SearchAsignada">
+                    Siguiente
+                </a>
             }
             else
             {
@@ -187,7 +200,7 @@
     </div>
 </div>
 
-<!-- MODAL: CREATE / EDIT (reutilizable) -->
+<!-- MODAL: CREATE / EDIT -->
 <div class="modal fade" id="createEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -241,20 +254,45 @@
     </div>
 </div>
 
+<!-- MODAL: ELIMINAR -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar licencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                ¿Seguro que deseas eliminar esta licencia?
+            </div>
+
+            <div class="modal-footer">
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Evitar interferencias de handlers globales: no hacemos preventDefault aquí,
-        // solo dejamos pasar paginación y botones.
+        // Evitar interferencias de handlers globales
         document.addEventListener('click', function (e) {
             if (e.target.closest('.pagination')) return;
             if (e.target.closest('button') || e.target.closest('a')) return;
         }, true);
 
-        // Helpers
         const detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
         const createEditModal = new bootstrap.Modal(document.getElementById('createEditModal'));
 
-        // Detalles (AJAX)
+        // Detalles
         document.querySelectorAll('.btn-details').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const id = this.dataset.id;
@@ -288,22 +326,12 @@
             });
         });
 
-        // Crear: abrir modal en modo crear
-        document.querySelector('[data-bs-target="#createModal"]')?.addEventListener('click', function () {
-            // no usado si usamos botón principal; mantenemos función para consistencia
-        });
-
-        // Abrir modal Crear (botón superior)
-        document.querySelector('button[data-bs-target="#createModal"]')?.addEventListener('click', function () {
-            // no-op si no existe createModal; usamos createEditModal para crear
-        });
-
-        // Botón "Crear licencia" abre createEditModal en modo crear (selector explícito por data-bs-target)
+        // Crear
         document.querySelector('button[data-bs-target="#createEditModal"]')?.addEventListener('click', function () {
             document.getElementById('createEditTitle').textContent = 'Crear licencia';
             document.getElementById('createEditForm').setAttribute('action', '/License/Create');
-            // reset campos
-            ['LicenseId','Code','Producto','Proveedor','Price','Caducidad','UserId'].forEach(id => {
+
+            ['LicenseId', 'Code', 'Producto', 'Proveedor', 'Price', 'Caducidad', 'UserId'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
@@ -312,7 +340,7 @@
             createEditModal.show();
         });
 
-        // Editar: cargar datos y abrir modal
+        // Editar
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const id = this.dataset.id;
@@ -340,9 +368,8 @@
             });
         });
 
-        // Submit del formulario Create/Edit: añadimos campos de query para mantener paginación/filtros
-        document.getElementById('createEditForm')?.addEventListener('submit', function (e) {
-            // Antes de enviar, añadimos inputs ocultos con los parámetros actuales para mantener estado
+        // Mantener filtros/paginación al guardar
+        document.getElementById('createEditForm')?.addEventListener('submit', function () {
             const ensureHidden = (name, value) => {
                 let el = this.querySelector(`input[name="${name}"]`);
                 if (!el) {
@@ -360,6 +387,19 @@
             ensureHidden('SearchProveedor', '@Model.SearchProveedor');
             ensureHidden('SearchProducto', '@Model.SearchProducto');
             ensureHidden('SearchAsignada', '@Model.SearchAsignada');
+        });
+
+        // Eliminar (modal)
+        document.addEventListener("DOMContentLoaded", function () {
+            var deleteModal = document.getElementById('deleteModal');
+
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var id = button.getAttribute('data-id');
+
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').action = '/License/Delete/' + id;
+            });
         });
     </script>
 }
