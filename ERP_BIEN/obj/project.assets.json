@@ -51,13 +51,13 @@
           }
         }
       },
-      "EPPlus/8.5.1": {
+      "EPPlus/8.5.3": {
         "type": "package",
         "dependencies": {
           "EPPlus.Interfaces": "8.4.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
           "System.ComponentModel.Annotations": "5.0.0",
-          "System.Security.Cryptography.Pkcs": "10.0.0"
+          "System.Security.Cryptography.Pkcs": "10.0.6"
         },
         "compile": {
           "lib/net10.0/EPPlus.dll": {
@@ -673,10 +673,10 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Authentication.Negotiate/10.0.5": {
+      "Microsoft.AspNetCore.Authentication.Negotiate/10.0.7": {
         "type": "package",
         "dependencies": {
-          "System.DirectoryServices.Protocols": "10.0.5"
+          "System.DirectoryServices.Protocols": "10.0.7"
         },
         "compile": {
           "lib/net10.0/Microsoft.AspNetCore.Authentication.Negotiate.dll": {
@@ -1430,11 +1430,11 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore/10.0.5": {
+      "Microsoft.EntityFrameworkCore/10.0.7": {
         "type": "package",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.5",
-          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.5"
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.7",
+          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.7"
         },
         "compile": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.dll": {
@@ -1450,7 +1450,7 @@
           "buildTransitive/net10.0/Microsoft.EntityFrameworkCore.props": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/10.0.5": {
+      "Microsoft.EntityFrameworkCore.Abstractions/10.0.7": {
         "type": "package",
         "compile": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
@@ -1463,10 +1463,10 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Analyzers/10.0.5": {
+      "Microsoft.EntityFrameworkCore.Analyzers/10.0.7": {
         "type": "package"
       },
-      "Microsoft.EntityFrameworkCore.Design/10.0.5": {
+      "Microsoft.EntityFrameworkCore.Design/10.0.7": {
         "type": "package",
         "dependencies": {
           "Humanizer.Core": "2.14.1",
@@ -1474,8 +1474,8 @@
           "Microsoft.CodeAnalysis.CSharp": "5.0.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.0.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.0.0",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
-          "Microsoft.Extensions.DependencyModel": "10.0.5",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
+          "Microsoft.Extensions.DependencyModel": "10.0.7",
           "Mono.TextTemplating": "3.0.0",
           "Newtonsoft.Json": "13.0.3"
         },
@@ -1493,10 +1493,10 @@
           "build/net10.0/Microsoft.EntityFrameworkCore.Design.props": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/10.0.5": {
+      "Microsoft.EntityFrameworkCore.Relational/10.0.7": {
         "type": "package",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.5"
+          "Microsoft.EntityFrameworkCore": "10.0.7"
         },
         "compile": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll": {
@@ -1509,11 +1509,11 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.SqlServer/10.0.5": {
+      "Microsoft.EntityFrameworkCore.SqlServer/10.0.7": {
         "type": "package",
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.7"
         },
         "compile": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
@@ -1538,7 +1538,7 @@
           "lib/net8.0/_._": {}
         }
       },
-      "Microsoft.Extensions.DependencyModel/10.0.5": {
+      "Microsoft.Extensions.DependencyModel/10.0.7": {
         "type": "package",
         "compile": {
           "lib/net10.0/Microsoft.Extensions.DependencyModel.dll": {
@@ -1998,35 +1998,35 @@
           }
         }
       },
-      "NuGet.Common/6.12.1": {
+      "NuGet.Common/7.3.1": {
         "type": "package",
         "dependencies": {
-          "NuGet.Frameworks": "6.12.1"
+          "NuGet.Frameworks": "7.3.1"
         },
         "compile": {
-          "lib/netstandard2.0/NuGet.Common.dll": {
+          "lib/net8.0/NuGet.Common.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/NuGet.Common.dll": {
+          "lib/net8.0/NuGet.Common.dll": {
             "related": ".xml"
           }
         }
       },
-      "NuGet.Configuration/6.12.1": {
+      "NuGet.Configuration/7.3.1": {
         "type": "package",
         "dependencies": {
-          "NuGet.Common": "6.12.1",
-          "System.Security.Cryptography.ProtectedData": "4.4.0"
+          "NuGet.Common": "7.3.1",
+          "System.Security.Cryptography.ProtectedData": "8.0.0"
         },
         "compile": {
-          "lib/netstandard2.0/NuGet.Configuration.dll": {
+          "lib/net8.0/NuGet.Configuration.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/NuGet.Configuration.dll": {
+          "lib/net8.0/NuGet.Configuration.dll": {
             "related": ".xml"
           }
         }
@@ -2049,15 +2049,15 @@
           }
         }
       },
-      "NuGet.Frameworks/6.12.1": {
+      "NuGet.Frameworks/7.3.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/NuGet.Frameworks.dll": {
+          "lib/net8.0/NuGet.Frameworks.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/NuGet.Frameworks.dll": {
+          "lib/net8.0/NuGet.Frameworks.dll": {
             "related": ".xml"
           }
         }
@@ -2079,21 +2079,21 @@
           }
         }
       },
-      "NuGet.Packaging/6.12.1": {
+      "NuGet.Packaging/7.3.1": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
-          "NuGet.Configuration": "6.12.1",
-          "NuGet.Versioning": "6.12.1",
-          "System.Security.Cryptography.Pkcs": "6.0.4"
+          "NuGet.Configuration": "7.3.1",
+          "NuGet.Versioning": "7.3.1",
+          "System.Security.Cryptography.Pkcs": "8.0.1"
         },
         "compile": {
-          "lib/net5.0/NuGet.Packaging.dll": {
+          "lib/net8.0/NuGet.Packaging.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/NuGet.Packaging.dll": {
+          "lib/net8.0/NuGet.Packaging.dll": {
             "related": ".xml"
           }
         }
@@ -2114,31 +2114,31 @@
           }
         }
       },
-      "NuGet.Protocol/6.12.1": {
+      "NuGet.Protocol/7.3.1": {
         "type": "package",
         "dependencies": {
-          "NuGet.Packaging": "6.12.1"
+          "NuGet.Packaging": "7.3.1"
         },
         "compile": {
-          "lib/net5.0/NuGet.Protocol.dll": {
+          "lib/net8.0/NuGet.Protocol.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/NuGet.Protocol.dll": {
+          "lib/net8.0/NuGet.Protocol.dll": {
             "related": ".xml"
           }
         }
       },
-      "NuGet.Versioning/6.12.1": {
+      "NuGet.Versioning/7.3.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/NuGet.Versioning.dll": {
+          "lib/net8.0/NuGet.Versioning.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/NuGet.Versioning.dll": {
+          "lib/net8.0/NuGet.Versioning.dll": {
             "related": ".xml"
           }
         }
@@ -2326,7 +2326,7 @@
           "lib/netstandard2.0/System.Data.DataSetExtensions.dll": {}
         }
       },
-      "System.DirectoryServices.Protocols/10.0.5": {
+      "System.DirectoryServices.Protocols/10.0.7": {
         "type": "package",
         "compile": {
           "lib/net10.0/System.DirectoryServices.Protocols.dll": {
@@ -2405,7 +2405,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "System.Security.Cryptography.Pkcs/10.0.0": {
+      "System.Security.Cryptography.Pkcs/10.0.6": {
         "type": "package",
         "compile": {
           "lib/net10.0/System.Security.Cryptography.Pkcs.dll": {
@@ -2507,15 +2507,15 @@
         "lib/netstandard2.0/Bogus.xml"
       ]
     },
-    "EPPlus/8.5.1": {
-      "sha512": "LhdQjZ7gTJYYMyHVdBTeIq8N+tYQeV1/VZSnOGeopoJFMWFqJ8V81L9h84yH7PkpF4p7LVJX1uakYTwgmf8Siw==",
+    "EPPlus/8.5.3": {
+      "sha512": "wU+ogF8qJTLoAqmD+X7ZCWAj2uUsIV8omXm4SkHhIGS4LPfWxlFDQhLb5FPedNp+0dDEA2S8dEpvtCezpzUgBA==",
       "type": "package",
-      "path": "epplus/8.5.1",
+      "path": "epplus/8.5.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "EPPlusLogo.png",
-        "epplus.8.5.1.nupkg.sha512",
+        "epplus.8.5.3.nupkg.sha512",
         "epplus.nuspec",
         "lib/net10.0/EPPlus.dll",
         "lib/net10.0/EPPlus.xml",
@@ -3303,10 +3303,10 @@
         "logo.png"
       ]
     },
-    "Microsoft.AspNetCore.Authentication.Negotiate/10.0.5": {
-      "sha512": "1xvbYMRqnTFIcWl0b3kO7VaG8Nud0sNRxejff6BpDd26GwYCMNXJibcfvqEVD388zBA9OeIuEQgawnlSLg3KCQ==",
+    "Microsoft.AspNetCore.Authentication.Negotiate/10.0.7": {
+      "sha512": "KNvuz1rU/rdSIpcKNBfuZ+yB/3ThaCF46mAQktLPtoqX6v2AbANjcw48Zpz1BO0ROJ+tGxTu9l9iA05T4XeWSg==",
       "type": "package",
-      "path": "microsoft.aspnetcore.authentication.negotiate/10.0.5",
+      "path": "microsoft.aspnetcore.authentication.negotiate/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3315,7 +3315,7 @@
         "THIRD-PARTY-NOTICES.TXT",
         "lib/net10.0/Microsoft.AspNetCore.Authentication.Negotiate.dll",
         "lib/net10.0/Microsoft.AspNetCore.Authentication.Negotiate.xml",
-        "microsoft.aspnetcore.authentication.negotiate.10.0.5.nupkg.sha512",
+        "microsoft.aspnetcore.authentication.negotiate.10.0.7.nupkg.sha512",
         "microsoft.aspnetcore.authentication.negotiate.nuspec"
       ]
     },
@@ -4819,10 +4819,10 @@
         "microsoft.dotnet.scaffolding.shared.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore/10.0.5": {
-      "sha512": "9tNBmK3EpYVGRQLiqP+bqK2m+TD0Gv//4vCzR7ZOgl4FWzCFyOpYdIVka13M4kcBdPdSJcs3wbHr3rmzOqbIMA==",
+    "Microsoft.EntityFrameworkCore/10.0.7": {
+      "sha512": "G6yclVO5/csPzzsymV0SemY2NDqE31CP5M3jprF5IuO9wJsh4aUOfYD8HCLuDmM1D1CfReegVic48O2r79d46Q==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore/10.0.5",
+      "path": "microsoft.entityframeworkcore/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4831,14 +4831,14 @@
         "buildTransitive/net10.0/Microsoft.EntityFrameworkCore.props",
         "lib/net10.0/Microsoft.EntityFrameworkCore.dll",
         "lib/net10.0/Microsoft.EntityFrameworkCore.xml",
-        "microsoft.entityframeworkcore.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/10.0.5": {
-      "sha512": "32c58Rnm47Qvhimawf67KO9PytgPz3QoWye7Abapt0Yocw/JnzMiSNj/pRoIKyn8Jxypkv86zxKD4Q/zNTc0Ag==",
+    "Microsoft.EntityFrameworkCore.Abstractions/10.0.7": {
+      "sha512": "TuxExnfIS/bSq3z2CbH0LwZH1oyj9iHhSGneU4fpxl3ikjZGZdSae9gcfnImV1rufH8f/ab1NnHwyL2BLyeZOg==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore.abstractions/10.0.5",
+      "path": "microsoft.entityframeworkcore.abstractions/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4846,28 +4846,28 @@
         "PACKAGE.md",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.xml",
-        "microsoft.entityframeworkcore.abstractions.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.abstractions.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.abstractions.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.Analyzers/10.0.5": {
-      "sha512": "ipC4u1VojgEfoIZhtbS2Sx5IluJTP/Jf1hz3yGsxGBgSukYY/CquI6rAjxn5H58CZgVn36qcuPPtNMwZ0AUzMg==",
+    "Microsoft.EntityFrameworkCore.Analyzers/10.0.7": {
+      "sha512": "eZnMyiJzo249Ejg5CaFScvJS0u7neQfS9DXknAHTO6FHVMM99gO0byNXHGZmA/BOkZ13ngeVziQLHTMOtgescg==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore.analyzers/10.0.5",
+      "path": "microsoft.entityframeworkcore.analyzers/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll",
         "docs/PACKAGE.md",
-        "microsoft.entityframeworkcore.analyzers.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.analyzers.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.analyzers.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.Design/10.0.5": {
-      "sha512": "gm6f0cC2w/2tcd4GeZJqEMruTercpIJfO5sSAFLtqTqblDBHgAFk70xwshUIUVX4I6sZwdEUSd1YxoKFk1AL0w==",
+    "Microsoft.EntityFrameworkCore.Design/10.0.7": {
+      "sha512": "8UMWkJdfwN/tyEZS6zd0s55zE5zaG4owldh+E91vXitHmux3FTP6Hjhgk6RL9Sv+TdO4FMERQIT6VzBtRrb1AQ==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore.design/10.0.5",
+      "path": "microsoft.entityframeworkcore.design/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4876,14 +4876,14 @@
         "build/net10.0/Microsoft.EntityFrameworkCore.Design.props",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Design.dll",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Design.xml",
-        "microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.design.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.design.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.Relational/10.0.5": {
-      "sha512": "uxmFjZEAB/KbsgWFSS4lLqkEHCfXxB2x0UcbiO4e5fCRpFFeTMSx/me6009nYJLu5IKlDwO1POh++P6RilFTDw==",
+    "Microsoft.EntityFrameworkCore.Relational/10.0.7": {
+      "sha512": "midwPufIwXhOJcVhaZpCZGNbjy2QoPfHI+70nw2dGcoULEW9DybMvMPYkRjOJV0eI46a1oVFhU4lFYDEx6YUbg==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore.relational/10.0.5",
+      "path": "microsoft.entityframeworkcore.relational/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4891,14 +4891,14 @@
         "PACKAGE.md",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll",
         "lib/net10.0/Microsoft.EntityFrameworkCore.Relational.xml",
-        "microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.relational.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.relational.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.SqlServer/10.0.5": {
-      "sha512": "/3Ault1Ay6OIEp3ZGGVem4mSWyEOX9e5leUMalGV9aFM57e0xFHAnlhmNaBHYtILkbtkaAErikQuaLqMQb4fww==",
+    "Microsoft.EntityFrameworkCore.SqlServer/10.0.7": {
+      "sha512": "jci/dpjLIZyrp0Kbt0kr1lh+7BXbJ3wNk+vTwS/Se65grEJSBC+eE2UAQsi/xSNB5lHP2dysyOMHugkpFwQwNA==",
       "type": "package",
-      "path": "microsoft.entityframeworkcore.sqlserver/10.0.5",
+      "path": "microsoft.entityframeworkcore.sqlserver/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4906,7 +4906,7 @@
         "PACKAGE.md",
         "lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.dll",
         "lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.xml",
-        "microsoft.entityframeworkcore.sqlserver.10.0.5.nupkg.sha512",
+        "microsoft.entityframeworkcore.sqlserver.10.0.7.nupkg.sha512",
         "microsoft.entityframeworkcore.sqlserver.nuspec"
       ]
     },
@@ -4936,10 +4936,10 @@
         "tools/net8.0/any/ef.runtimeconfig.json"
       ]
     },
-    "Microsoft.Extensions.DependencyModel/10.0.5": {
-      "sha512": "xA4kkL+QS6KCAOKz/O0oquHs44Ob8J7zpBCNt3wjkBWDg5aCqfwG8rWWLsg5V86AM0sB849g9JjPjIdksTCIKg==",
+    "Microsoft.Extensions.DependencyModel/10.0.7": {
+      "sha512": "gCglFg/9Chu3lyJNytRuQAYM3mXQKNs1i01Cz2bc545QaHQ+LbBb4O5UCfu968Gro3ZVSOZ/ktilmPcaUSGSZA==",
       "type": "package",
-      "path": "microsoft.extensions.dependencymodel/10.0.5",
+      "path": "microsoft.extensions.dependencymodel/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4960,7 +4960,7 @@
         "lib/net9.0/Microsoft.Extensions.DependencyModel.xml",
         "lib/netstandard2.0/Microsoft.Extensions.DependencyModel.dll",
         "lib/netstandard2.0/Microsoft.Extensions.DependencyModel.xml",
-        "microsoft.extensions.dependencymodel.10.0.5.nupkg.sha512",
+        "microsoft.extensions.dependencymodel.10.0.7.nupkg.sha512",
         "microsoft.extensions.dependencymodel.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -5778,10 +5778,10 @@
         "packageIcon.png"
       ]
     },
-    "NuGet.Common/6.12.1": {
-      "sha512": "nk8nTdhQl4x2VaAQUvefI7DDYAuBDlE+OZZRffm50Qx5dUAEq8wkc5JIqrN2lTEohObHPI/SXyG2UFdMQkrdyg==",
+    "NuGet.Common/7.3.1": {
+      "sha512": "1mp7zmyAGmQfT93ELC4c+MYOrJ8Ff4ekFZRek4JSVLb/wOO/o0bsPfLmqujCsJ2Hlwc+fpq1TQEnjSEgWdt8ng==",
       "type": "package",
-      "path": "nuget.common/6.12.1",
+      "path": "nuget.common/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5789,16 +5789,16 @@
         "icon.png",
         "lib/net472/NuGet.Common.dll",
         "lib/net472/NuGet.Common.xml",
-        "lib/netstandard2.0/NuGet.Common.dll",
-        "lib/netstandard2.0/NuGet.Common.xml",
-        "nuget.common.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Common.dll",
+        "lib/net8.0/NuGet.Common.xml",
+        "nuget.common.7.3.1.nupkg.sha512",
         "nuget.common.nuspec"
       ]
     },
-    "NuGet.Configuration/6.12.1": {
-      "sha512": "IRwlY1379ZgJ0oEJvjD+lDuOhJ5S1fsU5n/bEC5/i0+N9bo2WIMDAdaQ/qIdyK/gMJ/YWS+++GSX6rN7luqEvg==",
+    "NuGet.Configuration/7.3.1": {
+      "sha512": "tGxWBo47EQONOaqY+MbEWMrNjFthHgfavLM1HE0RcLyOXVCoQKBlZGV7v0hrS/rJrQKw6ZaBeHetX+ZJgS7Lxg==",
       "type": "package",
-      "path": "nuget.configuration/6.12.1",
+      "path": "nuget.configuration/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5806,9 +5806,9 @@
         "icon.png",
         "lib/net472/NuGet.Configuration.dll",
         "lib/net472/NuGet.Configuration.xml",
-        "lib/netstandard2.0/NuGet.Configuration.dll",
-        "lib/netstandard2.0/NuGet.Configuration.xml",
-        "nuget.configuration.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Configuration.dll",
+        "lib/net8.0/NuGet.Configuration.xml",
+        "nuget.configuration.7.3.1.nupkg.sha512",
         "nuget.configuration.nuspec"
       ]
     },
@@ -5831,10 +5831,10 @@
         "nuget.dependencyresolver.core.nuspec"
       ]
     },
-    "NuGet.Frameworks/6.12.1": {
-      "sha512": "kPaRD5RJC0ByUg+yGX6bDz5XHMI7OYmQwP8kbtef+vZ+csj/VDb5Bwas4ChxwhoAbI8lEvwP5/3aViQPpgNBow==",
+    "NuGet.Frameworks/7.3.1": {
+      "sha512": "VUPAE5l/Ir4Gb3dv+v0jq0Qe4nfwxfrfiYN7QhwlGyWPXFKYXSSke1t1bV/ZYd6idtTtRDqJPM49Lt/U8NTocg==",
       "type": "package",
-      "path": "nuget.frameworks/6.12.1",
+      "path": "nuget.frameworks/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5842,9 +5842,9 @@
         "icon.png",
         "lib/net472/NuGet.Frameworks.dll",
         "lib/net472/NuGet.Frameworks.xml",
-        "lib/netstandard2.0/NuGet.Frameworks.dll",
-        "lib/netstandard2.0/NuGet.Frameworks.xml",
-        "nuget.frameworks.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Frameworks.dll",
+        "lib/net8.0/NuGet.Frameworks.xml",
+        "nuget.frameworks.7.3.1.nupkg.sha512",
         "nuget.frameworks.nuspec"
       ]
     },
@@ -5865,10 +5865,10 @@
         "nuget.librarymodel.nuspec"
       ]
     },
-    "NuGet.Packaging/6.12.1": {
-      "sha512": "6s5NO3VNX6fIx6GwuWZtIsal9W1xkelYd3Vg2KUAg1zGqnKC3wB5IZlombvVGVGcwyl/A+iDvpUwSvgeDoB3wA==",
+    "NuGet.Packaging/7.3.1": {
+      "sha512": "5bT8uOrNBx4Srhbrd3HonYmyKhWJkvQyTWTYE2jvfPgYx2aCbPmq8MCYko7ce78hEN9mpq2xlrztVhguYPc+GQ==",
       "type": "package",
-      "path": "nuget.packaging/6.12.1",
+      "path": "nuget.packaging/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5876,11 +5876,9 @@
         "icon.png",
         "lib/net472/NuGet.Packaging.dll",
         "lib/net472/NuGet.Packaging.xml",
-        "lib/net5.0/NuGet.Packaging.dll",
-        "lib/net5.0/NuGet.Packaging.xml",
-        "lib/netstandard2.0/NuGet.Packaging.dll",
-        "lib/netstandard2.0/NuGet.Packaging.xml",
-        "nuget.packaging.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Packaging.dll",
+        "lib/net8.0/NuGet.Packaging.xml",
+        "nuget.packaging.7.3.1.nupkg.sha512",
         "nuget.packaging.nuspec"
       ]
     },
@@ -5903,10 +5901,10 @@
         "nuget.projectmodel.nuspec"
       ]
     },
-    "NuGet.Protocol/6.12.1": {
-      "sha512": "VBN7OtG/Y9Rnj1WT3G8X88ZHu5Pq+yzca5Z6OI/FWXcENVAQkUl0ml6Cv8ghOqYyiuvnObGDV9oWLD/bIuVtDw==",
+    "NuGet.Protocol/7.3.1": {
+      "sha512": "vYd5vtCJ/tpMQjbAs6rrftNgeh5Ip1w7tnEsDZCpGObKgUgOxHQBekCul3TnzmbNgobvJEkDJNaec5/ZBv66Hg==",
       "type": "package",
-      "path": "nuget.protocol/6.12.1",
+      "path": "nuget.protocol/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5914,18 +5912,16 @@
         "icon.png",
         "lib/net472/NuGet.Protocol.dll",
         "lib/net472/NuGet.Protocol.xml",
-        "lib/net5.0/NuGet.Protocol.dll",
-        "lib/net5.0/NuGet.Protocol.xml",
-        "lib/netstandard2.0/NuGet.Protocol.dll",
-        "lib/netstandard2.0/NuGet.Protocol.xml",
-        "nuget.protocol.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Protocol.dll",
+        "lib/net8.0/NuGet.Protocol.xml",
+        "nuget.protocol.7.3.1.nupkg.sha512",
         "nuget.protocol.nuspec"
       ]
     },
-    "NuGet.Versioning/6.12.1": {
-      "sha512": "fJ6rFYANDnohFsdpaY79FvrJxI6murmoOxXz6nZlf819F48+IBKMnAIg3oIBRtZq5y498ObMtKnro5IitvizUg==",
+    "NuGet.Versioning/7.3.1": {
+      "sha512": "TJrQWSmD1vakfav7qIhDXgDFfaZFfMJ+v6P8tcND9ZqXajD5B/ZzaoGYNzL4D3eDue6vAOUvwzu42G+19JNVUA==",
       "type": "package",
-      "path": "nuget.versioning/6.12.1",
+      "path": "nuget.versioning/7.3.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5933,9 +5929,9 @@
         "icon.png",
         "lib/net472/NuGet.Versioning.dll",
         "lib/net472/NuGet.Versioning.xml",
-        "lib/netstandard2.0/NuGet.Versioning.dll",
-        "lib/netstandard2.0/NuGet.Versioning.xml",
-        "nuget.versioning.6.12.1.nupkg.sha512",
+        "lib/net8.0/NuGet.Versioning.dll",
+        "lib/net8.0/NuGet.Versioning.xml",
+        "nuget.versioning.7.3.1.nupkg.sha512",
         "nuget.versioning.nuspec"
       ]
     },
@@ -6281,10 +6277,10 @@
         "version.txt"
       ]
     },
-    "System.DirectoryServices.Protocols/10.0.5": {
-      "sha512": "9cxxK3ulK9KHqifCyvxvATTYNda1WxZxvrC41loC/9j1/+qF6q/E2RCgqSNrKWB7WtFNDOWuJQSOoPF88OTskQ==",
+    "System.DirectoryServices.Protocols/10.0.7": {
+      "sha512": "AemhPGgFaSZ5468giPBAXdwqbyKW9ekhbzQWUy/rSbCf3NdsBOzFg2PBfg08x0sN5UK1oZGa7h9SWCwnwTRxyw==",
       "type": "package",
-      "path": "system.directoryservices.protocols/10.0.5",
+      "path": "system.directoryservices.protocols/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6320,7 +6316,7 @@
         "runtimes/win/lib/net8.0/System.DirectoryServices.Protocols.xml",
         "runtimes/win/lib/net9.0/System.DirectoryServices.Protocols.dll",
         "runtimes/win/lib/net9.0/System.DirectoryServices.Protocols.xml",
-        "system.directoryservices.protocols.10.0.5.nupkg.sha512",
+        "system.directoryservices.protocols.10.0.7.nupkg.sha512",
         "system.directoryservices.protocols.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -6408,10 +6404,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Security.Cryptography.Pkcs/10.0.0": {
-      "sha512": "UPWqLSygJlFerRi9XNIuM0a1VC8gHUIufyP24xQ0sc+XimqUAEcjpOz9DhKpyDjH+5B/wO3RpC0KpkEeDj/ddg==",
+    "System.Security.Cryptography.Pkcs/10.0.6": {
+      "sha512": "88tquaGJ1htm4DHWS6x9jwER7sFET2SVRN7HqO1FYZwE0diDcUmz0ajhVa8ZD2HGhDJBueSPjP/gqyP3gXtT2A==",
       "type": "package",
-      "path": "system.security.cryptography.pkcs/10.0.0",
+      "path": "system.security.cryptography.pkcs/10.0.6",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6439,7 +6435,7 @@
         "runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.xml",
         "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.xml",
-        "system.security.cryptography.pkcs.10.0.0.nupkg.sha512",
+        "system.security.cryptography.pkcs.10.0.6.nupkg.sha512",
         "system.security.cryptography.pkcs.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -6482,13 +6478,15 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "Bogus >= 35.6.5",
-      "EPPlus >= 8.5.1",
-      "Microsoft.AspNetCore.Authentication.Negotiate >= 10.0.5",
-      "Microsoft.EntityFrameworkCore >= 10.0.5",
-      "Microsoft.EntityFrameworkCore.Design >= 10.0.5",
-      "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.5",
+      "EPPlus >= 8.5.3",
+      "Microsoft.AspNetCore.Authentication.Negotiate >= 10.0.7",
+      "Microsoft.EntityFrameworkCore >= 10.0.7",
+      "Microsoft.EntityFrameworkCore.Design >= 10.0.7",
+      "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.7",
       "Microsoft.EntityFrameworkCore.Tools >= 10.0.7",
-      "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 10.0.2"
+      "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 10.0.2",
+      "NuGet.Packaging >= 7.3.1",
+      "NuGet.Protocol >= 7.3.1"
     ]
   },
   "packageFolders": {
@@ -6548,25 +6546,25 @@
           },
           "EPPlus": {
             "target": "Package",
-            "version": "[8.5.1, )"
+            "version": "[8.5.3, )"
           },
           "Microsoft.AspNetCore.Authentication.Negotiate": {
             "target": "Package",
-            "version": "[10.0.5, )"
+            "version": "[10.0.7, )"
           },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
-            "version": "[10.0.5, )"
+            "version": "[10.0.7, )"
           },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
             "target": "Package",
-            "version": "[10.0.5, )"
+            "version": "[10.0.7, )"
           },
           "Microsoft.EntityFrameworkCore.SqlServer": {
             "target": "Package",
-            "version": "[10.0.5, )"
+            "version": "[10.0.7, )"
           },
           "Microsoft.EntityFrameworkCore.Tools": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -6577,6 +6575,14 @@
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
             "target": "Package",
             "version": "[10.0.2, )"
+          },
+          "NuGet.Packaging": {
+            "target": "Package",
+            "version": "[7.3.1, )"
+          },
+          "NuGet.Protocol": {
+            "target": "Package",
+            "version": "[7.3.1, )"
           }
         },
         "imports": [
@@ -7015,27 +7021,5 @@
         }
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1901",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'NuGet.Packaging' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "libraryId": "NuGet.Packaging",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1901",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'NuGet.Protocol' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "libraryId": "NuGet.Protocol",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    }
-  ]
+  }
 }

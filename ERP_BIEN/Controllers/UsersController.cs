@@ -6,10 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ERP_BIEN.Controllers
 {
-    // ============================
-    // ACCESO AL MÓDULO USERS
-    // ============================
-    [Authorize(Policy = "USERS")]
     public class UsersController : Controller
     {
         private readonly UserService _service;
@@ -20,8 +16,9 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // INDEX (LISTA + FILTROS + PÁGINA)
+        // INDEX
         // ============================
+        [Authorize(Policy = "USERS")]
         public IActionResult Index(
             int pageNumber = 1,
             string searchName = null,
@@ -50,19 +47,18 @@ namespace ERP_BIEN.Controllers
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.TotalPages = result.TotalPages;
-
             ViewBag.SearchName = searchName;
             ViewBag.SearchDomain = searchDomain;
             ViewBag.SearchTeamId = searchTeamId;
-
             ViewBag.TeamList = _service.GetTeams();
 
             return View(users);
         }
 
         // ============================
-        // DETAILS (JSON PARA MODALES)
+        // DETAILS
         // ============================
+        [Authorize(Policy = "USERS")]
         public IActionResult Details(int id)
         {
             var u = _service.GetUser(id);
@@ -80,7 +76,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // POST – CREATE (ESCRITURA)
+        // CREATE
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -110,7 +106,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // POST – EDIT (ESCRITURA)
+        // EDIT
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -141,7 +137,17 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // POST – DELETE (ESCRITURA)
+        // DELETE (GET → NUNCA BORRA)
+        // ============================
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            // Si alguien entra por URL, volvemos al listado
+            return RedirectToAction("Index");
+        }
+
+        // ============================
+        // DELETE (POST REAL)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]

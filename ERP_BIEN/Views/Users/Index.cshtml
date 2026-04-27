@@ -1,5 +1,15 @@
 ﻿@model List<ERP_BIEN.Models.ViewModels.UserViewModel>
 
+@Html.AntiForgeryToken()
+
+<pre style="background:#111;color:#0f0;padding:10px">
+    MODULES:
+    @string.Join(", ", User.Claims.Where(c => c.Type == "module").Select(c => c.Value))
+
+    PERMISSIONS:
+    @string.Join(", ", User.Claims.Where(c => c.Type == "permission").Select(c => c.Value))
+</pre>
+
 <h2 class="mb-4">Gestión de Usuarios</h2>
 
 <style>
@@ -14,10 +24,10 @@
         z-index: 1;
         cursor: pointer;
     }
-    .pagination .page-link {
-    pointer-events: auto !important;
-}
 
+    .pagination .page-link {
+        pointer-events: auto !important;
+    }
 </style>
 
 <!-- ========================= -->
@@ -25,46 +35,59 @@
 <!-- ========================= -->
 <form method="get" asp-action="Index" asp-controller="Users" class="card card-body mb-4" id="usersFiltersForm">
     <div class="row g-3 align-items-end">
-    <input type="hidden" name="pageNumber" value="1" />
+        <input type="hidden" name="pageNumber" value="1" />
 
-    <div class="col-md-3">
-        <label class="form-label">Nombre</label>
-        <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
-    </div>
+        <div class="col-md-3">
+            <label class="form-label">Nombre</label>
+            <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
+        </div>
 
-    <div class="col-md-3">
-        <label class="form-label">Usuario</label>
-        <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
-    </div>
+        <div class="col-md-3">
+            <label class="form-label">Usuario</label>
+            <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
+        </div>
 
-    <div class="col-md-3">
-        <label class="form-label">Equipo</label>
-        <select name="searchTeamId" class="form-control">
-            <option value="">Todos</option>
-            @foreach (var t in ViewBag.TeamList)
-            {
-                <option value="@t.Value" selected="@(ViewBag.SearchTeamId?.ToString() == t.Value)">
-                    @t.Text
-                </option>
-            }
-        </select>
-    </div>
+        <div class="col-md-3">
+            <label class="form-label">Equipo</label>
+            <select name="searchTeamId" class="form-control" id="searchTeamId">
+                <option value="">Todos</option>
+                @foreach (var t in ViewBag.TeamList)
+                {
+                    if (ViewBag.SearchTeamId?.ToString() == t.Value)
+                    {
+                        <option value="@t.Value" selected>@t.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@t.Value">@t.Text</option>
+                    }
+                }
+            </select>
+        </div>
 
-    <div class="col-md-3 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-        <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary w-100"
-                onclick="window.erpClearFiltersAndSubmit(document.getElementById('usersFiltersForm'))">
-            Limpiar filtros
-        </button>
-        <a asp-action="ExportExcel" asp-controller="Users" class="btn btn-success w-100">📊 Excel</a>
-    </div>
+        <div class="col-md-3 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary">
+                Filtrar
+            </button>
 
-    <div class="col-12 d-flex justify-content-end mt-2">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            + Crear Usuario
-        </button>
-    </div>
+            <button type="button"
+                    id="clearFiltersBtn"
+                    class="btn btn-outline-secondary">
+                Limpiar filtros
+            </button>
 
+            <a asp-action="ExportExcel"
+                   asp-controller="Users"
+                   class="btn btn-success">
+                📊 Excel
+            </a>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end mt-2">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                + Crear Usuario
+            </button>
+        </div>
     </div>
 </form>
 
@@ -84,16 +107,13 @@
         @foreach (var u in Model)
         {
             <tr class="user-row" data-id="@u.Id">
-
                 <td>@u.Name @u.LastName</td>
                 <td>@u.DomainUser</td>
                 <td>@u.TeamName</td>
-
                 <td>
-                    <button class="btn btn-sm btn-warning edit-btn" data-id="@u.Id">Editar</button>
-                    <button class="btn btn-sm btn-danger delete-btn" data-id="@u.Id">Eliminar</button>
+                    <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="@u.Id">Editar</button>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="@u.Id">Eliminar</button>
                 </td>
-
             </tr>
         }
     </tbody>
@@ -107,15 +127,14 @@
 <!-- ========================= -->
 <!-- PAGINACIÓN -->
 <!-- ========================= -->
-@* Reemplaza el bloque <nav> existente por este *@
 <nav aria-label="Paginación">
     <ul class="pagination justify-content-center">
         <li class="page-item @(((int)ViewBag.PageNumber) == 1 ? "disabled" : "")">
             @if (((int)ViewBag.PageNumber) > 1)
             {
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
-                   Anterior
+                       href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                    Anterior
                 </a>
             }
             else
@@ -135,8 +154,8 @@
                 else
                 {
                     <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
-                       @i
+                           href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                        @i
                     </a>
                 }
             </li>
@@ -146,8 +165,8 @@
             @if (((int)ViewBag.TotalPages) > 0 && ((int)ViewBag.PageNumber) < (int)ViewBag.TotalPages)
             {
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
-                   Siguiente
+                       href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                    Siguiente
                 </a>
             }
             else
@@ -158,15 +177,14 @@
     </ul>
 </nav>
 
-
 <!-- ========================= -->
 <!-- MODAL: CREAR USUARIO -->
 <!-- ========================= -->
 <div class="modal fade" id="createModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
             <form method="post" asp-action="Create" asp-controller="Users">
+                @Html.AntiForgeryToken()
 
                 <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
                 <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
@@ -179,7 +197,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     <label>Nombre</label>
                     <input name="Name" class="form-control" required />
 
@@ -197,16 +214,13 @@
                             <option value="@t.Value">@t.Text</option>
                         }
                     </select>
-
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary">Crear</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear</button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
@@ -217,7 +231,6 @@
 <div class="modal fade" id="detailsModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title">Detalles del Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -230,10 +243,9 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-warning" id="openEditFromDetails">Editar</button>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning" id="openEditFromDetails">Editar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -244,8 +256,8 @@
 <div class="modal fade" id="editModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
             <form method="post" asp-action="Edit" asp-controller="Users">
+                @Html.AntiForgeryToken()
 
                 <input type="hidden" name="Id" id="edit-id" />
                 <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
@@ -259,7 +271,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     <label>Nombre</label>
                     <input name="Name" id="edit-name" class="form-control" />
 
@@ -276,50 +287,69 @@
                             <option value="@t.Value">@t.Text</option>
                         }
                     </select>
-
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-warning">Guardar Cambios</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
                 </div>
-
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= -->
+<!-- MODAL: CONFIRMAR ELIMINACIÓN -->
+<!-- ========================= -->
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Seguro que deseas eliminar este usuario?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+                    Eliminar
+                </button>
+            </div>
 
         </div>
     </div>
 </div>
 
 <!-- ========================= -->
-<!-- MODAL: ELIMINAR -->
+<!-- MODAL: ELIMINADO CORRECTAMENTE -->
 <!-- ========================= -->
-<div class="modal fade" id="deleteModal">
+<div class="modal fade"
+     id="deleteSuccessModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <form method="post" asp-action="Delete" asp-controller="Users">
+            <div class="modal-header">
+                <h5 class="modal-title">Usuario eliminado</h5>
+            </div>
 
-                <input type="hidden" name="Id" id="delete-id" />
-                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
-                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
-                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
-                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+            <div class="modal-body">
+                <p>El usuario se ha eliminado correctamente.</p>
+            </div>
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Eliminar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p>¿Seguro que deseas eliminar este usuario?</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-danger">Eliminar</button>
-                </div>
-
-            </form>
+            <div class="modal-footer">
+                <button type="button" id="closeSuccessBtn" class="btn btn-primary">
+                    Aceptar
+                </button>
+            </div>
 
         </div>
     </div>
@@ -327,26 +357,15 @@
 
 @section Scripts {
     <script>
-        // Scripts de Usuarios: versión segura, con limpieza y listener manual para Create
         document.addEventListener('DOMContentLoaded', () => {
 
             console.log("Scripts de Usuarios cargados");
 
-            // --- LIMPIEZA INICIAL DEFENSIVA (evita backdrops o modales abiertos al cargar)
-            setTimeout(() => {
-                const m = document.getElementById('createModal');
-                if (m && m.classList.contains('show')) {
-                    m.classList.remove('show');
-                    m.style.display = 'none';
-                }
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-            }, 100);
-
-            // --- CLICK EN FILA → VER DETALLES (delegación por filas)
+            // =========================
+            // CLICK EN FILA → VER DETALLES
+            // =========================
             document.querySelectorAll(".user-row").forEach(row => {
                 row.addEventListener("click", async (e) => {
-                    // permitir clicks en botones y elementos que abren modales
                     if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
                     const id = row.dataset.id;
                     if (!id) return;
@@ -354,181 +373,132 @@
                 });
             });
 
-            // --- BOTÓN EDITAR (seguro: solo si existen botones)
+            // =========================
+            // EDITAR
+            // =========================
             document.querySelectorAll(".edit-btn").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     const id = btn.dataset.id;
                     if (!id) return;
+
                     try {
                         const res = await fetch(`/Users/Details/${id}`);
                         if (!res.ok) throw new Error('Error fetching details');
                         const u = await res.json();
 
-                        const editId = document.getElementById("edit-id");
-                        const editName = document.getElementById("edit-name");
-                        const editLastname = document.getElementById("edit-lastname");
-                        const editDomain = document.getElementById("edit-domain");
-                        const editTeam = document.getElementById("edit-team");
+                        document.getElementById("edit-id").value = u.id ?? '';
+                        document.getElementById("edit-name").value = u.name ?? '';
+                        document.getElementById("edit-lastname").value = u.lastName ?? '';
+                        document.getElementById("edit-domain").value = u.domainUser ?? '';
+                        document.getElementById("edit-team").value = u.teamId ?? '';
 
-                        if (editId) editId.value = u.id ?? '';
-                        if (editName) editName.value = u.name ?? '';
-                        if (editLastname) editLastname.value = u.lastName ?? '';
-                        if (editDomain) editDomain.value = u.domainUser ?? '';
-                        if (editTeam) editTeam.value = u.teamId ?? '';
-
-                        const editModalEl = document.getElementById("editModal");
-                        if (editModalEl) new bootstrap.Modal(editModalEl).show();
+                        new bootstrap.Modal(document.getElementById("editModal")).show();
                     } catch (err) {
                         console.error('Error al cargar datos para editar:', err);
                     }
                 });
             });
 
-            // --- BOTÓN ELIMINAR (seguro: solo si existen botones)
+            // =========================
+            // ELIMINAR (AJAX + MODALES)
+            // =========================
+            let userIdToDelete = null;
+
             document.querySelectorAll(".delete-btn").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    const id = btn.dataset.id;
-                    if (!id) return;
-                    const deleteIdEl = document.getElementById("delete-id");
-                    if (deleteIdEl) deleteIdEl.value = id;
-                    const deleteModalEl = document.getElementById("deleteModal");
-                    if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+                    userIdToDelete = btn.dataset.id;
+                    new bootstrap.Modal(document.getElementById("deleteModal")).show();
                 });
             });
 
-            // --- BOTÓN CREAR USUARIO: listener manual seguro (parche definitivo)
-            const createBtn = document.querySelector('[data-bs-target="#createModal"]');
-            if (createBtn) {
-                createBtn.addEventListener('click', (e) => {
-                    const modalEl = document.getElementById('createModal');
-                    if (modalEl) {
-                        try {
-                            // No bloqueamos el comportamiento estándar (data-bs-toggle).
-                            // Solo aseguramos apertura si hiciera falta.
-                            if (window.bootstrap?.Modal) {
-                                bootstrap.Modal.getOrCreateInstance(modalEl).show();
-                            }
-                        } catch (err) {
-                            console.error('No se pudo abrir createModal manualmente:', err);
-                        }
+            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener("click", async () => {
+                    if (!userIdToDelete) return;
+
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                    const response = await fetch('/Users/Delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token
+                        },
+                        body: JSON.stringify({ id: userIdToDelete })
+                    });
+
+                    if (response.ok) {
+                        const deleteModalInstance = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
+                        if (deleteModalInstance) deleteModalInstance.hide();
+
+                        new bootstrap.Modal(document.getElementById("deleteSuccessModal")).show();
                     } else {
-                        console.warn('createModal no encontrado en DOM');
+                        alert("No se pudo eliminar el usuario.");
                     }
                 });
-            } else {
-                console.warn('Botón para abrir createModal no encontrado (selector [data-bs-target="#createModal"])');
             }
 
-            // --- FUNCION: CARGAR DETALLES Y MOSTRAR MODAL
+            const closeSuccessBtn = document.getElementById("closeSuccessBtn");
+            if (closeSuccessBtn) {
+                closeSuccessBtn.addEventListener("click", () => {
+                    location.reload();
+                });
+            }
+
+            // =========================
+            // DETALLES (modal)
+            // =========================
             async function loadDetails(id) {
                 try {
                     const res = await fetch(`/Users/Details/${id}`);
                     if (!res.ok) throw new Error('Error fetching details');
                     const u = await res.json();
 
-                    const detName = document.getElementById("det-name");
-                    const detDomain = document.getElementById("det-domain");
-                    const detTeam = document.getElementById("det-team");
+                    document.getElementById("det-name").innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
+                    document.getElementById("det-domain").innerText = u.domainUser ?? '';
+                    document.getElementById("det-team").innerText = u.teamName ?? '—';
 
-                    if (detName) detName.innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
-                    if (detDomain) detDomain.innerText = u.domainUser ?? '';
-                    if (detTeam) detTeam.innerText = u.teamName ?? '—';
-
-                    const detailsModalEl = document.getElementById("detailsModal");
-                    if (detailsModalEl) new bootstrap.Modal(detailsModalEl).show();
+                    new bootstrap.Modal(document.getElementById("detailsModal")).show();
                 } catch (err) {
                     console.error('Error al cargar detalles:', err);
                 }
             }
 
-            // --- DESDE DETALLES → EDITAR (solo si existe el botón dentro del modal)
             const openEditFromDetails = document.getElementById("openEditFromDetails");
             if (openEditFromDetails) {
                 openEditFromDetails.addEventListener("click", () => {
-                    const detailsModalEl = document.getElementById("detailsModal");
-                    const editModalEl = document.getElementById("editModal");
-
-                    const detailsInstance = detailsModalEl ? bootstrap.Modal.getInstance(detailsModalEl) : null;
+                    const detailsInstance = bootstrap.Modal.getInstance(document.getElementById("detailsModal"));
                     if (detailsInstance) detailsInstance.hide();
-
-                    if (editModalEl) new bootstrap.Modal(editModalEl).show();
+                    new bootstrap.Modal(document.getElementById("editModal")).show();
                 });
             }
 
-            // --- LIMPIEZA: eliminar backdrops residuales si existieran (defensivo)
-            setTimeout(() => {
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                if (backdrops.length > 0) {
-                    backdrops.forEach(b => b.remove());
-                    document.body.classList.remove('modal-open');
-                    console.log('Backdrops residuales eliminados');
-                }
-            }, 500);
-
-            // --- Asegurar limpieza al cerrar cualquier modal
-            document.addEventListener('hidden.bs.modal', () => {
-                setTimeout(() => {
-                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                    document.body.classList.remove('modal-open');
-                }, 50);
-            });
-
-            // --- BOTÓN LIMPIAR FILTROS (añadido)
-            // Reemplaza el enlace "Limpiar" por: <button type="button" id="clearFiltersBtn" ...>
-            const clearBtn = document.getElementById('clearFiltersBtn') || document.querySelector('[data-action="clear-filters"]');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', (e) => {
+            // =========================
+            // LIMPIAR FILTROS (DEFINITIVO)
+            // =========================
+            const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
+            if (clearFiltersBtnEl) {
+                clearFiltersBtnEl.addEventListener('click', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
 
-                    // eliminar backdrops residuales antes de enviar
-                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                    document.body.classList.remove('modal-open');
-
-                    // localizar el formulario de filtros más cercano
-                    const form = clearBtn.closest('form') || document.querySelector('form#filtersForm') || document.querySelector('form');
+                    const form = document.getElementById('usersFiltersForm');
                     if (!form) {
-                        // si no hay form, navegar a la ruta base
                         window.location.href = window.location.pathname;
                         return;
                     }
 
-                    // limpiar inputs de texto y search (sin tocar tokens ocultos)
-                    form.querySelectorAll('input[type="text"], input[type="search"]').forEach(i => {
-                        const name = i.getAttribute('name') || '';
-                        if (!/__RequestVerificationToken/i.test(name)) i.value = '';
-                    });
+                    form.querySelectorAll('input[type="text"], input[type="search"]').forEach(i => i.value = '');
+                    form.querySelectorAll('select').forEach(s => s.value = '');
 
-                    // limpiar selects
-                    form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-
-                    // limpiar checkboxes y radios
-                    form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(c => c.checked = false);
-
-                    // resetear campo de página a 1 si existe
-                    const pageField = form.querySelector('input[name="page"], input[name="pageNumber"], input[name="pagenumber"]');
+                    const pageField = form.querySelector('input[name="pageNumber"]');
                     if (pageField) pageField.value = 1;
 
-                    // asegurar método GET y enviar
-                    form.method = form.method || 'get';
                     form.submit();
                 });
-            } else {
-                console.warn('Botón Limpiar no encontrado (id="clearFiltersBtn" o [data-action="clear-filters"])');
             }
 
-            // --- Protección ligera: evitar que handlers globales bloqueen clicks en paginación y limpiar
-            // Este listener en fase de captura detiene la propagación hacia handlers globales en bubble,
-            // evitando que un handler mal diseñado haga preventDefault() y bloquee la acción.
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('#clearFiltersBtn') || e.target.closest('.pagination') || e.target.closest('form')) {
-                    // detener la propagación para que handlers globales en bubble no intercepten
-                    e.stopPropagation();
-                }
-            }, true);
-
-        }); // DOMContentLoaded
+        });
     </script>
 }

@@ -785,6 +785,7 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.Dir
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.Memory.Data.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.Reflection.MetadataLoadContext.dll
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\af\Humanizer.resources.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\ar\Humanizer.resources.dll
@@ -959,6 +960,7 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\w
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\linux\lib\net10.0\System.DirectoryServices.Protocols.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\osx\lib\net10.0\System.DirectoryServices.Protocols.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.DirectoryServices.Protocols.dll
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.csproj.AssemblyReference.cache
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\rpswa.dswa.cache.json
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.GeneratedMSBuildEditorConfig.editorconfig

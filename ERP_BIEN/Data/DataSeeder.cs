@@ -1,17 +1,113 @@
 ﻿using Bogus;
-using ERP_BIEN.Common.Enums; // Asegúrate de que los enums estén accesibles
+using ERP_BIEN.Common.Enums;
 using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using Microsoft.EntityFrameworkCore;
 
 public static class DataSeeder
 {
-    public static void SeedData(AppDbContext context)
-    {
-        // ===================================================
-        // 1. LIMPIEZA DE TABLAS (orden seguro para FK)
-        // ===================================================
+    // ===================================================
+    // CONFIGURACIÓN RÁPIDA
+    // ===================================================
+    // true  => borra y recrea todos los datos cada vez que arranca (modo DEV)
+    // false => solo inserta lo que falte (modo seguro)
+    private const bool RESET_DATABASE = true;
 
+    // Si quieres que tu usuario Windows tenga SUPERADMIN automáticamente:
+    // OJO: el seeder guarda DomainUser normalizado como "marcos.gutierrez"
+    private const string DEFAULT_SUPERADMIN_DOMAINUSER = "marcos.gutierrez";
+
+    // ===================================================
+    // ENTRYPOINT (tu Program.cs lo llama así)
+    // ===================================================
+    public static void RellenarDatos(IServiceScope scope)
+    {
+        Console.WriteLine(">>> DATASEEDER EJECUTÁNDOSE <<<");
+
+        try
+        {
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            Console.WriteLine(
+                $"Seeder usando BD: {context.Database.GetDbConnection().DataSource} / {context.Database.GetDbConnection().Database}"
+            );
+
+            // Asegura esquema
+            context.Database.Migrate();
+
+            // Ejecuta seed
+            RellenarDatos(context);
+
+            Console.WriteLine(">>> DATASEEDER TERMINADO <<<");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(">>> DATASEEDER ERROR <<<");
+            Console.WriteLine(ex.ToString()); // IMPORTANTE: ToString() para ver stacktrace real
+        }
+    }
+
+    // ===================================================
+    // SEED PRINCIPAL
+    // ===================================================
+    public static void RellenarDatos(AppDbContext context)
+    {
+        // Transacción => o todo o nada (evita quedarte sin permisos si falla a mitad)
+        using var tx = context.Database.BeginTransaction();
+
+        Console.WriteLine("SEED 1/9 - INICIO");
+
+        try
+        {
+            if (RESET_DATABASE)
+            {
+                Console.WriteLine("SEED 2/9 - RESET DATABASE (BORRANDO TABLAS)");
+                ResetDatabase(context);
+                Console.WriteLine("SEED 2/9 - RESET COMPLETADO");
+            }
+
+            // Seguridad SIEMPRE primero
+            Console.WriteLine("SEED 3/9 - SEED SEGURIDAD (ROLES + PERMISOS)");
+            SeedSecurity(context);
+            Console.WriteLine("SEED 3/9 - SEGURIDAD OK");
+
+            // Datos funcionales
+            Console.WriteLine("SEED 4/9 - TEAMS");
+            var teams = SeedTeams(context);
+            Console.WriteLine("SEED 4/9 - TEAMS OK");
+
+            Console.WriteLine("SEED 5/9 - USERS (con PersonalInfo + CompanyInfo)");
+            var users = SeedUsers(context, teams);
+            Console.WriteLine("SEED 5/9 - USERS OK");
+
+            Console.WriteLine("SEED 6/9 - LICENSES");
+            SeedLicenses(context, users);
+            Console.WriteLine("SEED 6/9 - LICENSES OK");
+
+            Console.WriteLine("SEED 7/9 - DEVICES (COMPUTERS + PHONES)");
+            SeedDevices(context, users);
+            Console.WriteLine("SEED 7/9 - DEVICES OK");
+
+            Console.WriteLine("SEED 8/9 - USERROLES + ROLEPERMISSIONS");
+            SeedUserRolesAndRolePermissions(context, users);
+            Console.WriteLine("SEED 8/9 - USERROLES + ROLEPERMISSIONS OK");
+
+            tx.Commit();
+            Console.WriteLine("SEED 9/9 - FIN (COMMIT OK)");
+        }
+        catch
+        {
+            tx.Rollback();
+            Console.WriteLine("SEED - ROLLBACK (se ha revertido todo)");
+            throw;
+        }
+    }
+
+    // ===================================================
+    // RESET (BORRADO TOTAL)
+    // ===================================================
+    private static void ResetDatabase(AppDbContext context)
+    {
         // Tablas puente primero
         context.UserRoles.RemoveRange(context.UserRoles);
         context.RolePermissions.RemoveRange(context.RolePermissions);
@@ -20,10 +116,8 @@ public static class DataSeeder
         context.Licenses.RemoveRange(context.Licenses);
         context.Software.RemoveRange(context.Software);
 
-        // Dispositivos (TPH): si tienes DbSet<Device>, con este basta
+        // Dispositivos
         context.Devices.RemoveRange(context.Devices);
-
-        // Si además estás usando DbSet derivados, puedes dejarlo, pero NO es obligatorio:
         context.Computers.RemoveRange(context.Computers);
         context.Phones.RemoveRange(context.Phones);
         context.Screens.RemoveRange(context.Screens);
@@ -31,7 +125,7 @@ public static class DataSeeder
         // Principales
         context.Users.RemoveRange(context.Users);
 
-        // 1:1 / dependencias que pueden quedarse huérfanas
+        // 1:1 dependencias User
         context.PersonalInformation.RemoveRange(context.PersonalInformation);
         context.PreceptorDetails.RemoveRange(context.PreceptorDetails);
         context.CompanyInformation.RemoveRange(context.CompanyInformation);
@@ -45,32 +139,99 @@ public static class DataSeeder
         context.Permissions.RemoveRange(context.Permissions);
 
         context.SaveChanges();
+    }
 
-        // ===================================================
-        // 2. ROLES (oficiales del ERP)
-        // ===================================================
-        var roles = new List<Role>
+    // ===================================================
+    // SEGURIDAD (ROLES + PERMISOS)
+    // ===================================================
+    private static void SeedSecurity(AppDbContext context)
+    {
+        // 1) ROLES (idempotente)
+        var rolesToEnsure = new List<Role>
         {
-            new Role { Code = "EMP",  Name = "Empleado" },
-            new Role { Code = "JEF",  Name = "Jefe" },
-            new Role { Code = "RRHH", Name = "Recursos Humanos" },
-            new Role { Code = "ITM",  Name = "IT Management" },
-            new Role { Code = "PM",   Name = "Project Manager" },
-            new Role { Code = "ADM",  Name = "SuperAdmin" }
+            new Role { Code = "EMP",        Name = "Empleado" },
+            new Role { Code = "JEF",        Name = "Jefe" },
+            new Role { Code = "RRHH",       Name = "Recursos Humanos" },
+            new Role { Code = "ITM",        Name = "IT Management" },
+            new Role { Code = "PM",         Name = "Project Manager" },
+            new Role { Code = "SUPERADMIN", Name = "SuperAdmin" } // ✅ importante (tu sistema real)
         };
-        context.Roles.AddRange(roles);
+
+        foreach (var r in rolesToEnsure)
+        {
+            if (!context.Roles.Any(x => x.Code == r.Code))
+                context.Roles.Add(r);
+        }
         context.SaveChanges();
 
-        var empleadoRole = roles.Single(r => r.Code == "EMP");
-        var jefeRole = roles.Single(r => r.Code == "JEF");
-        var rrhhRole = roles.Single(r => r.Code == "RRHH");
-        var itRole = roles.Single(r => r.Code == "ITM");
-        var pmRole = roles.Single(r => r.Code == "PM");
-        var adminRole = roles.Single(r => r.Code == "ADM");
+        // 2) PERMISSIONS (idempotente)
+        var permissionsToEnsure = new List<Permission>
+        {
+            // General
+            new Permission { Code = "WRITE", Description = "Permiso de escritura general" },
 
-        // ===================================================
-        // 3. TEAMS
-        // ===================================================
+            // Users
+            new Permission { Code = "USR_VIEW",   Description = "Ver usuarios" },
+            new Permission { Code = "USR_CREATE", Description = "Crear usuarios" },
+            new Permission { Code = "USR_EDIT",   Description = "Editar usuarios" },
+            new Permission { Code = "USR_DELETE", Description = "Eliminar usuarios" },
+
+            // Devices
+            new Permission { Code = "DEV_VIEW",   Description = "Ver dispositivos" },
+            new Permission { Code = "DEV_ASSIGN", Description = "Asignar dispositivos a usuarios" },
+            new Permission { Code = "DEV_EDIT",   Description = "Editar dispositivos" },
+            new Permission { Code = "DEV_DELETE", Description = "Eliminar dispositivos" },
+
+            // Licenses
+            new Permission { Code = "LIC_VIEW",   Description = "Ver licencias de software" },
+            new Permission { Code = "LIC_ASSIGN", Description = "Asignar licencias a usuarios" },
+            new Permission { Code = "LIC_EDIT",   Description = "Editar licencias" },
+            new Permission { Code = "LIC_DELETE", Description = "Eliminar licencias" },
+
+            // Roles/Permisos
+            new Permission { Code = "ROLE_MANAGE",       Description = "Gestionar roles" },
+            new Permission { Code = "PERMISSION_MANAGE", Description = "Gestionar permisos" },
+
+            // Reports
+            new Permission { Code = "REPORT_VIEW", Description = "Ver informes y listados" }
+        };
+
+        foreach (var p in permissionsToEnsure)
+        {
+            if (!context.Permissions.Any(x => x.Code == p.Code))
+                context.Permissions.Add(p);
+        }
+        context.SaveChanges();
+
+        // 3) SUPERADMIN => TODOS los permisos
+        var superAdminRole = context.Roles.Single(r => r.Code == "SUPERADMIN");
+        var allPerms = context.Permissions.ToList();
+
+        foreach (var perm in allPerms)
+        {
+            bool exists = context.RolePermissions.Any(rp =>
+                rp.RoleId == superAdminRole.Id && rp.PermissionId == perm.Id);
+
+            if (!exists)
+            {
+                context.RolePermissions.Add(new RolePermission
+                {
+                    RoleId = superAdminRole.Id,
+                    PermissionId = perm.Id
+                });
+            }
+        }
+        context.SaveChanges();
+    }
+
+    // ===================================================
+    // TEAMS
+    // ===================================================
+    private static List<Team> SeedTeams(AppDbContext context)
+    {
+        if (!RESET_DATABASE && context.Teams.Any())
+            return context.Teams.AsNoTracking().ToList();
+
         var teams = new Faker<Team>()
             .RuleFor(t => t.Name, f => f.Commerce.Department())
             .Generate(3);
@@ -78,9 +239,17 @@ public static class DataSeeder
         context.Teams.AddRange(teams);
         context.SaveChanges();
 
-        // ===================================================
-        // 4. PERSONAL INFORMATION
-        // ===================================================
+        return teams;
+    }
+
+    // ===================================================
+    // USERS + INFO
+    // ===================================================
+    private static List<User> SeedUsers(AppDbContext context, List<Team> teams)
+    {
+        if (!RESET_DATABASE && context.Users.Any())
+            return context.Users.AsNoTracking().ToList();
+
         var personalInfoGen = new Faker<PersonalInformation>("es")
             .RuleFor(p => p.Phone, f => f.Random.Number(600000000, 799999999))
             .RuleFor(p => p.Email, f => f.Internet.Email())
@@ -100,9 +269,6 @@ public static class DataSeeder
                 GeographicMobility = "Local"
             });
 
-        // ===================================================
-        // 5. COMPANY INFORMATION
-        // ===================================================
         var companyInfoGen = new Faker<CompanyInformation>("es")
             .RuleFor(c => c.spotNumber, f => f.Random.Number(1000, 9999))
             .RuleFor(c => c.technicalCenter, f => f.PickRandom<TechnicalCenter>())
@@ -122,9 +288,6 @@ public static class DataSeeder
             .RuleFor(c => c.MedicalInsurance, f => f.Random.Bool())
             .RuleFor(c => c.Presence, f => f.PickRandom<Presence>());
 
-        // ===================================================
-        // 6. USERS
-        // ===================================================
         var userGenerator = new Faker<User>("es")
             .RuleFor(u => u.Name, f => f.Name.FirstName())
             .RuleFor(u => u.LastName, f => f.Name.LastName())
@@ -135,17 +298,25 @@ public static class DataSeeder
 
         var users = userGenerator.Generate(50);
 
-        // ✅ USUARIO REAL (NORMALIZADO, SIN DOMINIO)
+        // Usuario real normalizado
         users[0].Name = "Marcos";
         users[0].LastName = "Gutierrez";
-        users[0].DomainUser = "marcos.gutierrez";
+        users[0].DomainUser = DEFAULT_SUPERADMIN_DOMAINUSER;
 
         context.Users.AddRange(users);
         context.SaveChanges();
 
-        // ===================================================
-        // 7. LICENSES
-        // ===================================================
+        return users;
+    }
+
+    // ===================================================
+    // LICENSES
+    // ===================================================
+    private static void SeedLicenses(AppDbContext context, List<User> users)
+    {
+        if (!RESET_DATABASE && context.Licenses.Any())
+            return;
+
         var licenseGen = new Faker<License>()
             .RuleFor(l => l.Code, f => f.Random.Guid().ToString())
             .RuleFor(l => l.Producto, f => f.PickRandom(
@@ -162,143 +333,74 @@ public static class DataSeeder
         var licenses = licenseGen.Generate(50);
         context.Licenses.AddRange(licenses);
         context.SaveChanges();
+    }
 
-        // ===================================================
-        // 8. COMPUTERS + PHONES (ejemplo)
-        // ===================================================
+    // ===================================================
+    // DEVICES
+    // ===================================================
+    private static void SeedDevices(AppDbContext context, List<User> users)
+    {
+        if (!RESET_DATABASE && (context.Computers.Any() || context.Phones.Any()))
+            return;
+
         var compGen = new Faker<Computer>("es")
-            .RuleFor(c => c.Hostname, f => f.Internet.DomainWord().ToUpper() + "-PC")
-            .RuleFor(c => c.SN, f => f.Random.AlphaNumeric(12).ToUpper())
-            .RuleFor(c => c.Model, f => f.PickRandom(
-                "MacBook Pro M3", "MacBook Air M2", "Dell XPS 13", "HP Spectre x360",
-                "Lenovo ThinkPad X1 Carbon", "Asus ZenBook 14", "Microsoft Surface Laptop 6",
-                "Acer Swift 5", "Lenovo Legion 5", "MSI Stealth 16 Studio",
-                "HP Omen 16", "Asus ROG Zephyrus G14", "Dell Latitude 7440",
-                "Samsung Galaxy Book4 Pro", "Razer Blade 15"))
-            .RuleFor(c => c.Status, f => f.PickRandom<StatusDevice>())
-            .RuleFor(c => c.NumberOfDevice, f => f.Random.Number(100, 999))
-            .RuleFor(c => c.isClient, f => f.Random.Bool())
-            .RuleFor(c => c.ComputerType, f => f.PickRandom<ComputerType>())
-            .RuleFor(c => c.UserId, f => f.PickRandom(users).Id);
+        .RuleFor(c => c.Comment, f => "") // ✅ AÑADIR ESTA LÍNEA
+        .RuleFor(c => c.Hostname, f => f.Internet.DomainWord().ToUpper() + "-PC")
+        .RuleFor(c => c.SN, f => f.Random.AlphaNumeric(12).ToUpper())
+        .RuleFor(c => c.Model, f => f.Commerce.ProductName())
+        .RuleFor(c => c.Status, f => f.PickRandom<StatusDevice>())
+        .RuleFor(c => c.NumberOfDevice, f => f.Random.Number(100, 999))
+        .RuleFor(c => c.isClient, f => f.Random.Bool())
+        .RuleFor(c => c.ComputerType, f => f.PickRandom<ComputerType>())
+        .RuleFor(c => c.UserId, f => f.PickRandom(users).Id);
 
         var phoneGen = new Faker<Phone>("es")
-            .RuleFor(p => p.Hostname, f => f.Person.FirstName.ToUpper() + "-TEL")
-            .RuleFor(p => p.SN, f => f.Random.AlphaNumeric(12).ToUpper())
-            .RuleFor(p => p.Model, f => f.PickRandom(
-                "iPhone 15 Pro", "Samsung Galaxy S24 Ultra", "Xiaomi 14 Pro", "Google Pixel 8 Pro",
-                "OnePlus 12", "Samsung Galaxy Z Flip 5", "iPhone 14", "Xiaomi Redmi Note 13 Pro",
-                "Realme GT 5", "Motorola Edge 40", "Huawei P60 Pro", "Sony Xperia 1 V",
-                "Nothing Phone (2)", "Oppo Find X6 Pro", "Honor Magic6 Pro"))
-            .RuleFor(p => p.Status, f => f.PickRandom<StatusDevice>())
-            .RuleFor(p => p.phonenumber, f => f.Random.Number(600000000, 699999999))
-            .RuleFor(p => p.SIM, f => f.Random.ReplaceNumbers("8934###########"))
-            .RuleFor(p => p.IMEI, f => f.Random.Number(1000000, 9999999))
-            .RuleFor(p => p.PIN, f => f.Random.Number(1111, 9999))
-            .RuleFor(p => p.PUK, f => f.Random.Number(11111111, 99999999))
-            .RuleFor(p => p.UserId, f => f.PickRandom(users).Id);
+     .RuleFor(p => p.Comment, f => "") // ✅ AÑADIR ESTA LÍNEA
+     .RuleFor(p => p.Hostname, f => f.Person.FirstName.ToUpper() + "-TEL")
+     .RuleFor(p => p.SN, f => f.Random.AlphaNumeric(12).ToUpper())
+     .RuleFor(p => p.Model, f => f.Commerce.ProductName())
+     .RuleFor(p => p.Status, f => f.PickRandom<StatusDevice>())
+     .RuleFor(p => p.phonenumber, f => f.Random.Number(600000000, 699999999))
+     .RuleFor(p => p.SIM, f => f.Random.ReplaceNumbers("8934###########"))
+     .RuleFor(p => p.IMEI, f => f.Random.Number(1000000, 9999999))
+     .RuleFor(p => p.PIN, f => f.Random.Number(1111, 9999))
+     .RuleFor(p => p.PUK, f => f.Random.Number(11111111, 99999999))
+     .RuleFor(p => p.UserId, f => f.PickRandom(users).Id);
+
 
         context.Computers.AddRange(compGen.Generate(25));
         context.Phones.AddRange(phoneGen.Generate(25));
         context.SaveChanges();
-
-        // ===================================================
-        // 9. PERMISSIONS
-        // ===================================================
-        var permissions = new List<Permission>
-        {
-            new Permission { Code = "USR_VIEW",  Description = "Ver usuarios" },
-            new Permission { Code = "USR_CREATE",Description = "Crear usuarios" },
-            new Permission { Code = "USR_EDIT",  Description = "Editar usuarios" },
-            new Permission { Code = "USR_DELETE",Description = "Eliminar usuarios" },
-
-            new Permission { Code = "DEV_VIEW",  Description = "Ver dispositivos" },
-            new Permission { Code = "DEV_ASSIGN",Description = "Asignar dispositivos a usuarios" },
-            new Permission { Code = "DEV_EDIT",  Description = "Editar dispositivos" },
-            new Permission { Code = "DEV_DELETE",Description = "Eliminar dispositivos" },
-
-            new Permission { Code = "LIC_VIEW",  Description = "Ver licencias de software" },
-            new Permission { Code = "LIC_ASSIGN",Description = "Asignar licencias a usuarios" },
-            new Permission { Code = "LIC_EDIT",  Description = "Editar licencias" },
-            new Permission { Code = "LIC_DELETE",Description = "Eliminar licencias" },
-
-            new Permission { Code = "ROLE_MANAGE",       Description = "Gestionar roles" },
-            new Permission { Code = "PERMISSION_MANAGE", Description = "Gestionar permisos" },
-            new Permission { Code = "REPORT_VIEW",       Description = "Ver informes y listados" }
-        };
-
-        context.Permissions.AddRange(permissions);
-        context.SaveChanges();
-
-        // ===================================================
-        // 10. USERROLES
-        // ===================================================
-        var userRoles = new List<UserRole>();
-
-        // ADM para los primeros 5
-        foreach (var user in users.Take(5))
-        {
-            userRoles.Add(new UserRole
-            {
-                UserId = user.Id,
-                RoleId = adminRole.Id
-            });
-        }
-
-        // EMP para el resto
-        foreach (var user in users.Skip(5))
-        {
-            userRoles.Add(new UserRole
-            {
-                UserId = user.Id,
-                RoleId = empleadoRole.Id
-            });
-        }
-
-        context.UserRoles.AddRange(userRoles);
-        context.SaveChanges();
-
-        // ===================================================
-        // 11. ROLEPERMISSIONS (ADMIN = TODO)
-        // ===================================================
-        var rolePermisions = new List<RolePermission>();
-        foreach (Permission per in permissions)
-        {
-            rolePermisions.Add(new RolePermission
-            {
-                PermissionId = per.Id,
-                RoleId = adminRole.Id
-            });
-        }
-
-        context.RolePermissions.AddRange(rolePermisions);
-        context.SaveChanges();
     }
 
-    public static void RellenarDatos(IServiceScope scope)
+    // ===================================================
+    // USERROLES + ROLEPERMISSIONS
+    // ===================================================
+    private static void SeedUserRolesAndRolePermissions(AppDbContext context, List<User> users)
     {
-        Console.WriteLine(">>> DATASEEDER EJECUTÁNDOSE <<<");
+        var empleadoRole = context.Roles.Single(r => r.Code == "EMP");
+        var superAdminRole = context.Roles.Single(r => r.Code == "SUPERADMIN");
 
-        var services = scope.ServiceProvider;
-        try
+        // 1) SUPERADMIN para el user "marcos.gutierrez"
+        var adminUser = context.Users.FirstOrDefault(u => u.DomainUser == DEFAULT_SUPERADMIN_DOMAINUSER);
+        if (adminUser != null)
         {
-            var context = services.GetRequiredService<AppDbContext>();
-
-            // 👇👇👇 ESTE ES EL SEGUNDO PASO 👇👇👇
-            Console.WriteLine(
-                $"Seeder usando BD: " +
-                $"{context.Database.GetDbConnection().DataSource} / " +
-                $"{context.Database.GetDbConnection().Database}"
-            );
-
-            context.Database.Migrate();
-
-            SeedData(context);
-
-            Console.WriteLine(">>> DATASEEDER TERMINADO <<<");
+            bool hasRole = context.UserRoles.Any(ur => ur.UserId == adminUser.Id && ur.RoleId == superAdminRole.Id);
+            if (!hasRole)
+            {
+                context.UserRoles.Add(new UserRole { UserId = adminUser.Id, RoleId = superAdminRole.Id });
+            }
         }
-        catch (Exception ex)
+
+        // 2) EMP para el resto si RESET
+        if (RESET_DATABASE)
         {
-            Console.WriteLine($"Error al cargar datos: {ex.Message}");
+            foreach (var u in users.Skip(1))
+            {
+                context.UserRoles.Add(new UserRole { UserId = u.Id, RoleId = empleadoRole.Id });
+            }
         }
+
+        context.SaveChanges();
     }
 }
