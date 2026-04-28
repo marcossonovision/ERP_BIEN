@@ -466,38 +466,28 @@
                 }
             }
 
-            const openEditFromDetails = document.getElementById("openEditFromDetails");
+           /* const openEditFromDetails = document.getElementById("openEditFromDetails");
             if (openEditFromDetails) {
                 openEditFromDetails.addEventListener("click", () => {
                     const detailsInstance = bootstrap.Modal.getInstance(document.getElementById("detailsModal"));
                     if (detailsInstance) detailsInstance.hide();
                     new bootstrap.Modal(document.getElementById("editModal")).show();
                 });
-            }
+            }*/
 
             // =========================
-            // LIMPIAR FILTROS (DEFINITIVO)
+            // LIMPIAR FILTROS 
             // =========================
-            const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
-            if (clearFiltersBtnEl) {
-                clearFiltersBtnEl.addEventListener('click', (e) => {
-                    e.preventDefault();
 
-                    const form = document.getElementById('usersFiltersForm');
-                    if (!form) {
-                        window.location.href = window.location.pathname;
-                        return;
-                    }
+                   const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
+        if (clearFiltersBtnEl) {
+            clearFiltersBtnEl.addEventListener('click', (e) => {
+                e.preventDefault();
 
-                    form.querySelectorAll('input[type="text"], input[type="search"]').forEach(i => i.value = '');
-                    form.querySelectorAll('select').forEach(s => s.value = '');
-
-                    const pageField = form.querySelector('input[name="pageNumber"]');
-                    if (pageField) pageField.value = 1;
-
-                    form.submit();
-                });
-            }
+                // ✅ LIMPIAR FILTROS DE VERDAD
+                window.location.href = '/Users/Index';
+            });
+        }
 
         });
     </script>

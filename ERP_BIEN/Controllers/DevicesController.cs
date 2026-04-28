@@ -1,5 +1,4 @@
 ﻿using ERP_BIEN.Common.Enums;
-using ERP_BIEN.Models;
 using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace ERP_BIEN.Controllers
 {
     // ============================
-    // ACCESO AL MÓDULO DEVICES
+    // ACCESO AL MÓDULO DEVICES (LECTURA REAL)
     // ============================
-    [Authorize(Policy = "DEVICES")]
+    [Authorize(Policy = "DEV_VIEW")]
     public class DevicesController : Controller
     {
         private readonly DeviceService _service;

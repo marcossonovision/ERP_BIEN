@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace ERP_BIEN.Controllers
 {
     // ============================
-    // ACCESO AL MÓDULO LICENSES
+    // ACCESO AL MÓDULO LICENSES (LECTURA REAL)
     // ============================
-    [Authorize(Policy = "LICENSES")]
+    [Authorize(Policy = "LIC_VIEW")]
     public class LicenseController : Controller
     {
         private readonly ILicenseService _svc;
@@ -25,8 +25,6 @@ namespace ERP_BIEN.Controllers
         {
             qp.PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber;
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
-
-            Console.WriteLine($"[LicenseController] PageNumber={qp.PageNumber}, PageSize={qp.PageSize}");
 
             var (items, total) = await _svc.GetPagedAsync(qp);
             var totalPages = qp.PageSize > 0

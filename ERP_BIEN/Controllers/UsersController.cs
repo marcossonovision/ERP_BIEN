@@ -16,9 +16,9 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // INDEX
+        // INDEX (LECTURA)
         // ============================
-        [Authorize(Policy = "USERS")]
+        [Authorize(Policy = "USR_VIEW")]
         public IActionResult Index(
             int pageNumber = 1,
             string searchName = null,
@@ -56,9 +56,9 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DETAILS
+        // DETAILS (LECTURA)
         // ============================
-        [Authorize(Policy = "USERS")]
+        [Authorize(Policy = "USR_VIEW")]
         public IActionResult Details(int id)
         {
             var u = _service.GetUser(id);
@@ -76,7 +76,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // CREATE
+        // CREATE (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -106,7 +106,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // EDIT
+        // EDIT (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -142,32 +142,28 @@ namespace ERP_BIEN.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            // Si alguien entra por URL, volvemos al listado
             return RedirectToAction("Index");
         }
 
         // ============================
-        // DELETE (POST REAL)
+        // DELETE (POST REAL) (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(
-            int id,
-            int pageNumber,
-            string searchName,
-            string searchDomain,
-            int? searchTeamId)
+        public IActionResult Delete([FromBody] DeleteUserRequest request)
         {
-            _service.DeleteUser(id);
+            if (request == null || request.Id <= 0)
+                return BadRequest();
 
-            return RedirectToAction("Index", new
-            {
-                pageNumber,
-                searchName,
-                searchDomain,
-                searchTeamId
-            });
+            _service.DeleteUser(request.Id);
+            return Ok();
         }
+
+        public class DeleteUserRequest
+        {
+            public int Id { get; set; }
+        }
+
     }
 }

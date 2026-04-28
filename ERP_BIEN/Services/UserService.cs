@@ -29,28 +29,57 @@ namespace ERP_BIEN.Services
                 .Include(u => u.Team)
                 .AsQueryable();
 
-            // FILTROS
+            // ============================
+            // FILTRO POR NOMBRE / APELLIDO
+            // (prefijo, en orden)
+            // ============================
             if (!string.IsNullOrWhiteSpace(searchName))
-                query = query.Where(u => (u.Name + " " + u.LastName).Contains(searchName));
+            {
+                var nameFilter = searchName.Trim().ToLower();
 
+                query = query.Where(u =>
+                    (u.Name != null && u.Name.ToLower().StartsWith(nameFilter)) ||
+                    (u.LastName != null && u.LastName.ToLower().StartsWith(nameFilter))
+                );
+            }
+
+            // ============================
+            // FILTRO POR USUARIO DE DOMINIO
+            // (prefijo)
+            // ============================
             if (!string.IsNullOrWhiteSpace(searchDomain))
-                query = query.Where(u => u.DomainUser.Contains(searchDomain));
+            {
+                var domainFilter = searchDomain.Trim().ToLower();
 
+                query = query.Where(u =>
+                    u.DomainUser != null &&
+                    u.DomainUser.ToLower().StartsWith(domainFilter)
+                );
+            }
+
+            // ============================
+            // FILTRO POR EQUIPO
+            // ============================
             if (searchTeamId.HasValue)
-                query = query.Where(u => u.TeamId == searchTeamId);
+            {
+                query = query.Where(u => u.TeamId == searchTeamId.Value);
+            }
 
+            // ============================
             // TOTAL DE PÁGINAS
+            // ============================
             int totalUsers = query.Count();
             int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
 
             if (totalPages > 0 && pageNumber > totalPages)
-            {
                 pageNumber = totalPages;
-            }
 
+            // ============================
             // PAGINACIÓN
+            // ============================
             var users = query
                 .OrderBy(u => u.Name)
+                .ThenBy(u => u.LastName)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -70,6 +99,7 @@ namespace ERP_BIEN.Services
 
         // ============================================
         // CREAR USUARIO
+        // (tal y como lo tienes ahora)
         // ============================================
         public void CreateUser(User user)
         {
@@ -78,25 +108,57 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // EDITAR USUARIO
+        // EDITAR USUARIO (CORRECTO)
         // ============================================
-        public void UpdateUser(User user)
+        public void UpdateUser(User updated)
         {
-            _context.Users.Update(user);
+            var user = _context.Users
+                .FirstOrDefault(u => u.Id == updated.Id);
+
+            if (user == null)
+                throw new Exception("Usuario no encontrado");
+
+            user.Name = updated.Name;
+            user.LastName = updated.LastName;
+            user.DomainUser = updated.DomainUser;
+            user.TeamId = updated.TeamId;
+
             _context.SaveChanges();
         }
 
         // ============================================
-        // ELIMINAR USUARIO
+        // ELIMINAR USUARIO (HARD DELETE REAL)
         // ============================================
         public void DeleteUser(int id)
         {
-            var u = _context.Users.Find(id);
-            if (u != null)
-            {
-                _context.Users.Remove(u);
-                _context.SaveChanges();
-            }
+            var user = _context.Users
+                .Include(u => u.UserRoles)
+                .Include(u => u.Devices)
+                .Include(u => u.Licenses)
+                .Include(u => u.PersonalInfo)
+                .Include(u => u.CompanyInfo)
+                .FirstOrDefault(u => u.Id == id);
+
+            if (user == null)
+                return;
+
+            if (user.UserRoles != null && user.UserRoles.Any())
+                _context.UserRoles.RemoveRange(user.UserRoles);
+
+            if (user.Devices != null && user.Devices.Any())
+                _context.Devices.RemoveRange(user.Devices);
+
+            if (user.Licenses != null && user.Licenses.Any())
+                _context.Licenses.RemoveRange(user.Licenses);
+
+            if (user.PersonalInfo != null)
+                _context.PersonalInformation.Remove(user.PersonalInfo);
+
+            if (user.CompanyInfo != null)
+                _context.CompanyInformation.Remove(user.CompanyInfo);
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
 
         // ============================================

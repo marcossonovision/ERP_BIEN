@@ -17,14 +17,20 @@ namespace ERP_BIEN.Controllers
     public class RoleController : Controller
     {
         private readonly IRoleService _svc;
-        public RoleController(IRoleService svc) => _svc = svc;
+
+        public RoleController(IRoleService svc)
+        {
+            _svc = svc;
+        }
 
         // ============================
         // GET – INDEX (LECTURA)
         // ============================
+        [HttpGet]
         public async Task<IActionResult> Index([FromQuery] RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
+
             qp.PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber;
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
 
@@ -52,16 +58,15 @@ namespace ERP_BIEN.Controllers
         public async Task<JsonResult> DetailsJson(int id)
         {
             var role = await _svc.GetByIdAsync(id);
-            if (role == null) return Json(null);
+            if (role == null)
+                return Json(null);
 
-            var dto = new
+            return Json(new
             {
                 id = role.Id,
                 code = role.Code,
                 name = role.Name
-            };
-
-            return Json(dto);
+            });
         }
 
         // ============================
@@ -73,8 +78,25 @@ namespace ERP_BIEN.Controllers
         public async Task<IActionResult> Create(RoleViewModel vm, RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
+
             if (!ModelState.IsValid)
-                return RedirectToAction(nameof(Index), qp);
+            {
+                var (items, total) = await _svc.GetPagedAsync(qp);
+
+                var vmIndex = new RoleIndexMvcViewModel
+                {
+                    Roles = items.ToList(),
+                    PageNumber = qp.PageNumber,
+                    PageSize = qp.PageSize,
+                    TotalItems = total,
+                    TotalPages = qp.PageSize > 0
+                        ? (int)Math.Ceiling(total / (double)qp.PageSize)
+                        : 0,
+                    Search = qp.Search
+                };
+
+                return View("Index", vmIndex);
+            }
 
             await _svc.CreateAsync(new Role
             {
@@ -99,12 +121,31 @@ namespace ERP_BIEN.Controllers
         public async Task<IActionResult> Edit(RoleViewModel vm, RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
+
             if (!ModelState.IsValid)
-                return RedirectToAction(nameof(Index), qp);
+            {
+                var (items, total) = await _svc.GetPagedAsync(qp);
+
+                var vmIndex = new RoleIndexMvcViewModel
+                {
+                    Roles = items.ToList(),
+                    PageNumber = qp.PageNumber,
+                    PageSize = qp.PageSize,
+                    TotalItems = total,
+                    TotalPages = qp.PageSize > 0
+                        ? (int)Math.Ceiling(total / (double)qp.PageSize)
+                        : 0,
+                    Search = qp.Search
+                };
+
+                return View("Index", vmIndex);
+            }
 
             var role = await _svc.GetByIdAsync(vm.Id);
             if (role == null)
+            {
                 return RedirectToAction(nameof(Index), qp);
+            }
 
             role.Code = vm.Code?.Trim();
             role.Name = vm.Name?.Trim();
@@ -142,7 +183,9 @@ namespace ERP_BIEN.Controllers
                 : 1;
 
             if (PageNumber > maxPage)
+            {
                 PageNumber = Math.Max(1, maxPage);
+            }
 
             return RedirectToAction(nameof(Index), new
             {
