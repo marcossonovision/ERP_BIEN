@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ERP_BIEN.Data;
 using ERP_BIEN.Models;
-using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,35 +19,46 @@ namespace ERP_BIEN.Services
             if (qp.PageNumber < 1) qp.PageNumber = 1;
             if (qp.PageSize < 1) qp.PageSize = 10;
 
-            var query = _db.Licenses.Include(l => l.User).AsQueryable();
+            var query = _db.Licenses
+                .Include(l => l.User)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(qp.Search))
             {
+                var s = qp.Search.Trim();
                 query = query.Where(l =>
-                    l.Code.Contains(qp.Search) ||
-                    l.Producto.Contains(qp.Search) ||
-                    l.Proveedor.Contains(qp.Search));
+                    l.Code.Contains(s) ||
+                    l.Producto.Contains(s) ||
+                    l.Proveedor.Contains(s));
             }
 
             if (!string.IsNullOrWhiteSpace(qp.SearchProveedor))
-                query = query.Where(l => l.Proveedor.Contains(qp.SearchProveedor));
+                query = query.Where(l => l.Proveedor.Contains(qp.SearchProveedor.Trim()));
 
             if (!string.IsNullOrWhiteSpace(qp.SearchProducto))
-                query = query.Where(l => l.Producto.Contains(qp.SearchProducto));
+                query = query.Where(l => l.Producto.Contains(qp.SearchProducto.Trim()));
 
             if (!string.IsNullOrWhiteSpace(qp.SearchAsignada))
             {
                 var raw = qp.SearchAsignada.Trim().ToLowerInvariant();
-                bool asignada = raw == "true";
-                query = query.Where(l => l.Asignada == asignada);
+                bool? asignada = raw switch
+                {
+                    "true" => true,
+                    "false" => false,
+                    "1" => true,
+                    "0" => false,
+                    _ => null
+                };
+
+                if (asignada.HasValue)
+                    query = query.Where(l => l.Asignada == asignada.Value);
             }
 
             var total = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(total / (double)qp.PageSize);
-            if (totalPages > 0 && qp.PageNumber > totalPages) qp.PageNumber = totalPages;
 
             var items = await query
                 .OrderBy(l => l.Producto)
+                .ThenBy(l => l.Code)
                 .Skip((qp.PageNumber - 1) * qp.PageSize)
                 .Take(qp.PageSize)
                 .ToListAsync();
@@ -58,7 +68,9 @@ namespace ERP_BIEN.Services
 
         public async Task<License> GetByIdAsync(int id)
         {
-            return await _db.Licenses.Include(l => l.User).FirstOrDefaultAsync(l => l.Id == id);
+            return await _db.Licenses
+                .Include(l => l.User)
+                .FirstOrDefaultAsync(l => l.Id == id);
         }
 
         public async Task<License> CreateAsync(License license)
@@ -70,9 +82,6 @@ namespace ERP_BIEN.Services
 
         public async Task<bool> UpdateAsync(License license)
         {
-            var exists = await _db.Licenses.AnyAsync(x => x.Id == license.Id);
-            if (!exists) return false;
-            _db.Licenses.Update(license);
             await _db.SaveChangesAsync();
             return true;
         }
@@ -81,6 +90,7 @@ namespace ERP_BIEN.Services
         {
             var ent = await _db.Licenses.FindAsync(id);
             if (ent == null) return false;
+
             _db.Licenses.Remove(ent);
             await _db.SaveChangesAsync();
             return true;
@@ -88,8 +98,10 @@ namespace ERP_BIEN.Services
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _db.Users.OrderBy(u => u.Name).ToListAsync();
+            return await _db.Users
+                .OrderBy(u => u.Name)
+                .ThenBy(u => u.LastName)
+                .ToListAsync();
         }
     }
 }
-

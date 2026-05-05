@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ERP_BIEN.Controllers
 {
     // ============================
-    // ACCESO AL MÓDULO DEVICES (LECTURA REAL)
+    // ACCESO AL MÓDULO DEVICES
     // ============================
     [Authorize(Policy = "DEV_VIEW")]
     public class DevicesController : Controller
@@ -22,6 +22,7 @@ namespace ERP_BIEN.Controllers
         // ============================================================
         // INDEX (LECTURA)
         // ============================================================
+        [HttpGet]
         public async Task<IActionResult> Index(
             int pageNumber = 1,
             string deviceTypeFilter = null,
@@ -58,20 +59,20 @@ namespace ERP_BIEN.Controllers
             if (totalPages > 0 && pageNumber > totalPages)
             {
                 pageNumber = totalPages;
-                (devices, totalPages) =
-                    await _service.GetDevicesAsync(
-                        pageNumber,
-                        pageSize,
-                        deviceTypeFilter,
-                        statusFilter,
-                        userIdFilter,
-                        hostnameFilter,
-                        modelFilter,
-                        snFilter,
-                        manufacturingFrom,
-                        manufacturingTo,
-                        useFrom,
-                        useTo);
+                (devices, totalPages) = await _service.GetDevicesAsync(
+                    pageNumber,
+                    pageSize,
+                    deviceTypeFilter,
+                    statusFilter,
+                    userIdFilter,
+                    hostnameFilter,
+                    modelFilter,
+                    snFilter,
+                    manufacturingFrom,
+                    manufacturingTo,
+                    useFrom,
+                    useTo
+                );
             }
 
             var vm = new DevicesViewModel
@@ -101,6 +102,7 @@ namespace ERP_BIEN.Controllers
         // ============================================================
         // DETAILS (LECTURA – MODAL)
         // ============================================================
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var device = await _service.GetByIdAsync(id);

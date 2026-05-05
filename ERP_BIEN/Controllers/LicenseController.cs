@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 
 namespace ERP_BIEN.Controllers
 {
-    // ============================
-    // ACCESO AL MÓDULO LICENSES (LECTURA REAL)
-    // ============================
     [Authorize(Policy = "LIC_VIEW")]
     public class LicenseController : Controller
     {
@@ -19,7 +16,7 @@ namespace ERP_BIEN.Controllers
         public LicenseController(ILicenseService svc) => _svc = svc;
 
         // ============================
-        // INDEX (LECTURA)
+        // INDEX
         // ============================
         public async Task<IActionResult> Index([FromQuery] LicenseQueryParameters qp)
         {
@@ -27,6 +24,7 @@ namespace ERP_BIEN.Controllers
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
 
             var (items, total) = await _svc.GetPagedAsync(qp);
+
             var totalPages = qp.PageSize > 0
                 ? (int)Math.Ceiling(total / (double)qp.PageSize)
                 : 0;
@@ -54,7 +52,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DETAILS (LECTURA – JSON)
+        // DETAILS (JSON)
         // ============================
         [HttpGet]
         public async Task<JsonResult> DetailsJson(int id)
@@ -62,7 +60,7 @@ namespace ERP_BIEN.Controllers
             var lic = await _svc.GetByIdAsync(id);
             if (lic == null) return Json(null);
 
-            var dto = new
+            return Json(new
             {
                 id = lic.Id,
                 code = lic.Code,
@@ -76,13 +74,11 @@ namespace ERP_BIEN.Controllers
                 userName = lic.User != null
                     ? $"{lic.User.Name} {lic.User.LastName}"
                     : null
-            };
-
-            return Json(dto);
+            });
         }
 
         // ============================
-        // CREATE (ESCRITURA)
+        // CREATE
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -109,7 +105,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // EDIT (ESCRITURA)
+        // EDIT
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -137,7 +133,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DELETE (ESCRITURA)
+        // DELETE
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]

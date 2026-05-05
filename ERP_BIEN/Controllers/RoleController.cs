@@ -14,6 +14,7 @@ namespace ERP_BIEN.Controllers
     // ACCESO AL MÓDULO ROLES (SOLO ADMIN)
     // ============================
     [Authorize(Policy = "ROLES")]
+    [Route("Roles")]
     public class RoleController : Controller
     {
         private readonly IRoleService _svc;
@@ -25,12 +26,12 @@ namespace ERP_BIEN.Controllers
 
         // ============================
         // GET – INDEX (LECTURA)
+        // URL: /Roles
         // ============================
-        [HttpGet]
+        [HttpGet("")]
         public async Task<IActionResult> Index([FromQuery] RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
-
             qp.PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber;
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
 
@@ -48,13 +49,14 @@ namespace ERP_BIEN.Controllers
                 Search = qp.Search
             };
 
-            return View(vm);
+            return View("Index", vm);
         }
 
         // ============================
-        // GET – DETAILS (LECTURA / JSON)
+        // GET – DETAILS (JSON) (OPCIONAL)
+        // URL: /Roles/DetailsJson/5
         // ============================
-        [HttpGet]
+        [HttpGet("DetailsJson/{id}")]
         public async Task<JsonResult> DetailsJson(int id)
         {
             var role = await _svc.GetByIdAsync(id);
@@ -70,38 +72,34 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // POST – CREATE (ESCRITURA)
+        // POST – CREATE ✅ (ARREGLADO)
+        // URL: /Roles/Create
         // ============================
         [Authorize(Policy = "WRITE")]
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RoleViewModel vm, RoleQueryParameters qp)
+        public async Task<IActionResult> Create(
+            string Code,
+            string Name,
+            RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
 
-            if (!ModelState.IsValid)
+            // Validación mínima (evita ModelState “silencioso”)
+            if (string.IsNullOrWhiteSpace(Code) || string.IsNullOrWhiteSpace(Name))
             {
-                var (items, total) = await _svc.GetPagedAsync(qp);
-
-                var vmIndex = new RoleIndexMvcViewModel
+                return RedirectToAction(nameof(Index), new
                 {
-                    Roles = items.ToList(),
-                    PageNumber = qp.PageNumber,
+                    PageNumber = 1,
                     PageSize = qp.PageSize,
-                    TotalItems = total,
-                    TotalPages = qp.PageSize > 0
-                        ? (int)Math.Ceiling(total / (double)qp.PageSize)
-                        : 0,
                     Search = qp.Search
-                };
-
-                return View("Index", vmIndex);
+                });
             }
 
             await _svc.CreateAsync(new Role
             {
-                Code = vm.Code?.Trim(),
-                Name = vm.Name?.Trim()
+                Code = Code,
+                Name = Name
             });
 
             return RedirectToAction(nameof(Index), new
@@ -113,53 +111,57 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // POST – EDIT (ESCRITURA)
+        // POST – EDIT ✅
+        // URL: /Roles/Edit
         // ============================
         [Authorize(Policy = "WRITE")]
-        [HttpPost]
+        [HttpPost("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(RoleViewModel vm, RoleQueryParameters qp)
         {
             qp ??= new RoleQueryParameters();
 
-            if (!ModelState.IsValid)
+            // Validación mínima (sin “quedarse colgado”)
+            if (vm == null || vm.Id <= 0 || string.IsNullOrWhiteSpace(vm.Code) || string.IsNullOrWhiteSpace(vm.Name))
             {
-                var (items, total) = await _svc.GetPagedAsync(qp);
-
-                var vmIndex = new RoleIndexMvcViewModel
+                return RedirectToAction(nameof(Index), new
                 {
-                    Roles = items.ToList(),
-                    PageNumber = qp.PageNumber,
-                    PageSize = qp.PageSize,
-                    TotalItems = total,
-                    TotalPages = qp.PageSize > 0
-                        ? (int)Math.Ceiling(total / (double)qp.PageSize)
-                        : 0,
+                    PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber,
+                    PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize,
                     Search = qp.Search
-                };
-
-                return View("Index", vmIndex);
+                });
             }
 
             var role = await _svc.GetByIdAsync(vm.Id);
             if (role == null)
             {
-                return RedirectToAction(nameof(Index), qp);
+                return RedirectToAction(nameof(Index), new
+                {
+                    PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber,
+                    PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize,
+                    Search = qp.Search
+                });
             }
 
-            role.Code = vm.Code?.Trim();
-            role.Name = vm.Name?.Trim();
+            role.Code = vm.Code;
+            role.Name = vm.Name;
 
             await _svc.UpdateAsync(role);
 
-            return RedirectToAction(nameof(Index), qp);
+            return RedirectToAction(nameof(Index), new
+            {
+                PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber,
+                PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize,
+                Search = qp.Search
+            });
         }
 
         // ============================
-        // POST – DELETE (ESCRITURA)
+        // POST – DELETE
+        // URL: /Roles/Delete
         // ============================
         [Authorize(Policy = "WRITE")]
-        [HttpPost]
+        [HttpPost("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(
             int id,

@@ -123,15 +123,18 @@ namespace ERP_BIEN.Services
             if (device == null)
                 return;
 
-            device.Hostname = hostname?.Trim();
-            device.SN = sn?.Trim();
-            device.Model = model?.Trim();
+            device.Hostname = hostname;
+            device.SN = sn;
+            device.Model = model;
             device.NumberOfDevice = numberOfDevice;
             device.ManufacturingDate = manufacturingDate;
             device.Status = status;
-            device.Comment = comment?.Trim();
+            device.Comment = comment;
             device.UseDate = useDate;
             device.UserId = userId;
+
+            // ✅ NORMALIZACIÓN CENTRALIZADA
+            NormalizeDevice(device);
 
             _context.Devices.Add(device);
             await _context.SaveChangesAsync();
@@ -156,17 +159,19 @@ namespace ERP_BIEN.Services
             if (device == null)
                 return;
 
-            device.Hostname = hostname?.Trim();
-            device.SN = sn?.Trim();
-            device.Model = model?.Trim();
+            device.Hostname = hostname;
+            device.SN = sn;
+            device.Model = model;
             device.NumberOfDevice = numberOfDevice;
             device.ManufacturingDate = manufacturingDate;
             device.Status = status;
-            device.Comment = comment?.Trim();
+            device.Comment = comment;
             device.UseDate = useDate;
             device.UserId = userId;
 
-            _context.Devices.Update(device);
+            // ✅ NORMALIZACIÓN CENTRALIZADA
+            NormalizeDevice(device);
+
             await _context.SaveChangesAsync();
         }
 
@@ -200,5 +205,20 @@ namespace ERP_BIEN.Services
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
+        // ============================================================
+        // NORMALIZACIÓN (CLAVE PARA EVITAR ERRORES)
+        // ============================================================
+        private void NormalizeDevice(Device device)
+        {
+            // ❌ Nunca guardar NULL en columnas críticas
+            device.Comment = string.IsNullOrWhiteSpace(device.Comment)
+                ? string.Empty
+                : device.Comment.Trim();
+
+            // Limpiar strings
+            device.Hostname = device.Hostname?.Trim();
+            device.Model = device.Model?.Trim();
+            device.SN = device.SN?.Trim();
+        }
     }
 }
