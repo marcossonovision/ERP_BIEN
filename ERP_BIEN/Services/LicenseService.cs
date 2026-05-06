@@ -14,6 +14,9 @@ namespace ERP_BIEN.Services
         private readonly AppDbContext _db;
         public LicenseService(AppDbContext db) => _db = db;
 
+        // ============================================================
+        // GET PAGED (LISTADO + FILTROS)
+        // ============================================================
         public async Task<(IEnumerable<License> Items, int TotalCount)> GetPagedAsync(LicenseQueryParameters qp)
         {
             if (qp.PageNumber < 1) qp.PageNumber = 1;
@@ -23,6 +26,9 @@ namespace ERP_BIEN.Services
                 .Include(l => l.User)
                 .AsQueryable();
 
+            // ----------------------------
+            // Search general
+            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.Search))
             {
                 var s = qp.Search.Trim();
@@ -32,15 +38,31 @@ namespace ERP_BIEN.Services
                     l.Proveedor.Contains(s));
             }
 
+            // ----------------------------
+            // Filtro proveedor
+            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.SearchProveedor))
-                query = query.Where(l => l.Proveedor.Contains(qp.SearchProveedor.Trim()));
+            {
+                var proveedor = qp.SearchProveedor.Trim();
+                query = query.Where(l => l.Proveedor.Contains(proveedor));
+            }
 
+            // ----------------------------
+            // Filtro producto
+            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.SearchProducto))
-                query = query.Where(l => l.Producto.Contains(qp.SearchProducto.Trim()));
+            {
+                var producto = qp.SearchProducto.Trim();
+                query = query.Where(l => l.Producto.Contains(producto));
+            }
 
+            // ============================================================
+            // ✅ PASO 2: FILTRO ASIGNADA POR UserId (NO por l.Asignada)
+            // ============================================================
             if (!string.IsNullOrWhiteSpace(qp.SearchAsignada))
             {
                 var raw = qp.SearchAsignada.Trim().ToLowerInvariant();
+
                 bool? asignada = raw switch
                 {
                     "true" => true,
@@ -51,7 +73,12 @@ namespace ERP_BIEN.Services
                 };
 
                 if (asignada.HasValue)
-                    query = query.Where(l => l.Asignada == asignada.Value);
+                {
+                    if (asignada.Value)
+                        query = query.Where(l => l.UserId != null);
+                    else
+                        query = query.Where(l => l.UserId == null);
+                }
             }
 
             var total = await query.CountAsync();
@@ -63,9 +90,22 @@ namespace ERP_BIEN.Services
                 .Take(qp.PageSize)
                 .ToListAsync();
 
+            // ============================================================
+            // ✅ Blindaje visual: recalcular flags según UserId
+            // (aunque en BD haya datos viejos, la UI se ve coherente)
+            // ============================================================
+            foreach (var l in items)
+            {
+                l.Asignada = l.UserId != null;
+                l.Disponible = l.UserId == null;
+            }
+
             return (items, total);
         }
 
+        // ============================================================
+        // GET BY ID
+        // ============================================================
         public async Task<License> GetByIdAsync(int id)
         {
             return await _db.Licenses
@@ -73,6 +113,9 @@ namespace ERP_BIEN.Services
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 
+        // ============================================================
+        // CREATE
+        // ============================================================
         public async Task<License> CreateAsync(License license)
         {
             _db.Licenses.Add(license);
@@ -80,12 +123,20 @@ namespace ERP_BIEN.Services
             return license;
         }
 
+        // ============================================================
+        // UPDATE
+        // ============================================================
         public async Task<bool> UpdateAsync(License license)
         {
+            // Si el license viene trackeado (lo normal cuando lo has cargado con GetByIdAsync),
+            // basta con SaveChangesAsync.
             await _db.SaveChangesAsync();
             return true;
         }
 
+        // ============================================================
+        // DELETE
+        // ============================================================
         public async Task<bool> DeleteAsync(int id)
         {
             var ent = await _db.Licenses.FindAsync(id);
@@ -96,6 +147,9 @@ namespace ERP_BIEN.Services
             return true;
         }
 
+        // ============================================================
+        // USERS (para dropdown, etc.)
+        // ============================================================
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             return await _db.Users

@@ -21,6 +21,9 @@ namespace ERP_BIEN.Data
         public DbSet<License> Licenses { get; set; }
         public DbSet<Software> Software { get; set; }
 
+        // 🔥 AÑADIDO (HISTÓRICO)
+        public DbSet<LicenseHistory> LicenseHistories { get; set; }
+
         // ===== HARDWARE =====
         public DbSet<Hardware> Hardware { get; set; }
 
@@ -41,13 +44,13 @@ namespace ERP_BIEN.Data
 
         public DbSet<Ascendant> Ascendants { get; set; }
         public DbSet<Child> Childs { get; set; }
+
         // ===== AUDITORÍA =====
-        public DbSet<AuditLog> AuditLogs { get; set; }   // ⭐ AÑADIDO
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
 
             // =========================
             // USER
@@ -91,19 +94,18 @@ namespace ERP_BIEN.Data
                       .HasForeignKey<User>(u => u.CompanyInfoId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // N:1 User -> Team (membership)
+                // N:1 User -> Team
                 entity.HasOne(u => u.Team)
                       .WithMany(t => t.Members)
                       .HasForeignKey(u => u.TeamId)
                       .OnDelete(DeleteBehavior.SetNull);
 
-                // 1:N User -> ManagedTeams (PM / manager)
+                // 1:N User -> ManagedTeams
                 entity.HasMany(u => u.ManagedTeams)
                       .WithOne(t => t.ProjectManager)
                       .HasForeignKey(t => t.ProjectManagerId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
-
 
             // =========================
             // TEAM
@@ -117,7 +119,9 @@ namespace ERP_BIEN.Data
                       .HasMaxLength(150);
             });
 
-
+            // =========================
+            // ROLE PERMISSION
+            // =========================
             modelBuilder.Entity<RolePermission>(entity =>
             {
                 entity.HasKey(rp => new { rp.RoleId, rp.PermissionId });
@@ -131,28 +135,23 @@ namespace ERP_BIEN.Data
                       .HasForeignKey(rp => rp.PermissionId);
             });
 
-
-
+            // =========================
+            // USER ROLE
+            // =========================
             modelBuilder.Entity<UserRole>(entity =>
             {
-                // ✅ Clave primaria compuesta
                 entity.HasKey(ur => new { ur.UserId, ur.RoleId });
 
-                // Relación con User
                 entity.HasOne(ur => ur.User)
                       .WithMany(u => u.UserRoles)
                       .HasForeignKey(ur => ur.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // Relación con Role
                 entity.HasOne(ur => ur.Role)
                       .WithMany(r => r.UserRoles)
                       .HasForeignKey(ur => ur.RoleId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-
-
-
 
             base.OnModelCreating(modelBuilder);
         }

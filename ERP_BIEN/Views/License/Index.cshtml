@@ -1,10 +1,52 @@
-﻿@model ERP_BIEN.ViewModels.LicenseIndexMvcViewModel
+﻿@using System.Text.Json
+@model ERP_BIEN.ViewModels.LicenseIndexMvcViewModel
 
 @{
     ViewData["Title"] = "Licenses";
+
+    void RenderQpHidden()
+    {
+        <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
+        <input type="hidden" name="PageSize" value="@Model.PageSize" />
+        <input type="hidden" name="Search" value="@Model.Search" />
+        <input type="hidden" name="SearchProveedor" value="@Model.SearchProveedor" />
+        <input type="hidden" name="SearchProducto" value="@Model.SearchProducto" />
+        <input type="hidden" name="SearchAsignada" value="@Model.SearchAsignada" />
+    }
 }
 
 <h2 class="mb-3">Licenses</h2>
+<div class="row mb-3">
+
+    <div class="col-md-3">
+        <div class="card p-2 text-center">
+            <h6>Total</h6>
+            <h4>@Model.TotalLicenses</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-2 text-center">
+            <h6>Asignadas</h6>
+            <h4 class="text-success">@Model.AssignedLicenses</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-2 text-center">
+            <h6>Libres</h6>
+            <h4 class="text-secondary">@Model.FreeLicenses</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-2 text-center">
+            <h6>Uso</h6>
+            <h4>@Model.UsagePercentage %</h4>
+        </div>
+    </div>
+
+</div>
 
 <!-- FILTROS -->
 <form method="get" asp-action="Index" asp-controller="License" class="card card-body mb-3">
@@ -31,73 +73,19 @@
         <div class="col-auto">
             <label class="form-label">Asignada</label>
             <select name="SearchAsignada" class="form-select">
-                @if (string.IsNullOrWhiteSpace(Model.SearchAsignada))
-                {
-                    <option value="" selected>Todas</option>
-                }
-                else
-                {
-                    <option value="">Todas</option>
-                }
-
-                @if (Model.SearchAsignada == "true")
-                {
-                    <option value="true" selected>Sí</option>
-                }
-                else
-                {
-                    <option value="true">Sí</option>
-                }
-
-                @if (Model.SearchAsignada == "false")
-                {
-                    <option value="false" selected>No</option>
-                }
-                else
-                {
-                    <option value="false">No</option>
-                }
+                <option value="" selected="@(string.IsNullOrWhiteSpace(Model.SearchAsignada))">Todas</option>
+                <option value="true" selected="@(Model.SearchAsignada == "true")">Sí</option>
+                <option value="false" selected="@(Model.SearchAsignada == "false")">No</option>
             </select>
         </div>
 
         <div class="col-auto">
             <label class="form-label">Page size</label>
             <select name="PageSize" class="form-select">
-                @if (Model.PageSize == 5)
-                {
-                    <option value="5" selected>5</option>
-                }
-                else
-                {
-                    <option value="5">5</option>
-                }
-
-                @if (Model.PageSize == 10)
-                {
-                    <option value="10" selected>10</option>
-                }
-                else
-                {
-                    <option value="10">10</option>
-                }
-
-                @if (Model.PageSize == 25)
-                {
-                    <option value="25" selected>25</option>
-                }
-                else
-                {
-                    <option value="25">25</option>
-                }
-
-                @if (Model.PageSize == 50)
-                {
-                    <option value="50" selected>50</option>
-                }
-                else
-                {
-                    <option value="50">50</option>
-                }
+                <option value="5" selected="@(Model.PageSize == 5)">5</option>
+                <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50</option>
             </select>
         </div>
 
@@ -115,7 +103,8 @@
 
         <div class="col-auto ms-auto">
             <button type="button" class="btn btn-success"
-                    data-bs-toggle="modal" data-bs-target="#createEditModal">
+                    data-bs-toggle="modal" data-bs-target="#createEditModal"
+                    id="btnOpenCreate">
                 Crear licencia
             </button>
         </div>
@@ -128,43 +117,83 @@
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th>Codigo</th>
+                <th>Código</th>
                 <th>Producto</th>
                 <th>Proveedor</th>
                 <th>Precio</th>
                 <th>Caducidad</th>
                 <th>Asignada</th>
                 <th>Disponible</th>
+                <th>Usuario</th>
                 <th class="text-end">Acciones</th>
             </tr>
         </thead>
+
         <tbody>
-            @if (!Model.Licenses.Any())
+            @if (Model.Licenses == null || !Model.Licenses.Any())
             {
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No hay registros</td>
+                    <td colspan="9" class="text-center text-muted">No hay registros</td>
                 </tr>
             }
             else
             {
                 foreach (var item in Model.Licenses)
                 {
-                    <tr>
+                    <tr class="clickable-row" data-id="@item.Id" style="cursor:pointer">
                         <td>@item.Code</td>
                         <td>@item.Producto</td>
                         <td>@item.Proveedor</td>
                         <td>@item.Price</td>
                         <td>@(item.Caducidad?.ToString("yyyy-MM-dd") ?? "-")</td>
-                        <td>@(item.Asignada ? "Sí" : "No")</td>
-                        <td>@(item.Disponible ? "Sí" : "No")</td>
-                        <td class="text-end">
-                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-details" data-id="@item.Id">
-                                Detalles
-                            </button>
-                            <button type="button" class="btn btn-sm btn-warning me-1 btn-edit" data-id="@item.Id">
+
+                        <td>@(item.UserId != null ? "Sí" : "No")</td>
+                        <td>@(item.UserId == null ? "Sí" : "No")</td>
+
+                        <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
+
+                        <td class="text-end" style="min-width: 430px;">
+                            <!-- EDITAR -->
+                            <button type="button"
+                                    class="btn btn-sm btn-warning me-1 btn-edit"
+                                    data-id="@item.Id">
                                 Editar
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger btn-delete"
+
+                            <!-- HISTÓRICO -->
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-dark me-1 btn-history"
+                                    data-id="@item.Id"
+                                    data-code="@item.Code">
+                                Histórico
+                            </button>
+
+                            <!-- ASIGNAR / QUITAR -->
+                            @if (item.UserId == null)
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-success me-1 btn-open-assign"
+                                        data-id="@item.Id">
+                                    Asignar
+                                </button>
+                            }
+                            else
+                            {
+                                <form class="d-inline" method="post" asp-action="Unassign" asp-controller="License">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    @{
+                                        RenderQpHidden();
+                                    }
+                                    <button type="submit" class="btn btn-sm btn-secondary me-1">
+                                        Quitar
+                                    </button>
+                                </form>
+                            }
+
+                            <!-- ELIMINAR -->
+                            <button type="button"
+                                    class="btn btn-sm btn-danger btn-delete"
                                     data-id="@item.Id"
                                     data-bs-toggle="modal"
                                     data-bs-target="#deleteModal">
@@ -252,12 +281,38 @@
                 <h5 class="modal-title">Detalles de la licencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body" id="detailsBody">
                 <div class="text-center text-muted">Cargando...</div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: HISTÓRICO -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyTitle">Histórico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="historyBody">
+                    <div class="text-center text-muted">Cargando...</div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -266,52 +321,59 @@
 <div class="modal fade" id="createEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+
             <form id="createEditForm" method="post" asp-action="Create" asp-controller="License">
                 @Html.AntiForgeryToken()
+                @{
+                    RenderQpHidden();
+                }
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="createEditTitle">Crear licencia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
                     <input type="hidden" id="LicenseId" name="Id" value="0" />
+
                     <div class="mb-2">
                         <label class="form-label">Código</label>
                         <input class="form-control" id="Code" name="Code" />
                     </div>
+
                     <div class="mb-2">
                         <label class="form-label">Producto</label>
                         <input class="form-control" id="Producto" name="Producto" />
                     </div>
+
                     <div class="mb-2">
                         <label class="form-label">Proveedor</label>
                         <input class="form-control" id="Proveedor" name="Proveedor" />
                     </div>
+
                     <div class="mb-2">
                         <label class="form-label">Precio</label>
                         <input class="form-control" id="Price" name="Price" />
                     </div>
+
                     <div class="mb-2">
                         <label class="form-label">Caducidad</label>
                         <input type="date" class="form-control" id="Caducidad" name="Caducidad" />
                     </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" id="Asignada" name="Asignada" />
-                        <label class="form-check-label" for="Asignada">Asignada</label>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" id="Disponible" name="Disponible" checked />
-                        <label class="form-check-label" for="Disponible">Disponible</label>
-                    </div>
+
                     <div class="mb-2">
-                        <label class="form-label">Usuario asignado (Id)</label>
-                        <input class="form-control" id="UserId" name="UserId" />
+                        <label class="form-label">Usuario asignado (Id) (opcional)</label>
+                        <input class="form-control" id="UserId" name="UserId" type="number" min="1" />
+                        <small class="text-muted">Si pones UserId, se asigna y se marca no disponible automáticamente.</small>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="createEditSubmit">Guardar</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
@@ -320,21 +382,265 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Eliminar licencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
                 ¿Seguro que deseas eliminar esta licencia?
             </div>
+
             <div class="modal-footer">
-                <form id="deleteForm" method="post">
+                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="License">
                     @Html.AntiForgeryToken()
+                    @{
+                        RenderQpHidden();
+                    }
+
                     <input type="hidden" name="id" id="deleteId" />
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
+
+<!-- ✅ MODAL: ASIGNAR (BUSCADOR) -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form id="assignForm" method="post" asp-action="Assign" asp-controller="License">
+                @Html.AntiForgeryToken()
+                @{
+                    RenderQpHidden();
+                }
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Asignar licencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="assignLicenseId" />
+                    <input type="hidden" name="userId" id="assignUserId" />
+
+                    <label class="form-label">Buscar usuario</label>
+                    <input type="text" class="form-control" id="assignUserSearch"
+                           placeholder="Escribe nombre o apellido..." autocomplete="off" />
+
+                    <div class="list-group mt-2" id="assignUserResults" style="max-height:260px; overflow:auto;">
+                    </div>
+
+                    <div class="text-muted small mt-2">
+                        Selecciona un usuario de la lista para habilitar “Asignar”.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="assignSubmit" disabled>Asignar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const users = @Html.Raw(JsonSerializer.Serialize(
+                            (Model.Users ?? new List<ERP_BIEN.Models.User>())
+                                    .Select(u => new { id = u.Id, name = ((u.Name ?? "") + " " + (u.LastName ?? "")).Trim() })
+                                    .OrderBy(x => x.name)
+                                    .ToList()
+                    ));
+
+            // CLICK FILA -> detalles
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", function (e) {
+                    if (e.target.closest("button") || e.target.closest("form") || e.target.closest("input")) return;
+                    loadDetails(row.dataset.id);
+                });
+            });
+
+            // Editar
+            document.querySelectorAll(".btn-edit").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    fetch(`/License/DetailsJson?id=${id}`)
+                        .then(r => r.json())
+                        .then(d => {
+                            if (!d) return;
+                            document.getElementById("LicenseId").value = d.id;
+                            document.getElementById("Code").value = d.code ?? "";
+                            document.getElementById("Producto").value = d.producto ?? "";
+                            document.getElementById("Proveedor").value = d.proveedor ?? "";
+                            document.getElementById("Price").value = d.price ?? "";
+                            document.getElementById("Caducidad").value = d.caducidad ?? "";
+                            document.getElementById("UserId").value = d.userId ?? "";
+
+                            document.getElementById("createEditForm").action = "/License/Edit";
+                            document.getElementById("createEditTitle").innerText = "Editar licencia";
+                            new bootstrap.Modal(document.getElementById("createEditModal")).show();
+                        });
+                });
+            });
+
+            // Eliminar
+            document.querySelectorAll(".btn-delete").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    document.getElementById("deleteId").value = this.dataset.id;
+                });
+            });
+
+            // Histórico
+            const historyModal = new bootstrap.Modal(document.getElementById("historyModal"));
+            document.querySelectorAll(".btn-history").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+
+                    const licId = this.dataset.id;
+                    const code = this.dataset.code;
+
+                    document.getElementById("historyTitle").innerText = `Histórico - ${code}`;
+                    const body = document.getElementById("historyBody");
+                    body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+
+                    fetch(`/License/HistoryJson?licenseId=${licId}`)
+                        .then(r => r.json())
+                        .then(rows => {
+                            if (!rows || rows.length === 0) {
+                                body.innerHTML = '<div class="text-muted">No hay histórico para esta licencia.</div>';
+                                historyModal.show();
+                                return;
+                            }
+
+                            let html = `
+                                <div class="table-responsive">
+                                  <table class="table table-sm table-striped align-middle">
+                                    <thead>
+                                      <tr>
+                                         <th>Usuario</th>
+                                         <th>Inicio</th>
+                                         <th>Fin</th>
+                                         <th>Duración</th>
+
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+
+                            rows.forEach(r => {
+                                        html += `
+                                        <tr>
+                                            <td>${r.userName}</td>
+                                            <td>${r.startDate}</td>
+                                            <td>${r.endDate ?? "ACTUAL"}</td>
+                                            <td>${r.duration}</td>
+                                        </tr>
+                                    `;
+                                    ``
+                            });
+
+                            html += `</tbody></table></div>`;
+                            body.innerHTML = html;
+                            historyModal.show();
+                        });
+                });
+            });
+
+            // Asignar (buscador)
+            const assignModal = new bootstrap.Modal(document.getElementById("assignModal"));
+            const assignLicenseId = document.getElementById("assignLicenseId");
+            const assignUserId = document.getElementById("assignUserId");
+            const assignSearch = document.getElementById("assignUserSearch");
+            const assignResults = document.getElementById("assignUserResults");
+            const assignSubmit = document.getElementById("assignSubmit");
+
+            document.querySelectorAll(".btn-open-assign").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    assignLicenseId.value = this.dataset.id;
+
+                    assignUserId.value = "";
+                    assignSubmit.disabled = true;
+                    assignSearch.value = "";
+                    assignResults.innerHTML = "";
+
+                    renderUserResults(users.slice(0, 15));
+                    assignModal.show();
+                    assignSearch.focus();
+                });
+            });
+
+            assignSearch.addEventListener("input", function () {
+                const q = (this.value || "").trim().toLowerCase();
+                if (!q) { renderUserResults(users.slice(0, 15)); return; }
+                renderUserResults(users.filter(u => (u.name||"").toLowerCase().includes(q)).slice(0, 20));
+            });
+
+            function renderUserResults(list) {
+                assignResults.innerHTML = "";
+                if (!list || list.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "list-group-item text-muted";
+                    empty.textContent = "No hay resultados";
+                    assignResults.appendChild(empty);
+                    return;
+                }
+                list.forEach(u => {
+                    const b = document.createElement("button");
+                    b.type = "button";
+                    b.className = "list-group-item list-group-item-action";
+                    b.textContent = u.name;
+                    b.addEventListener("click", () => {
+                        assignUserId.value = u.id;
+                        assignSubmit.disabled = false;
+                        [...assignResults.children].forEach(x => x.classList.remove("active"));
+                        b.classList.add("active");
+                    });
+                    assignResults.appendChild(b);
+                });
+            }
+
+            document.getElementById("assignForm").addEventListener("submit", function (e) {
+                if (!assignUserId.value) {
+                    e.preventDefault();
+                    alert("Selecciona un usuario de la lista.");
+                }
+            });
+
+            function loadDetails(id) {
+                const body = document.getElementById("detailsBody");
+                body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+                fetch(`/License/DetailsJson?id=${id}`)
+                    .then(r => r.json())
+                    .then(d => {
+                        if (!d) { body.innerHTML = '<div class="text-danger">No encontrado</div>'; return; }
+                        body.innerHTML = `
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Código</dt><dd class="col-sm-8">${d.code ?? ""}</dd>
+                                <dt class="col-sm-4">Producto</dt><dd class="col-sm-8">${d.producto ?? ""}</dd>
+                                <dt class="col-sm-4">Proveedor</dt><dd class="col-sm-8">${d.proveedor ?? ""}</dd>
+                                <dt class="col-sm-4">Precio</dt><dd class="col-sm-8">${d.price ?? ""}</dd>
+                                <dt class="col-sm-4">Caducidad</dt><dd class="col-sm-8">${d.caducidad ?? "-"}</dd>
+                                <dt class="col-sm-4">Asignada</dt><dd class="col-sm-8">${d.asignada ? "Sí" : "No"}</dd>
+                                <dt class="col-sm-4">Disponible</dt><dd class="col-sm-8">${d.disponible ? "Sí" : "No"}</dd>
+                                <dt class="col-sm-4">Usuario</dt><dd class="col-sm-8">${d.userName ?? "-"}</dd>
+                            </dl>
+                        `;
+                        new bootstrap.Modal(document.getElementById("detailsModal")).show();
+                    });
+            }
+        });
+    </script>
+}

@@ -41,7 +41,7 @@ builder.Services.AddScoped<DeviceService>();
 builder.Services.AddScoped<ILicenseService, LicenseService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
-builder.Services.AddScoped<ERP_BIEN.Services.TeamService>();
+builder.Services.AddScoped<TeamService>();
 
 // =====================================================
 // 5. CLAIMS TRANSFORMATION (RBAC)
@@ -53,15 +53,15 @@ builder.Services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
 // =====================================================
 builder.Services.AddAuthorization(options =>
 {
-    // -------------------------------------------------
-    // ✅ DASHBOARD (solo autenticación)
-    // -------------------------------------------------
+    // =========================
+    // DASHBOARD (cualquiera autenticado)
+    // =========================
     options.AddPolicy("DASHBOARD", p =>
         p.RequireAuthenticatedUser());
 
-    // -------------------------------------------------
-    // ✅ MODULES (UI / MENÚ / NAVEGACIÓN)
-    // -------------------------------------------------
+    // =========================
+    // MODULES (acceso a módulos)
+    // =========================
     options.AddPolicy("USERS", p => p.RequireClaim("module", "USERS"));
     options.AddPolicy("ROLES", p => p.RequireClaim("module", "ROLES"));
     options.AddPolicy("EMPLOYEES", p => p.RequireClaim("module", "EMPLOYEES"));
@@ -69,9 +69,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("LICENSES", p => p.RequireClaim("module", "LICENSES"));
     options.AddPolicy("TEAM", p => p.RequireClaim("module", "TEAM"));
 
-    // -------------------------------------------------
-    // ✅ PERMISSIONS (SEGURIDAD REAL)
-    // -------------------------------------------------
+    // =========================
+    // PERMISSIONS (seguridad real)
+    // =========================
     options.AddPolicy("USR_VIEW", p => p.RequireClaim("permission", "USR_VIEW"));
     options.AddPolicy("USR_CREATE", p => p.RequireClaim("permission", "USR_CREATE"));
     options.AddPolicy("USR_EDIT", p => p.RequireClaim("permission", "USR_EDIT"));
@@ -87,9 +87,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("LIC_EDIT", p => p.RequireClaim("permission", "LIC_EDIT"));
     options.AddPolicy("LIC_DELETE", p => p.RequireClaim("permission", "LIC_DELETE"));
 
-    // -------------------------------------------------
-    // ✅ WRITE (PERMISO GLOBAL DE ESCRITURA)
-    // -------------------------------------------------
+    // =========================
+    // PERMISO GLOBAL DE ESCRITURA
+    // =========================
     options.AddPolicy("WRITE", p =>
         p.RequireClaim("permission", "WRITE"));
 });

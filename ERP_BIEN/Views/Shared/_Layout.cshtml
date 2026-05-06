@@ -167,7 +167,10 @@
                     <span class="user-name">@User.Identity?.Name</span>
                 </div>
 
-                <a class="logout-btn" href="/Logout">Cerrar sesión</a>
+                <a class="logout-btn" asp-controller="Auth" asp-action="Logout">
+                    Cerrar sesión
+                </a>
+
             </header>
 
             <!-- PAGE CONTENT -->

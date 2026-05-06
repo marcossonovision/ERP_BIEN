@@ -1,12 +1,17 @@
-﻿namespace WebCoreMVC.Services
-{
-    using ERP_BIEN.Data;
-    using ERP_BIEN.Models;
-    using ERP_BIEN.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.EntityFrameworkCore;
-    using System.Security.Claims;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using ERP_BIEN.Data;
+using ERP_BIEN.Models;
+using ERP_BIEN.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
+namespace WebCoreMVC.Services
+{
     public class CustomClaimsTransformation : IClaimsTransformation
     {
         private readonly AppDbContext _db;
@@ -25,6 +30,7 @@
             if (principal?.Identity is not ClaimsIdentity identity || !identity.IsAuthenticated)
                 return principal;
 
+            // Evita duplicar claims en cada request
             if (identity.HasClaim(c => c.Type == TransformedMarker))
                 return principal;
 
@@ -44,9 +50,11 @@
             {
                 var s = input.Trim();
 
+                // DOMINIO\usuario -> usuario
                 if (s.Contains("\\"))
                     s = s.Split('\\')[1].Trim();
 
+                // usuario@dominio -> usuario
                 if (s.Contains("@"))
                     s = s.Split('@')[0].Trim();
 
@@ -55,6 +63,7 @@
 
             var normalized = Normalize(rawUser);
 
+            // Probamos contra ambas variantes (con dominio y sin dominio)
             var keys = new[] { rawUser.Trim(), normalized }
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -81,7 +90,7 @@
             }
 
             // =========================
-            // ROLES
+            // ROLES -> ClaimTypes.Role
             // =========================
             var roles = user.UserRoles?
                 .Where(ur => ur.Role != null)
@@ -98,28 +107,26 @@
             }
 
             // =========================
-            // PERMISSIONS → permission
+            // PERMISSIONS -> "permission"
             // =========================
-            foreach (var ur in user.UserRoles ?? Enumerable.Empty<UserRole>())
-            {
-                var role = ur.Role;
-                if (role == null) continue;
+            var permissions = user.UserRoles?
+                .Where(ur => ur.Role != null)
+                .SelectMany(ur => ur.Role.RolePermissions ?? Enumerable.Empty<RolePermission>())
+                .Where(rp => rp.Permission != null && !string.IsNullOrWhiteSpace(rp.Permission.Code))
+                .Select(rp => rp.Permission.Code)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList()
+                ?? new List<string>();
 
-                foreach (var rp in role.RolePermissions ?? Enumerable.Empty<RolePermission>())
-                {
-                    if (rp.Permission != null &&
-                        !string.IsNullOrWhiteSpace(rp.Permission.Code))
-                    {
-                        if (!identity.HasClaim("permission", rp.Permission.Code))
-                        {
-                            identity.AddClaim(new Claim("permission", rp.Permission.Code));
-                        }
-                    }
-                }
+            foreach (var p in permissions)
+            {
+                if (!identity.HasClaim("permission", p))
+                    identity.AddClaim(new Claim("permission", p));
             }
 
             // =========================
-            // MODULES → module
+            // MODULES -> "module"
+            // (según matriz RoleAccessMatrix)
             // =========================
             var modules = RoleAccessMatrix.GetModulesForRoles(roles);
             foreach (var module in modules)
@@ -128,6 +135,7 @@
                     identity.AddClaim(new Claim("module", module));
             }
 
+            // Marca transformado
             identity.AddClaim(new Claim(TransformedMarker, "1"));
             return principal;
         }

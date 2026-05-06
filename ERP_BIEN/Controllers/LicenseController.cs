@@ -1,29 +1,40 @@
-﻿using ERP_BIEN.Models;
+﻿using ERP_BIEN.Data;
+using ERP_BIEN.Models;
 using ERP_BIEN.Services;
 using ERP_BIEN.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ERP_BIEN.Controllers
 {
-    [Authorize(Policy = "LIC_VIEW")]
+    [Authorize(Policy = "LICENSES")]
     public class LicenseController : Controller
     {
         private readonly ILicenseService _svc;
-        public LicenseController(ILicenseService svc) => _svc = svc;
+        private readonly AppDbContext _db;
+
+        public LicenseController(ILicenseService svc, AppDbContext db)
+        {
+            _svc = svc;
+            _db = db;
+        }
 
         // ============================
-        // INDEX
+        // INDEX (LECTURA)
         // ============================
+        [Authorize(Policy = "LIC_VIEW")]
         public async Task<IActionResult> Index([FromQuery] LicenseQueryParameters qp)
         {
             qp.PageNumber = qp.PageNumber <= 0 ? 1 : qp.PageNumber;
             qp.PageSize = qp.PageSize <= 0 ? 10 : qp.PageSize;
 
             var (items, total) = await _svc.GetPagedAsync(qp);
+            
+
 
             var totalPages = qp.PageSize > 0
                 ? (int)Math.Ceiling(total / (double)qp.PageSize)
@@ -34,6 +45,28 @@ namespace ERP_BIEN.Controllers
                 qp.PageNumber = totalPages;
                 (items, total) = await _svc.GetPagedAsync(qp);
             }
+            var topUsers = items
+            .Where(l => l.User != null)
+            .GroupBy(l => l.User.Name + " " + l.User.LastName)
+            .Select(g => new
+            {
+                Name = g.Key,
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .Take(3)
+            .ToList();
+                        var allLicenses = await _db.Licenses
+                .Include(l => l.User)
+                .ToListAsync();
+
+            var totalLicenses = allLicenses.Count;
+            var assignedLicenses = allLicenses.Count(l => l.UserId != null);
+            var freeLicenses = allLicenses.Count(l => l.UserId == null);
+
+            var usage = totalLicenses > 0
+                ? (int)((assignedLicenses * 100.0) / totalLicenses)
+                : 0;
 
             var vm = new LicenseIndexMvcViewModel
             {
@@ -45,15 +78,29 @@ namespace ERP_BIEN.Controllers
                 Search = qp.Search,
                 SearchProveedor = qp.SearchProveedor,
                 SearchProducto = qp.SearchProducto,
-                SearchAsignada = qp.SearchAsignada
+                SearchAsignada = qp.SearchAsignada,
+
+                // ✅ AÑADE ESTO (AQUÍ ESTÁ LA CLAVE)
+                TotalLicenses = totalLicenses,
+                AssignedLicenses = assignedLicenses,
+                FreeLicenses = freeLicenses,
+                UsagePercentage = usage,
+
+                TopUsers = topUsers
+        .Select(x => $"{x.Name} ({x.Count})")
+        .ToList()
             };
+
+            // ✅ Para el buscador de asignación
+            vm.Users = (await _svc.GetAllUsersAsync()).ToList();
 
             return View(vm);
         }
 
         // ============================
-        // DETAILS (JSON)
+        // DETAILS (LECTURA – JSON)
         // ============================
+        [Authorize(Policy = "LIC_VIEW")]
         [HttpGet]
         public async Task<JsonResult> DetailsJson(int id)
         {
@@ -71,14 +118,39 @@ namespace ERP_BIEN.Controllers
                 asignada = lic.Asignada,
                 disponible = lic.Disponible,
                 userId = lic.UserId,
-                userName = lic.User != null
-                    ? $"{lic.User.Name} {lic.User.LastName}"
-                    : null
+                userName = lic.User != null ? $"{lic.User.Name} {lic.User.LastName}" : null
             });
         }
 
         // ============================
-        // CREATE
+        // HISTÓRICO (LECTURA – JSON)
+        // ============================
+        [Authorize(Policy = "LIC_VIEW")]
+        [HttpGet]
+        public async Task<JsonResult> HistoryJson(int licenseId)
+        {
+            var rows = await _db.LicenseHistories
+                .AsNoTracking()
+                .Where(h => h.LicenseId == licenseId)
+                .Include(h => h.User)
+                .OrderByDescending(h => h.StartDate)
+                .Select(h => new
+                {
+                    id = h.Id,
+                    userName = h.User != null ? (h.User.Name + " " + h.User.LastName) : ("User " + h.UserId),
+                    startDate = h.StartDate.ToString("yyyy-MM-dd HH:mm"),
+                    endDate = h.EndDate.HasValue ? h.EndDate.Value.ToString("yyyy-MM-dd HH:mm") : null,
+                    duration = h.EndDate.HasValue
+                        ? ((h.EndDate.Value - h.StartDate).TotalMinutes).ToString("0") + " min"
+                        : "ACTUAL"
+                })
+                .ToListAsync();
+
+            return Json(rows);
+        }
+
+        // ============================
+        // CREATE (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -88,6 +160,10 @@ namespace ERP_BIEN.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction(nameof(Index), qp);
 
+            // Evitar FK si viene userId al crear
+            if (vm.UserId.HasValue && !await _db.Users.AnyAsync(u => u.Id == vm.UserId.Value))
+                return RedirectToAction(nameof(Index), qp);
+
             var lic = new License
             {
                 Code = vm.Code?.Trim(),
@@ -95,17 +171,17 @@ namespace ERP_BIEN.Controllers
                 Proveedor = vm.Proveedor?.Trim(),
                 Price = vm.Price?.Trim(),
                 Caducidad = vm.Caducidad,
-                Asignada = vm.Asignada,
-                Disponible = vm.Disponible,
                 UserId = vm.UserId
             };
+
+            ApplyAssignmentState(lic);
 
             await _svc.CreateAsync(lic);
             return RedirectToAction(nameof(Index), qp);
         }
 
         // ============================
-        // EDIT
+        // EDIT (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -119,21 +195,104 @@ namespace ERP_BIEN.Controllers
             if (lic == null)
                 return RedirectToAction(nameof(Index), qp);
 
+            // Evitar FK si viene userId al editar
+            if (vm.UserId.HasValue && !await _db.Users.AnyAsync(u => u.Id == vm.UserId.Value))
+                return RedirectToAction(nameof(Index), qp);
+
             lic.Code = vm.Code?.Trim();
             lic.Producto = vm.Producto?.Trim();
             lic.Proveedor = vm.Proveedor?.Trim();
             lic.Price = vm.Price?.Trim();
             lic.Caducidad = vm.Caducidad;
-            lic.Asignada = vm.Asignada;
-            lic.Disponible = vm.Disponible;
             lic.UserId = vm.UserId;
+
+            ApplyAssignmentState(lic);
 
             await _svc.UpdateAsync(lic);
             return RedirectToAction(nameof(Index), qp);
         }
 
         // ============================
-        // DELETE
+        // ASSIGN (ASIGNAR) – RF-034 + RF-031
+        // ============================
+        [Authorize(Policy = "LIC_ASSIGN")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Assign(int id, int userId, LicenseQueryParameters qp)
+        {
+            var lic = await _svc.GetByIdAsync(id);
+            if (lic == null)
+                return RedirectToAction(nameof(Index), qp);
+
+            // No asignar si ya está asignada (obligas Quitar -> Asignar)
+            if (lic.UserId.HasValue)
+                return RedirectToAction(nameof(Index), qp);
+
+            // Evitar FK: userId debe existir
+            if (!await _db.Users.AnyAsync(u => u.Id == userId))
+                return RedirectToAction(nameof(Index), qp);
+
+            // Cerrar histórico abierto colgado (seguridad)
+            var open = await _db.LicenseHistories
+                .Where(h => h.LicenseId == id && h.EndDate == null)
+                .OrderByDescending(h => h.StartDate)
+                .FirstOrDefaultAsync();
+
+            if (open != null)
+                open.EndDate = DateTime.Now;
+
+            // Asignar
+            lic.UserId = userId;
+            ApplyAssignmentState(lic);
+
+            // Crear histórico
+            _db.LicenseHistories.Add(new LicenseHistory
+            {
+                LicenseId = lic.Id,
+                UserId = userId,
+                StartDate = DateTime.Now,
+                EndDate = null
+            });
+
+            await _svc.UpdateAsync(lic);
+            return RedirectToAction(nameof(Index), qp);
+        }
+
+        // ============================
+        // UNASSIGN (RETIRAR) – RF-035 + RF-031
+        // ============================
+        [Authorize(Policy = "LIC_ASSIGN")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unassign(int id, LicenseQueryParameters qp)
+        {
+            var lic = await _svc.GetByIdAsync(id);
+            if (lic == null)
+                return RedirectToAction(nameof(Index), qp);
+
+            // Si ya está libre, no hacer nada
+            if (!lic.UserId.HasValue)
+                return RedirectToAction(nameof(Index), qp);
+
+            // Cerrar histórico abierto
+            var open = await _db.LicenseHistories
+                .Where(h => h.LicenseId == id && h.EndDate == null)
+                .OrderByDescending(h => h.StartDate)
+                .FirstOrDefaultAsync();
+
+            if (open != null)
+                open.EndDate = DateTime.Now;
+
+            // Quitar
+            lic.UserId = null;
+            ApplyAssignmentState(lic);
+
+            await _svc.UpdateAsync(lic);
+            return RedirectToAction(nameof(Index), qp);
+        }
+
+        // ============================
+        // DELETE (ESCRITURA)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -142,6 +301,23 @@ namespace ERP_BIEN.Controllers
         {
             await _svc.DeleteAsync(id);
             return RedirectToAction(nameof(Index), qp);
+        }
+
+        // ============================
+        // HELPER: Estado consistente
+        // ============================
+        private static void ApplyAssignmentState(License lic)
+        {
+            if (lic.UserId.HasValue)
+            {
+                lic.Asignada = true;
+                lic.Disponible = false;
+            }
+            else
+            {
+                lic.Asignada = false;
+                lic.Disponible = true;
+            }
         }
     }
 }
