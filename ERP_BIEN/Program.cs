@@ -141,9 +141,9 @@ app.MapRazorPages();
 // =====================================================
 // 9. DATA SEEDER
 // =====================================================
-using (var scope = app.Services.CreateScope())
-{
-    DataSeeder.RellenarDatos(scope);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    DataSeeder.RellenarDatos(scope);
+//}
 
 app.Run();

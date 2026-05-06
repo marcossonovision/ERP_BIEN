@@ -56,7 +56,7 @@ namespace ERP_BIEN.Controllers
             .OrderByDescending(x => x.Count)
             .Take(3)
             .ToList();
-                        var allLicenses = await _db.Licenses
+             var allLicenses = await _db.Licenses
                 .Include(l => l.User)
                 .ToListAsync();
 
