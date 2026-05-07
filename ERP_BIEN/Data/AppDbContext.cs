@@ -29,6 +29,7 @@ namespace ERP_BIEN.Data
 
         // ===== DISPOSITIVOS (TPH) =====
         public DbSet<Device> Devices { get; set; }
+        public DbSet<DeviceHistory> DeviceHistories { get; set; }
         public DbSet<Computer> Computers { get; set; }
         public DbSet<Screen> Screens { get; set; }
         public DbSet<Phone> Phones { get; set; }

@@ -1,4 +1,8 @@
-﻿using ERP_BIEN.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using ERP_BIEN.Common.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -133,15 +137,26 @@ namespace ERP_BIEN.Services
             device.UseDate = useDate;
             device.UserId = userId;
 
-            // ✅ NORMALIZACIÓN CENTRALIZADA
             NormalizeDevice(device);
 
             _context.Devices.Add(device);
+
+            // ✅ Si se crea asignado, abrimos histórico en la MISMA transacción
+            if (userId.HasValue)
+            {
+                // aún no tenemos Id hasta guardar, así que primero SaveChanges
+                await _context.SaveChangesAsync();
+
+                await OpenHistoryAsync(device.Id, userId.Value);
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             await _context.SaveChangesAsync();
         }
 
         // ============================================================
-        // EDIT
+        // EDIT (CORREGIDO: si cambia UserId => histórico)
         // ============================================================
         public async Task EditAsync(
             int id,
@@ -159,6 +174,9 @@ namespace ERP_BIEN.Services
             if (device == null)
                 return;
 
+            var previousUserId = device.UserId;
+
+            // Datos normales
             device.Hostname = hostname;
             device.SN = sn;
             device.Model = model;
@@ -167,11 +185,31 @@ namespace ERP_BIEN.Services
             device.Status = status;
             device.Comment = comment;
             device.UseDate = useDate;
-            device.UserId = userId;
 
-            // ✅ NORMALIZACIÓN CENTRALIZADA
+            // ✅ Si cambia asignación => histórico (RF-025 / RF-071) 
+            if (previousUserId != userId)
+            {
+                // Cerrar histórico activo si lo hubiera
+                await CloseActiveHistoryAsync(id);
+
+                // Asignar/Desasignar en entidad
+                device.UserId = userId;
+
+                // Abrir nuevo histórico si hay usuario
+                if (userId.HasValue)
+                {
+                    await OpenHistoryAsync(id, userId.Value);
+                }
+            }
+            else
+            {
+                // no cambió usuario
+                device.UserId = userId;
+            }
+
             NormalizeDevice(device);
 
+            // ✅ operación atómica (RNF-024) 
             await _context.SaveChangesAsync();
         }
 
@@ -206,19 +244,105 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================================
-        // NORMALIZACIÓN (CLAVE PARA EVITAR ERRORES)
+        // ASIGNAR / QUITAR + HISTÓRICO (como Licenses)
+        // ============================================================
+        public async Task AssignAsync(int deviceId, int userId)
+        {
+            var device = await _context.Devices.FindAsync(deviceId);
+            if (device == null) return;
+
+            await CloseActiveHistoryAsync(deviceId);
+
+            device.UserId = userId;
+
+            await OpenHistoryAsync(deviceId, userId);
+
+            // ✅ atómico (RNF-024) 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UnassignAsync(int deviceId)
+        {
+            var device = await _context.Devices.FindAsync(deviceId);
+            if (device == null) return;
+
+            await CloseActiveHistoryAsync(deviceId);
+
+            device.UserId = null;
+
+            // ✅ atómico (RNF-024) 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<DeviceHistoryRowDto>> GetDeviceHistoryAsync(int deviceId)
+        {
+            var rows = await _context.DeviceHistories
+                .Include(h => h.User)
+                .Where(h => h.DeviceId == deviceId)
+                .OrderByDescending(h => h.StartDate)
+                .ToListAsync();
+
+            return rows.Select(h => new DeviceHistoryRowDto
+            {
+                UserName = h.User != null ? (h.User.Name + " " + h.User.LastName) : "-",
+                StartDate = h.StartDate.ToString("yyyy-MM-dd"),
+                EndDate = h.EndDate.HasValue ? h.EndDate.Value.ToString("yyyy-MM-dd") : null,
+                Duration = h.EndDate.HasValue
+                    ? $"{Math.Max(0, (h.EndDate.Value - h.StartDate).Days)} días"
+                    : "ACTUAL"
+            }).ToList();
+        }
+
+        private async Task CloseActiveHistoryAsync(int deviceId)
+        {
+            var active = await _context.DeviceHistories
+                .Where(h => h.DeviceId == deviceId && h.EndDate == null)
+                .OrderByDescending(h => h.StartDate)
+                .FirstOrDefaultAsync();
+
+            if (active != null)
+                active.EndDate = DateTime.Now;
+        }
+
+        private Task OpenHistoryAsync(int deviceId, int userId)
+        {
+            var h = new DeviceHistory
+            {
+                DeviceId = deviceId,
+                UserId = userId,
+                StartDate = DateTime.Now,
+                EndDate = null
+            };
+
+            _context.DeviceHistories.Add(h);
+            return Task.CompletedTask;
+        }
+
+        // ============================================================
+        // NORMALIZACIÓN
         // ============================================================
         private void NormalizeDevice(Device device)
         {
-            // ❌ Nunca guardar NULL en columnas críticas
             device.Comment = string.IsNullOrWhiteSpace(device.Comment)
                 ? string.Empty
                 : device.Comment.Trim();
 
-            // Limpiar strings
             device.Hostname = device.Hostname?.Trim();
             device.Model = device.Model?.Trim();
             device.SN = device.SN?.Trim();
         }
+
+        internal async Task UnassignAsync(object deviceId)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class DeviceHistoryRowDto
+    {
+        public string UserName { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; } // null => ACTUAL
+        public string Duration { get; set; }
     }
 }

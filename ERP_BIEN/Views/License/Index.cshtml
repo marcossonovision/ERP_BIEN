@@ -153,12 +153,7 @@
                         <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
 
                         <td class="text-end" style="min-width: 430px;">
-                            <!-- EDITAR -->
-                            <button type="button"
-                                    class="btn btn-sm btn-warning me-1 btn-edit"
-                                    data-id="@item.Id">
-                                Editar
-                            </button>
+                           
 
                             <!-- HISTÓRICO -->
                             <button type="button"
@@ -286,9 +281,22 @@
                 <div class="text-center text-muted">Cargando...</div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <<div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-warning"
+                        onclick="openEditLicenseFromDetails()">
+                    Editar
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+
             </div>
+
         </div>
     </div>
 </div>
@@ -456,41 +464,17 @@
         document.addEventListener("DOMContentLoaded", function () {
 
             const users = @Html.Raw(JsonSerializer.Serialize(
-                            (Model.Users ?? new List<ERP_BIEN.Models.User>())
-                                    .Select(u => new { id = u.Id, name = ((u.Name ?? "") + " " + (u.LastName ?? "")).Trim() })
-                                    .OrderBy(x => x.name)
-                                    .ToList()
-                    ));
+                                                    (Model.Users ?? new List<ERP_BIEN.Models.User>())
+                                                                    .Select(u => new { id = u.Id, name = ((u.Name ?? "") + " " + (u.LastName ?? "")).Trim() })
+                                                                    .OrderBy(x => x.name)
+                                                                    .ToList()
+                                    ));
 
             // CLICK FILA -> detalles
             document.querySelectorAll(".clickable-row").forEach(row => {
                 row.addEventListener("click", function (e) {
                     if (e.target.closest("button") || e.target.closest("form") || e.target.closest("input")) return;
                     loadDetails(row.dataset.id);
-                });
-            });
-
-            // Editar
-            document.querySelectorAll(".btn-edit").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    const id = this.dataset.id;
-                    fetch(`/License/DetailsJson?id=${id}`)
-                        .then(r => r.json())
-                        .then(d => {
-                            if (!d) return;
-                            document.getElementById("LicenseId").value = d.id;
-                            document.getElementById("Code").value = d.code ?? "";
-                            document.getElementById("Producto").value = d.producto ?? "";
-                            document.getElementById("Proveedor").value = d.proveedor ?? "";
-                            document.getElementById("Price").value = d.price ?? "";
-                            document.getElementById("Caducidad").value = d.caducidad ?? "";
-                            document.getElementById("UserId").value = d.userId ?? "";
-
-                            document.getElementById("createEditForm").action = "/License/Edit";
-                            document.getElementById("createEditTitle").innerText = "Editar licencia";
-                            new bootstrap.Modal(document.getElementById("createEditModal")).show();
-                        });
                 });
             });
 
@@ -518,37 +502,30 @@
                     fetch(`/License/HistoryJson?licenseId=${licId}`)
                         .then(r => r.json())
                         .then(rows => {
-                            if (!rows || rows.length === 0) {
-                                body.innerHTML = '<div class="text-muted">No hay histórico para esta licencia.</div>';
-                                historyModal.show();
-                                return;
-                            }
 
                             let html = `
                                 <div class="table-responsive">
-                                  <table class="table table-sm table-striped align-middle">
+                                  <table class="table table-sm table-striped">
                                     <thead>
                                       <tr>
                                          <th>Usuario</th>
                                          <th>Inicio</th>
                                          <th>Fin</th>
                                          <th>Duración</th>
-
                                       </tr>
                                     </thead>
                                     <tbody>
                             `;
 
                             rows.forEach(r => {
-                                        html += `
-                                        <tr>
-                                            <td>${r.userName}</td>
-                                            <td>${r.startDate}</td>
-                                            <td>${r.endDate ?? "ACTUAL"}</td>
-                                            <td>${r.duration}</td>
-                                        </tr>
-                                    `;
-                                   
+                                html += `
+                                    <tr>
+                                        <td>${r.userName}</td>
+                                        <td>${r.startDate}</td>
+                                        <td>${r.endDate ?? "ACTUAL"}</td>
+                                        <td>${r.duration}</td>
+                                    </tr>
+                                `;
                             });
 
                             html += `</tbody></table></div>`;
@@ -558,7 +535,7 @@
                 });
             });
 
-            // Asignar (buscador)
+            // ASIGNAR
             const assignModal = new bootstrap.Modal(document.getElementById("assignModal"));
             const assignLicenseId = document.getElementById("assignLicenseId");
             const assignUserId = document.getElementById("assignUserId");
@@ -582,65 +559,79 @@
                 });
             });
 
-            assignSearch.addEventListener("input", function () {
-                const q = (this.value || "").trim().toLowerCase();
-                if (!q) { renderUserResults(users.slice(0, 15)); return; }
-                renderUserResults(users.filter(u => (u.name||"").toLowerCase().includes(q)).slice(0, 20));
-            });
-
             function renderUserResults(list) {
                 assignResults.innerHTML = "";
-                if (!list || list.length === 0) {
-                    const empty = document.createElement("div");
-                    empty.className = "list-group-item text-muted";
-                    empty.textContent = "No hay resultados";
-                    assignResults.appendChild(empty);
-                    return;
-                }
                 list.forEach(u => {
                     const b = document.createElement("button");
                     b.type = "button";
                     b.className = "list-group-item list-group-item-action";
                     b.textContent = u.name;
-                    b.addEventListener("click", () => {
+                    b.onclick = () => {
                         assignUserId.value = u.id;
                         assignSubmit.disabled = false;
-                        [...assignResults.children].forEach(x => x.classList.remove("active"));
-                        b.classList.add("active");
-                    });
+                    };
                     assignResults.appendChild(b);
                 });
             }
 
-            document.getElementById("assignForm").addEventListener("submit", function (e) {
-                if (!assignUserId.value) {
-                    e.preventDefault();
-                    alert("Selecciona un usuario de la lista.");
-                }
-            });
-
+            // ✅ DETAILS
             function loadDetails(id) {
+                window.currentLicenseId = id;
+
                 const body = document.getElementById("detailsBody");
                 body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+
                 fetch(`/License/DetailsJson?id=${id}`)
                     .then(r => r.json())
                     .then(d => {
-                        if (!d) { body.innerHTML = '<div class="text-danger">No encontrado</div>'; return; }
                         body.innerHTML = `
-                            <dl class="row mb-0">
-                                <dt class="col-sm-4">Código</dt><dd class="col-sm-8">${d.code ?? ""}</dd>
-                                <dt class="col-sm-4">Producto</dt><dd class="col-sm-8">${d.producto ?? ""}</dd>
-                                <dt class="col-sm-4">Proveedor</dt><dd class="col-sm-8">${d.proveedor ?? ""}</dd>
-                                <dt class="col-sm-4">Precio</dt><dd class="col-sm-8">${d.price ?? ""}</dd>
-                                <dt class="col-sm-4">Caducidad</dt><dd class="col-sm-8">${d.caducidad ?? "-"}</dd>
-                                <dt class="col-sm-4">Asignada</dt><dd class="col-sm-8">${d.asignada ? "Sí" : "No"}</dd>
-                                <dt class="col-sm-4">Disponible</dt><dd class="col-sm-8">${d.disponible ? "Sí" : "No"}</dd>
-                                <dt class="col-sm-4">Usuario</dt><dd class="col-sm-8">${d.userName ?? "-"}</dd>
-                            </dl>
+                            <p><strong>Código:</strong> ${d.code ?? ""}</p>
+                            <p><strong>Producto:</strong> ${d.producto ?? ""}</p>
+                            <p><strong>Usuario:</strong> ${d.userName ?? "-"}</p>
                         `;
                         new bootstrap.Modal(document.getElementById("detailsModal")).show();
                     });
             }
+
         });
+
+        // ✅ 👉 ESTA ES LA FUNCIÓN QUE TE FALTABA
+        function openEditLicenseFromDetails() {
+
+            const id = window.currentLicenseId;
+
+            if (!id) return;
+
+            fetch('/License/DetailsJson?id=' + id)
+                .then(r => r.json())
+                .then(d => {
+
+                    document.getElementById("LicenseId").value = d.id;
+                    document.getElementById("Code").value = d.code ?? "";
+                    document.getElementById("Producto").value = d.producto ?? "";
+                    document.getElementById("Proveedor").value = d.proveedor ?? "";
+                    document.getElementById("Price").value = d.price ?? "";
+                    document.getElementById("Caducidad").value = d.caducidad ?? "";
+                    document.getElementById("UserId").value = d.userId ?? "";
+
+                    // modo editar
+                    document.getElementById("createEditForm").action = "/License/Edit";
+                    document.getElementById("createEditTitle").innerText = "Editar licencia";
+
+                    // cerrar details
+                    bootstrap.Modal.getInstance(document.getElementById("detailsModal")).hide();
+
+                    // abrir modal editar
+                    new bootstrap.Modal(document.getElementById("createEditModal")).show();
+                });
+        }
+
+        // limpiar filtros
+        window.erpClearFiltersAndSubmit = function (form) {
+            if (!form) return;
+            form.querySelectorAll("input[type='text']").forEach(i => i.value = "");
+            form.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+            form.submit();
+        };
     </script>
 }

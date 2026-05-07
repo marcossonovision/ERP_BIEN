@@ -1,9 +1,26 @@
-﻿@model ERP_BIEN.Models.ViewModels.DevicesViewModel
+﻿@using System.Text.Json
+@model ERP_BIEN.Models.ViewModels.DevicesViewModel
 @using ERP_BIEN.Common.Enums
 @using ERP_BIEN.Models
 
 @{
     ViewData["Title"] = "Gestión de Dispositivos";
+
+    // Helper: mantener filtros + paginación en POST (como en Licenses)
+    void RenderQpHidden()
+    {
+        <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+        <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
+        <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
+        <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
+        <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
+        <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
+        <input type="hidden" name="snFilter" value="@Model.SNFilter" />
+        <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+        <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+        <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+        <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+    }
 }
 
 <div class="page-header mb-3">
@@ -11,7 +28,6 @@
 </div>
 
 <style>
-    /* Acciones: mismo tamaño y alineación */
     .device-actions {
         display: flex;
         justify-content: flex-end;
@@ -20,13 +36,20 @@
         flex-wrap: nowrap;
     }
     .device-actions .btn { min-width: 92px; }
+    .device-row { cursor: pointer; }
 </style>
 
-<!-- FILTROS AVANZADOS -->
-<form method="get" class="card card-body mb-3">
-    <div class="row g-2">
+<!-- FILTROS AVANZADOS (PRO) -->
+<form method="get" class="card shadow-sm border-0 mb-4 p-4">
+
+    <div class="mb-3">
+        <h6 class="fw-bold text-muted">Filtros de búsqueda</h6>
+        <hr class="mt-1" />
+    </div>
+
+    <div class="row g-3">
         <div class="col-md-2">
-            <label class="form-label">Tipo</label>
+            <label class="form-label text-muted small">Tipo</label>
             <select class="form-select" name="DeviceTypeFilter">
                 <option value="">Todos</option>
                 <option value="Computer" selected="@(Model.DeviceTypeFilter == "Computer")">Computer</option>
@@ -37,78 +60,75 @@
         </div>
 
         <div class="col-md-2">
-            <label class="form-label">Estado</label>
+            <label class="form-label text-muted small">Estado</label>
             <select class="form-select" name="StatusFilter">
                 <option value="">Todos</option>
                 @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
                 {
-                    <option value="@s" selected="@(Model.StatusFilter == s)">
-                        @s
-                    </option>
+                    <option value="@s" selected="@(Model.StatusFilter == s)">@s</option>
                 }
             </select>
         </div>
 
         <div class="col-md-2">
-            <label class="form-label">Usuario</label>
+            <label class="form-label text-muted small">Usuario</label>
             <select class="form-select" name="UserIdFilter">
                 <option value="">Todos</option>
                 @foreach (var u in Model.Users)
                 {
-                    <option value="@u.Id" selected="@(Model.UserIdFilter == u.Id)">
-                        @u.Name @u.LastName
-                    </option>
+                    <option value="@u.Id" selected="@(Model.UserIdFilter == u.Id)">@u.Name @u.LastName</option>
                 }
             </select>
         </div>
 
         <div class="col-md-2">
-            <label class="form-label">Hostname</label>
+            <label class="form-label text-muted small">Hostname</label>
             <input class="form-control" name="HostnameFilter" value="@Model.HostnameFilter" />
         </div>
 
         <div class="col-md-2">
-            <label class="form-label">Modelo</label>
+            <label class="form-label text-muted small">Modelo</label>
             <input class="form-control" name="ModelFilter" value="@Model.ModelFilter" />
         </div>
 
         <div class="col-md-2">
-            <label class="form-label">SN</label>
+            <label class="form-label text-muted small">SN</label>
             <input class="form-control" name="SNFilter" value="@Model.SNFilter" />
         </div>
     </div>
 
-    <div class="row g-2 mt-2">
+    <div class="row g-3 mt-3">
         <div class="col-md-3">
-            <label class="form-label">Fabricación desde</label>
-            <input type="date" class="form-control" name="ManufacturingFrom"
-                   value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+            <label class="form-label text-muted small">Fabricación</label>
+            <div class="d-flex gap-2">
+                <input type="date" class="form-control" name="ManufacturingFrom"
+                       value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+                <input type="date" class="form-control" name="ManufacturingTo"
+                       value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+            </div>
         </div>
+
         <div class="col-md-3">
-            <label class="form-label">Fabricación hasta</label>
-            <input type="date" class="form-control" name="ManufacturingTo"
-                   value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Uso desde</label>
-            <input type="date" class="form-control" name="UseFrom"
-                   value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Uso hasta</label>
-            <input type="date" class="form-control" name="UseTo"
-                   value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+            <label class="form-label text-muted small">Uso</label>
+            <div class="d-flex gap-2">
+                <input type="date" class="form-control" name="UseFrom"
+                       value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+                <input type="date" class="form-control" name="UseTo"
+                       value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+            </div>
         </div>
     </div>
 
-    <div class="mt-3 d-flex justify-content-between">
-    <button type="submit" class="btn btn-primary">Filtrar</button>
-    <button type="button"
-            class="btn btn-outline-secondary"
-            onclick="window.location.href='@Url.Action("Index", "Devices")'">
-        Limpiar filtros
-    </button>
-</div>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div>
+            <button type="submit" class="btn btn-primary px-4">Filtrar</button>
+            <button type="button" class="btn btn-light border ms-2"
+                    onclick="window.location.href='@Url.Action("Index","Devices")'">
+                Limpiar
+            </button>
+        </div>
+        <div class="text-muted small">Ajusta los filtros para refinar resultados</div>
+    </div>
 </form>
 
 <div class="d-flex justify-content-end mb-2">
@@ -120,7 +140,6 @@
     </button>
 </div>
 
-
 <table class="table table-striped table-hover">
     <thead>
         <tr>
@@ -131,7 +150,7 @@
             <th>Estado</th>
             <th>Usuario</th>
             <th>Fecha uso</th>
-            <th style="width:160px;">Acciones</th>
+            <th style="width:260px;">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -146,206 +165,157 @@
                 _ => "Device"
             };
 
-<tr class="device-row" data-id="@d.Id">
-    <td>@tipo</td>
-    <td>@d.Hostname</td>
-    <td>@d.Model</td>
-    <td>@d.SN</td>
-    <td>@d.Status</td>
-    <td>@(d.User != null ? d.User.Name + " " + d.User.LastName : "")</td>
-    <td>@(d.UseDate?.ToString("dd/MM/yyyy") ?? "-")</td>
-    <td>
-        <div class="device-actions">
-            <button type="button"
-                    class="btn btn-sm btn-warning"
-                    data-bs-toggle="modal"
-                    data-bs-target="#editModal"
-                    data-id="@d.Id"
-                    data-hostname="@d.Hostname"
-                    data-model="@d.Model"
-                    data-sn="@d.SN"
-                    data-number="@d.NumberOfDevice"
-                    data-manufacturing="@(d.ManufacturingDate?.ToString("yyyy-MM-dd"))"
-                    data-status="@d.Status"
-                    data-comment="@d.Comment"
-                    data-use="@(d.UseDate?.ToString("yyyy-MM-dd"))"
-                    data-userid="@d.UserId"
-                    onclick="event.stopPropagation();">
-                Editar
-            </button>
+            <tr class="device-row" data-id="@d.Id">
+                <td>@tipo</td>
+                <td>@d.Hostname</td>
+                <td>@d.Model</td>
+                <td>@d.SN</td>
+                <td>@d.Status</td>
+                <td>@(d.User != null ? d.User.Name + " " + d.User.LastName : "-")</td>
+                <td>@(d.UseDate?.ToString("dd/MM/yyyy") ?? "-")</td>
 
-            <button type="button"
-                    class="btn btn-sm btn-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteModal"
-                    data-id="@d.Id"
-                    data-name="@d.Hostname"
-                    onclick="event.stopPropagation();">
-                Eliminar
-            </button>
-        </div>
-    </td>
-</tr>
+                <td>
+                    <div class="device-actions">
+                        @if (d.UserId == null)
+                        {
+                            <button type="button"
+                                    class="btn btn-sm btn-success"
+                                    onclick="event.stopPropagation(); openAssignModal(@d.Id);">
+                                Asignar
+                            </button>
+                        }
+                        else
+                        {
+                            <form class="d-inline" method="post" asp-action="Unassign" asp-controller="Devices"
+                                  onclick="event.stopPropagation();">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="deviceId" value="@d.Id" />
+                                @{ RenderQpHidden(); }
+                                <button type="submit" class="btn btn-sm btn-secondary">Quitar</button>
+                            </form>
+                        }
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-dark"
+                                onclick="event.stopPropagation(); loadHistory(@d.Id, '@d.Hostname');">
+                            Histórico
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-id="@d.Id"
+                                data-name="@d.Hostname"
+                                onclick="event.stopPropagation();">
+                            Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
+
 
 @if (!Model.Devices.Any())
 {
     <p class="text-muted mt-3">No se encontraron dispositivos.</p>
 }
 
-<!-- PAGINACIÓN -->
-@{
-    var current = Model.PageNumber;
-    var total = Model.TotalPages;
-    var dt = Model.DeviceTypeFilter;
-    var st = Model.StatusFilter;
-    var uid = Model.UserIdFilter;
-    var hn = Model.HostnameFilter;
-    var md = Model.ModelFilter;
-    var sn = Model.SNFilter;
-}
-
-<nav aria-label="Page navigation" class="mt-3">
-    <ul class="pagination justify-content-center">
-
-        <li class="page-item @(current == 1 ? "disabled" : "")" aria-disabled="@(current == 1)">
-            @if (current > 1)
-            {
-                <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = current - 1, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
-                    Anterior
-                </a>
-            }
-            else
-            {
-                <span class="page-link">Anterior</span>
-            }
-        </li>
-
-        @for (int i = 1; i <= total; i++)
-        {
-            var isActive = i == current;
-            <li class="page-item @(isActive ? "active" : "")" @(isActive ? "aria-current=\"page\"" : "")>
-                @if (isActive)
-                {
-                    <span class="page-link">@i</span>
-                }
-                else
-                {
-                    <a class="page-link"
-                           href="@Url.Action("Index", new { pageNumber = i, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
-                        @i
-                    </a>
-                }
-            </li>
-        }
-
-        <li class="page-item @(current >= total || total == 0 ? "disabled" : "")" aria-disabled="@(current >= total || total == 0)">
-            @if (current < total)
-            {
-                <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = current + 1, DeviceTypeFilter = dt, StatusFilter = st, UserIdFilter = uid, HostnameFilter = hn, ModelFilter = md, SNFilter = sn })">
-                    Siguiente
-                </a>
-            }
-            else
-            {
-                <span class="page-link">Siguiente</span>
-            }
-        </li>
-
-    </ul>
-</nav>
-
-
-<!-- CREATE MODAL -->
+<!-- CREATE MODAL (WIZARD 2 PASOS) -->
 <div class="modal fade" id="createModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="post" asp-action="Create">
+            <form method="post" asp-action="Create" asp-controller="Devices">
+                @Html.AntiForgeryToken()
+                @{ RenderQpHidden(); }
+
                 <div class="modal-header">
                     <h5 class="modal-title">Crear Dispositivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <label class="form-label">Tipo de dispositivo</label>
-                    <select class="form-select" name="DeviceType" required>
-                        <option value="">-- Seleccionar --</option>
-                        <option value="Computer">Computer</option>
-                        <option value="Phone">Phone</option>
-                        <option value="Screen">Screen</option>
-                        <option value="DockStation">DockStation</option>
-                    </select>
+                    <div id="step1">
+                        <h6 class="text-muted mb-3">Información básica</h6>
 
-                    <label class="form-label mt-2">Hostname</label>
-                    <input class="form-control" name="Hostname" required />
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" name="deviceType" required>
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Computer">Computer</option>
+                            <option value="Phone">Phone</option>
+                            <option value="Screen">Screen</option>
+                            <option value="DockStation">DockStation</option>
+                        </select>
 
-                    <label class="form-label mt-2">Modelo</label>
-                    <input class="form-control" name="Model" />
+                        <label class="form-label mt-2">Hostname</label>
+                        <input class="form-control" name="hostname" required />
 
-                    <label class="form-label mt-2">SN</label>
-                    <input class="form-control" name="SN" />
+                        <label class="form-label mt-2">Modelo</label>
+                        <input class="form-control" name="model" />
 
-                    <label class="form-label mt-2">Número de dispositivo</label>
-                    <input type="number" class="form-control" name="NumberOfDevice" value="1" />
+                        <label class="form-label mt-2">SN</label>
+                        <input class="form-control" name="sn" />
+                    </div>
 
-                    <label class="form-label mt-2">Fecha fabricación</label>
-                    <input type="date" class="form-control" name="ManufacturingDate" />
+                    <div id="step2" style="display:none;">
+                        <h6 class="text-muted mb-3">Configuración</h6>
 
-                    <label class="form-label mt-2">Estado</label>
-                    <select class="form-select" name="Status">
-                        @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
-                        {
-                            <option value="@s">@s</option>
-                        }
-                    </select>
+                        <label class="form-label">Número</label>
+                        <input type="number" class="form-control" name="numberOfDevice" value="1" />
 
-                    <label class="form-label mt-2">Comentario</label>
-                    <textarea class="form-control" name="Comment"></textarea>
+                        <label class="form-label mt-2">Fabricación</label>
+                        <input type="date" class="form-control" name="manufacturingDate" />
 
-                    <label class="form-label mt-2">Fecha uso</label>
-                    <input type="date" class="form-control" name="UseDate" />
+                        <label class="form-label mt-2">Estado</label>
+                        <select class="form-select" name="status">
+                            @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        </select>
 
-                    <label class="form-label mt-2">Usuario asignado</label>
-                    <select class="form-select" name="UserId">
-                        <option value="">-- Sin asignar --</option>
-                        @foreach (var u in Model.Users)
-                        {
-                            <option value="@u.Id">@u.Name @u.LastName</option>
-                        }
-                    </select>
+                        <label class="form-label mt-2">Comentario</label>
+                        <textarea class="form-control" name="comment"></textarea>
 
-                    <!-- mantener filtros/paginación -->
-                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
-                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
-                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
-                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
-                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
-                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
-                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
-                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+                        <label class="form-label mt-2">Usuario</label>
+                        <select class="form-select" name="userId">
+                            <option value="">-- Sin asignar --</option>
+                            @foreach (var u in Model.Users)
+                            {
+                                <option value="@u.Id">@u.Name @u.LastName</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()" id="btnPrev" style="display:none;">
+                        Atrás
+                    </button>
+
+                    <button type="button" class="btn btn-primary" onclick="nextStep()" id="btnNext">
+                        Siguiente
+                    </button>
+
+                    <button type="submit" class="btn btn-success" id="btnCreate" style="display:none;">
+                        Crear dispositivo
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- EDIT MODAL (tu modal de editar) -->
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="post" asp-action="Edit">
+            <form method="post" asp-action="Edit" asp-controller="Devices">
+                @Html.AntiForgeryToken()
+                @{ RenderQpHidden(); }
+
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Dispositivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -391,19 +361,6 @@
                             <option value="@u.Id">@u.Name @u.LastName</option>
                         }
                     </select>
-
-                    <!-- mantener filtros/paginación -->
-                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
-                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
-                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
-                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
-                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
-                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
-                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
-                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
                 </div>
 
                 <div class="modal-footer">
@@ -419,7 +376,10 @@
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="post" asp-action="Delete">
+            <form method="post" asp-action="Delete" asp-controller="Devices">
+                @Html.AntiForgeryToken()
+                @{ RenderQpHidden(); }
+
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar Dispositivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -428,19 +388,6 @@
                 <div class="modal-body">
                     <input type="hidden" id="delete-id" name="Id" />
                     <p>¿Seguro que deseas eliminar el dispositivo <strong id="delete-name"></strong>?</p>
-
-                    <!-- mantener filtros/paginación -->
-                    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
-                    <input type="hidden" name="deviceTypeFilter" value="@Model.DeviceTypeFilter" />
-                    <input type="hidden" name="statusFilter" value="@Model.StatusFilter" />
-                    <input type="hidden" name="userIdFilter" value="@Model.UserIdFilter" />
-                    <input type="hidden" name="hostnameFilter" value="@Model.HostnameFilter" />
-                    <input type="hidden" name="modelFilter" value="@Model.ModelFilter" />
-                    <input type="hidden" name="snFilter" value="@Model.SNFilter" />
-                    <input type="hidden" name="manufacturingFrom" value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="manufacturingTo" value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useFrom" value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
-                    <input type="hidden" name="useTo" value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
                 </div>
 
                 <div class="modal-footer">
@@ -452,61 +399,6 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // DETAILS modal (carga partial HTML)
-        const detailsModalEl = document.getElementById('detailsModal');
-        const detailsBodyEl = document.getElementById('detailsBody');
-        const detailsModal = detailsModalEl ? new bootstrap.Modal(detailsModalEl) : null;
-
-        document.querySelectorAll('.device-row').forEach(row => {
-    row.addEventListener('click', async () => {
-        const id = row.dataset.id;
-        if (!id || !detailsBodyEl || !detailsModal) return;
-
-        detailsBodyEl.innerHTML =
-            '<div class="text-center text-muted py-3">Cargando...</div>';
-
-        detailsModal.show();
-
-        try {
-            const res = await fetch(`/Devices/Details/${id}`);
-            if (!res.ok) throw new Error();
-            detailsBodyEl.innerHTML = await res.text();
-        } catch {
-            detailsBodyEl.innerHTML =
-                '<div class="text-danger text-center py-3">Error al cargar detalles</div>';
-        }
-    });
-});
-
-        
-
-        var editModal = document.getElementById('editModal');
-        editModal.addEventListener('show.bs.modal', function (event) {
-            var b = event.relatedTarget;
-
-            document.getElementById('edit-id').value = b.getAttribute('data-id');
-            document.getElementById('edit-hostname').value = b.getAttribute('data-hostname');
-            document.getElementById('edit-model').value = b.getAttribute('data-model');
-            document.getElementById('edit-sn').value = b.getAttribute('data-sn');
-            document.getElementById('edit-number').value = b.getAttribute('data-number');
-            document.getElementById('edit-manufacturing').value = b.getAttribute('data-manufacturing');
-            document.getElementById('edit-status').value = b.getAttribute('data-status');
-            document.getElementById('edit-comment').value = b.getAttribute('data-comment');
-            document.getElementById('edit-use').value = b.getAttribute('data-use');
-            document.getElementById('edit-userid').value = b.getAttribute('data-userid');
-        });
-
-        var deleteModal = document.getElementById('deleteModal');
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            var b = event.relatedTarget;
-            document.getElementById('delete-id').value = b.getAttribute('data-id');
-            document.getElementById('delete-name').innerText = b.getAttribute('data-name');
-        });
-    </script>
-}
-
 <!-- DETAILS MODAL -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -515,12 +407,461 @@
                 <h5 class="modal-title">Detalles del Dispositivo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
+
             <div class="modal-body" id="detailsBody">
                 <div class="text-center text-muted py-3">Cargando...</div>
             </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="btnEditFromDetails">Editar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyTitle">Histórico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="historyBody">
+                    <div class="text-center text-muted">Cargando...</div>
+                </div>
+            </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- ASSIGN MODAL (buscador) -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form id="assignForm" method="post" asp-action="Assign" asp-controller="Devices">
+                @Html.AntiForgeryToken()
+                @{ RenderQpHidden(); }
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Asignar dispositivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="deviceId" id="assignDeviceId" />
+                    <input type="hidden" name="userId" id="assignUserId" />
+
+                    <label class="form-label">Buscar usuario</label>
+                    <input type="text" class="form-control" id="assignUserSearch"
+                           placeholder="Escribe nombre o apellido..." autocomplete="off" />
+
+                    <div class="list-group mt-2" id="assignUserResults" style="max-height:260px; overflow:auto;"></div>
+
+                    <div class="text-muted small mt-2">
+                        Selecciona un usuario de la lista para habilitar “Asignar”.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="assignSubmit" disabled>Asignar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- TOAST CONTAINER -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+    <div id="appToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                Acción realizada
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // ========= USERS (para buscador assign)
+const users = @Html.Raw(JsonSerializer.Serialize(
+    (Model.Users ?? new List<ERP_BIEN.Models.User>())
+        .Select(u => new { id = u.Id, name = ((u.Name ?? "") + " " + (u.LastName ?? "")).Trim() })
+        .OrderBy(x => x.name)
+        .ToList()
+));
+
+// ========= DETAILS click fila
+const detailsModalEl = document.getElementById('detailsModal');
+const detailsBodyEl = document.getElementById('detailsBody');
+const detailsModal = detailsModalEl ? new bootstrap.Modal(detailsModalEl) : null;
+window.currentDeviceId = null;
+
+document.querySelectorAll('.device-row').forEach(row => {
+    row.addEventListener('click', async (e) => {
+        if (e.target.closest("button") || e.target.closest("form") || e.target.closest("input") || e.target.closest("select")) return;
+
+        const id = row.dataset.id;
+        window.currentDeviceId = id;
+
+        if (!id || !detailsBodyEl || !detailsModal) return;
+
+        detailsBodyEl.innerHTML = '<div class="text-center text-muted py-3">Cargando...</div>';
+        detailsModal.show();
+
+        try {
+            const res = await fetch(`/Devices/Details/${id}`);
+            if (!res.ok) throw new Error();
+            detailsBodyEl.innerHTML = await res.text();
+        } catch {
+            detailsBodyEl.innerHTML = '<div class="text-danger text-center py-3">Error al cargar detalles</div>';
+        }
+    });
+});
+
+// ========= EDITAR desde DETAILS
+document.getElementById('btnEditFromDetails')?.addEventListener('click', async () => {
+    const id = window.currentDeviceId;
+    if (!id) return;
+
+    try {
+        const res = await fetch(`/Devices/DetailsJson?id=${id}`);
+        const d = await res.json();
+        if (!d) return;
+
+        document.getElementById('edit-id').value = d.id;
+        document.getElementById('edit-hostname').value = d.hostname ?? "";
+        document.getElementById('edit-model').value = d.model ?? "";
+        document.getElementById('edit-sn').value = d.sn ?? "";
+        document.getElementById('edit-number').value = d.numberOfDevice ?? 0;
+        document.getElementById('edit-manufacturing').value = d.manufacturingDate ?? "";
+        document.getElementById('edit-status').value = d.status ?? "";
+        document.getElementById('edit-comment').value = d.comment ?? "";
+        document.getElementById('edit-use').value = d.useDate ?? "";
+        document.getElementById('edit-userid').value = d.userId ?? "";
+
+        bootstrap.Modal.getInstance(detailsModalEl)?.hide();
+        new bootstrap.Modal(document.getElementById('editModal')).show();
+    } catch (e) {
+        console.error(e);
+    }
+});
+
+// ========= DELETE fill
+document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function (event) {
+    const b = event.relatedTarget;
+    document.getElementById('delete-id').value = b.getAttribute('data-id');
+    document.getElementById('delete-name').innerText = b.getAttribute('data-name');
+});
+
+// ========= HISTÓRICO
+function loadHistory(deviceId, hostname) {
+    const body = document.getElementById("historyBody");
+    const title = document.getElementById("historyTitle");
+    title.innerText = `Histórico - ${hostname}`;
+    body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+
+    fetch(`/Devices/HistoryJson?deviceId=${deviceId}`)
+        .then(r => r.json())
+        .then(rows => {
+            if (!rows || rows.length === 0) {
+                body.innerHTML = '<div class="text-muted">No hay histórico para este dispositivo.</div>';
+                new bootstrap.Modal(document.getElementById('historyModal')).show();
+                return;
+            }
+
+            let html = `
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped align-middle">
+                    <thead>
+                      <tr>
+                         <th>Usuario</th>
+                         <th>Inicio</th>
+                         <th>Fin</th>
+                         <th>Duración</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+            `;
+            rows.forEach(r => {
+                html += `
+                    <tr>
+                        <td>${r.userName ?? r.UserName ?? "-"}</td>
+                        <td>${r.startDate ?? r.StartDate ?? "-"}</td>
+                        <td>${(r.endDate ?? r.EndDate) ?? "ACTUAL"}</td>
+                        <td>${r.duration ?? r.Duration ?? "-"}</td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table></div>`;
+            body.innerHTML = html;
+            new bootstrap.Modal(document.getElementById('historyModal')).show();
+        })
+        .catch(() => {
+            body.innerHTML = '<div class="text-danger">Error cargando histórico</div>';
+            new bootstrap.Modal(document.getElementById('historyModal')).show();
+        });
+}
+
+// ========= TOAST (ARREGLADO: NO contiene otras funciones dentro)
+function showToast(message, type = "success") {
+    const toastEl = document.getElementById('appToast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    toastMessage.innerText = message;
+
+    toastEl.className = "toast align-items-center text-white border-0";
+    if (type === "success") toastEl.classList.add("bg-success");
+    if (type === "error") toastEl.classList.add("bg-danger");
+    if (type === "info") toastEl.classList.add("bg-primary");
+
+    new bootstrap.Toast(toastEl).show();
+}
+
+// ========= ASSIGN MODAL (lista + buscador)
+const assignModalInstance = new bootstrap.Modal(document.getElementById("assignModal"));
+const assignDeviceId = document.getElementById("assignDeviceId");
+const assignUserId = document.getElementById("assignUserId");
+const assignSearch = document.getElementById("assignUserSearch");
+const assignResults = document.getElementById("assignUserResults");
+const assignSubmit = document.getElementById("assignSubmit");
+
+function renderUserResults(list) {
+    assignResults.innerHTML = "";
+
+    if (!list || list.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "list-group-item text-muted";
+        empty.textContent = "No hay resultados";
+        assignResults.appendChild(empty);
+        return;
+    }
+
+    list.forEach(u => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "list-group-item list-group-item-action";
+        b.textContent = u.name;
+
+        b.addEventListener("click", () => {
+            assignUserId.value = u.id;
+            assignSubmit.disabled = false;
+
+            [...assignResults.children].forEach(x => x.classList.remove("active"));
+            b.classList.add("active");
+        });
+
+        assignResults.appendChild(b);
+    });
+}
+
+function openAssignModal(deviceId) {
+    assignDeviceId.value = deviceId;
+    assignUserId.value = "";
+    assignSubmit.disabled = true;
+    assignSearch.value = "";
+    assignResults.innerHTML = "";
+
+    renderUserResults(users.slice(0, 15));
+
+    assignModalInstance.show();
+    setTimeout(() => assignSearch.focus(), 200);
+}
+
+assignSearch?.addEventListener("input", function () {
+    const q = (this.value || "").trim().toLowerCase();
+    if (!q) { renderUserResults(users.slice(0, 15)); return; }
+    renderUserResults(users.filter(u => (u.name || "").toLowerCase().includes(q)).slice(0, 20));
+});
+
+// ========= ✅ ACTUALIZAR UI INMEDIATA (ESTO TE FALTABA)
+function updateAssignedUI(deviceId, userId) {
+    const row = document.querySelector(`tr.device-row[data-id="${deviceId}"]`);
+    if (!row) return;
+
+    // Columnas: 0 Tipo, 1 Hostname, 2 Modelo, 3 SN, 4 Estado, 5 Usuario, 6 Fecha uso, 7 Acciones
+    const userCell = row.children[5];
+    const u = users.find(x => String(x.id) === String(userId));
+    userCell.textContent = u ? u.name : "-";
+
+    const actions = row.querySelector(".device-actions");
+    if (!actions) return;
+
+    const hostname = row.children[1]?.textContent?.trim() ?? "";
+
+    // Cambiamos acciones: ahora Quitar (sin recargar) + histórico + eliminar
+    actions.innerHTML = `
+        <button type="button"
+                class="btn btn-sm btn-secondary"
+                onclick="event.stopPropagation(); unassignDeviceAjax(${deviceId});">
+            Quitar
+        </button>
+
+        <button type="button"
+                class="btn btn-sm btn-outline-dark"
+                onclick="event.stopPropagation(); loadHistory(${deviceId}, ${JSON.stringify(hostname)});">
+            Histórico
+        </button>
+
+        <button type="button"
+                class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                data-id="${deviceId}"
+                data-name="${hostname}"
+                onclick="event.stopPropagation();">
+            Eliminar
+        </button>
+    `;
+}
+
+// ========= ✅ UNASSIGN SIN RECARGA (ANTES LO TENÍAS DENTRO DE showToast)
+async function unassignDeviceAjax(deviceId) {
+    try {
+        // token anti-forgery sacado del assignForm (ya lo tienes en el modal)
+        const token = document.querySelector('#assignForm input[name="__RequestVerificationToken"]')?.value;
+
+        const fd = new FormData();
+        fd.append("deviceId", deviceId);
+        fd.append("pageNumber", @Model.PageNumber);
+        if (token) fd.append("__RequestVerificationToken", token);
+
+        const res = await fetch("/Devices/Unassign", {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin"
+        });
+
+        if (!res.ok) {
+            showToast("Error al desasignar ❌", "error");
+            return;
+        }
+
+        const row = document.querySelector(`tr.device-row[data-id="${deviceId}"]`);
+        if (!row) return;
+
+        row.children[5].textContent = "-";
+
+        const actions = row.querySelector(".device-actions");
+        const hostname = row.children[1]?.textContent?.trim() ?? "";
+
+        actions.innerHTML = `
+            <button type="button"
+                    class="btn btn-sm btn-success"
+                    onclick="event.stopPropagation(); openAssignModal(${deviceId});">
+                Asignar
+            </button>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-dark"
+                    onclick="event.stopPropagation(); loadHistory(${deviceId}, ${JSON.stringify(hostname)});">
+                Histórico
+            </button>
+
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal"
+                    data-id="${deviceId}"
+                    data-name="${hostname}"
+                    onclick="event.stopPropagation();">
+                Eliminar
+            </button>
+        `;
+
+        showToast("Dispositivo desasignado ✅", "success");
+
+    } catch (e) {
+        console.error(e);
+        showToast("Error inesperado ❌", "error");
+    }
+}
+
+// ========= ✅ ASSIGN SIN RECARGA + CAMBIO INMEDIATO
+document.getElementById("assignForm")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    if (!assignUserId.value) {
+        alert("Selecciona un usuario de la lista.");
+        return;
+    }
+
+    const form = this;
+    const data = new FormData(form);
+
+    try {
+        const response = await fetch(form.action, {
+            method: "POST",
+            body: data,
+            credentials: "same-origin"
+        });
+
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("assignModal"))?.hide();
+
+            // CAMBIO INMEDIATO
+            updateAssignedUI(assignDeviceId.value, assignUserId.value);
+
+            showToast("Dispositivo asignado correctamente ✅", "success");
+        } else {
+            showToast("Error al asignar ❌", "error");
+        }
+
+    } catch (err) {
+        console.error(err);
+        showToast("Error inesperado ❌", "error");
+    }
+});
+
+// ========= WIZARD CREATE MODAL (2 pasos)
+let step = 1;
+
+function nextStep() {
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step2").style.display = "block";
+
+    document.getElementById("btnPrev").style.display = "inline-block";
+    document.getElementById("btnNext").style.display = "none";
+    document.getElementById("btnCreate").style.display = "inline-block";
+
+    step = 2;
+}
+
+function prevStep() {
+    document.getElementById("step1").style.display = "block";
+    document.getElementById("step2").style.display = "none";
+
+    document.getElementById("btnPrev").style.display = "none";
+    document.getElementById("btnNext").style.display = "inline-block";
+    document.getElementById("btnCreate").style.display = "none";
+
+    step = 1;
+}
+
+document.getElementById("createModal")?.addEventListener("show.bs.modal", function () {
+    document.getElementById("step1").style.display = "block";
+    document.getElementById("step2").style.display = "none";
+
+    document.getElementById("btnPrev").style.display = "none";
+    document.getElementById("btnNext").style.display = "inline-block";
+    document.getElementById("btnCreate").style.display = "none";
+
+    step = 1;
+});
+
+
+    </script>
+}
