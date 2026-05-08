@@ -157,5 +157,68 @@ namespace ERP_BIEN.Services
                 .ThenBy(u => u.LastName)
                 .ToListAsync();
         }
+        // ============================================================
+        // ASSIGN LICENSE TO USER
+        // ============================================================
+        public async Task<bool> AssignToUserAsync(int licenseId, int userId)
+        {
+            var license = await _db.Licenses
+                .FirstOrDefaultAsync(l => l.Id == licenseId);
+
+            if (license == null)
+                throw new InvalidOperationException("La licencia no existe.");
+
+            // ✅ Fuente única de verdad
+            if (license.UserId != null)
+                throw new InvalidOperationException("La licencia ya está asignada.");
+
+            // ✅ RF-036: no sobreasignar (blindaje extra)
+            var total = await _db.Licenses.CountAsync(l =>
+                l.Producto == license.Producto &&
+                l.Proveedor == license.Proveedor);
+
+            var assigned = await _db.Licenses.CountAsync(l =>
+                l.Producto == license.Producto &&
+                l.Proveedor == license.Proveedor &&
+                l.UserId != null);
+
+            if (assigned >= total)
+                throw new InvalidOperationException("No hay licencias disponibles para este producto.");
+
+            // ✅ Asignación
+            license.UserId = userId;
+
+            // Flags derivados (para coherencia inmediata si se usan)
+            license.Asignada = true;
+            license.Disponible = false;
+
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        // ============================================================
+        // UNASSIGN LICENSE
+        // ============================================================
+        public async Task<bool> UnassignAsync(int licenseId)
+        {
+            var license = await _db.Licenses
+                .FirstOrDefaultAsync(l => l.Id == licenseId);
+
+            if (license == null)
+                return false;
+
+            if (license.UserId == null)
+                return false;
+
+            license.UserId = null;
+
+            // Flags derivados
+            license.Asignada = false;
+            license.Disponible = true;
+
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
     }
+
 }

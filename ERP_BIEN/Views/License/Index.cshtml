@@ -443,6 +443,9 @@
 
                     <div class="list-group mt-2" id="assignUserResults" style="max-height:260px; overflow:auto;">
                     </div>
+                    <div id="assignEmptyState" class="text-muted small mt-2 d-none">
+                        No hay usuarios que coincidan.
+                    </div>
 
                     <div class="text-muted small mt-2">
                         Selecciona un usuario de la lista para habilitar “Asignar”.
@@ -559,20 +562,54 @@
                 });
             });
 
-            function renderUserResults(list) {
-                assignResults.innerHTML = "";
-                list.forEach(u => {
-                    const b = document.createElement("button");
-                    b.type = "button";
-                    b.className = "list-group-item list-group-item-action";
-                    b.textContent = u.name;
-                    b.onclick = () => {
-                        assignUserId.value = u.id;
-                        assignSubmit.disabled = false;
-                    };
-                    assignResults.appendChild(b);
-                });
+                    function renderUserResults(list) {
+            assignResults.innerHTML = "";
+
+            const empty = document.getElementById("assignEmptyState");
+
+            if (!list.length) {
+                empty.classList.remove("d-none");
+                return;
             }
+
+            empty.classList.add("d-none");
+
+            list.forEach(u => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = "list-group-item list-group-item-action";
+                b.textContent = u.name;
+
+                b.onclick = () => {
+                    assignUserId.value = u.id;
+                    assignSubmit.disabled = false;
+
+                    // ✅ resaltar seleccionado
+                    assignResults.querySelectorAll(".active")
+                        .forEach(x => x.classList.remove("active"));
+                    b.classList.add("active");
+                };
+
+                assignResults.appendChild(b);
+            });
+        }
+                    // ✅ FILTRAR USUARIOS AL ESCRIBIR
+        assignSearch.addEventListener("input", function () {
+            const term = assignSearch.value.trim().toLowerCase();
+
+            // Si el input está vacío, mostramos los primeros usuarios
+            if (!term) {
+                renderUserResults(users.slice(0, 15));
+                return;
+            }
+
+            // Filtramos por nombre/apellido
+            const filtered = users
+                .filter(u => u.name.toLowerCase().includes(term))
+                .slice(0, 15);
+
+            renderUserResults(filtered);
+        });
 
             // ✅ DETAILS
             function loadDetails(id) {

@@ -983,7 +983,6 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\qgeg4tvwg6-{0}-ez2vzv8mtj-ez2vzv8mtj.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\r9ojlce74q-{0}-16caf07hlu-16caf07hlu.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\ipr1fud6y7-{0}-2z51tiqrnb-2z51tiqrnb.gz
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\iuvewsjssr-{0}-b9sayid5wm-b9sayid5wm.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\7wz9thazox-{0}-jllbkh7ykp-jllbkh7ykp.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\1egj97b7ff-{0}-61n19gt1b8-61n19gt1b8.gz
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\zhjm5ala1y-{0}-dnzpww5dvt-dnzpww5dvt.gz
@@ -1059,3 +1058,4 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\refint\ERP
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.pdb
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.genruntimeconfig.cache
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ref\ERP_BIEN.dll
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\iuvewsjssr-{0}-bpnlv9evlo-bpnlv9evlo.gz

@@ -13,5 +13,9 @@ namespace ERP_BIEN.Services
         Task<bool> UpdateAsync(License license);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<User>> GetAllUsersAsync();
+
+        // ✅ AÑADIR ESTO
+        Task<bool> AssignToUserAsync(int licenseId, int userId);
+        Task<bool> UnassignAsync(int licenseId);
     }
 }

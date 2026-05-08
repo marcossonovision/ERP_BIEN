@@ -88,17 +88,7 @@ namespace ERP_BIEN.Services
                 .FirstOrDefault(u => u.Id == id);
         }
 
-        public List<SelectItem> GetTeams()
-        {
-            return _context.Teams
-                .OrderBy(t => t.Name)
-                .Select(t => new SelectItem
-                {
-                    Value = t.Id.ToString(),
-                    Text = t.Name
-                })
-                .ToList();
-        }
+        
 
         public void CreateEmployee(User user)
         {
@@ -119,6 +109,11 @@ namespace ERP_BIEN.Services
 
             _context.Users.Remove(u);
             _context.SaveChanges();
+        }
+
+        internal dynamic GetTeams()
+        {
+            throw new NotImplementedException();
         }
     }
 }

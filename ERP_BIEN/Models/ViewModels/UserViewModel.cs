@@ -11,5 +11,11 @@
 
         public int? TeamId { get; set; }
         public string TeamName { get; set; }
+        public int? RoleId { get; set; }
+        public string RoleName { get; set; } = "Sin Rol";
+        public bool IsActive { get; set; }
+
+
+
     }
 }

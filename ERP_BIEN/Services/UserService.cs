@@ -1,5 +1,6 @@
 ﻿using ERP_BIEN.Data;
 using ERP_BIEN.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ERP_BIEN.Services
@@ -15,6 +16,7 @@ namespace ERP_BIEN.Services
 
         // ============================================
         // PAGINACIÓN + FILTROS
+        // (Incluye Team + UserRoles.Role para RBAC)
         // ============================================
         public (List<User> Users, int TotalPages) GetPagedUsers(
             string searchName,
@@ -27,11 +29,13 @@ namespace ERP_BIEN.Services
 
             var query = _context.Users
                 .Include(u => u.Team)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
                 .AsQueryable();
 
             // ============================
             // FILTRO POR NOMBRE / APELLIDO
-            // (prefijo, en orden)
+            // (prefijo)
             // ============================
             if (!string.IsNullOrWhiteSpace(searchName))
             {
@@ -88,18 +92,19 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // OBTENER UN USUARIO
+        // OBTENER UN USUARIO (con Team + Roles)
         // ============================================
         public User GetUser(int id)
         {
             return _context.Users
                 .Include(u => u.Team)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
                 .FirstOrDefault(u => u.Id == id);
         }
 
         // ============================================
         // CREAR USUARIO
-        // (tal y como lo tienes ahora)
         // ============================================
         public void CreateUser(User user)
         {
@@ -122,6 +127,38 @@ namespace ERP_BIEN.Services
             user.LastName = updated.LastName;
             user.DomainUser = updated.DomainUser;
             user.TeamId = updated.TeamId;
+
+            _context.SaveChanges();
+        }
+
+        // ============================================
+        // ✅ ACTUALIZAR ROL DEL USUARIO (1 rol)
+        // (si quieres multi-rol luego lo ampliamos)
+        // ============================================
+        public void UpdateUserRole(int userId, int? roleId)
+        {
+            var user = _context.Users
+                .Include(u => u.UserRoles)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+                throw new Exception("Usuario no encontrado");
+
+            // limpiar roles actuales
+            if (user.UserRoles != null && user.UserRoles.Any())
+            {
+                _context.UserRoles.RemoveRange(user.UserRoles);
+            }
+
+            // asignar nuevo rol si viene informado
+            if (roleId.HasValue)
+            {
+                _context.UserRoles.Add(new UserRole
+                {
+                    UserId = userId,
+                    RoleId = roleId.Value
+                });
+            }
 
             _context.SaveChanges();
         }
@@ -160,29 +197,53 @@ namespace ERP_BIEN.Services
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
+        // ============================================
+        // ACTIVAR / DESACTIVAR USUARIO (TOGGLE)
+        // ============================================
+        public bool ToggleUserActive(int userId)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+                return false;
+
+            user.IsActive = !user.IsActive;
+
+            _context.SaveChanges();
+
+            return user.IsActive;
+        }
+
 
         // ============================================
-        // LISTA DE EQUIPOS PARA SELECT
+        // ✅ LISTA DE EQUIPOS PARA SELECT (SelectListItem)
+        // (esto arregla el cast del chip)
         // ============================================
-        public List<SelectItem> GetTeams()
+        public List<SelectListItem> GetTeams()
         {
             return _context.Teams
                 .OrderBy(t => t.Name)
-                .Select(t => new SelectItem
+                .Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
                     Text = t.Name
                 })
                 .ToList();
         }
-    }
 
-    // ============================================
-    // MODELO PARA SELECT
-    // ============================================
-    public class SelectItem
-    {
-        public string Value { get; set; }
-        public string Text { get; set; }
+        // ============================================
+        // ✅ LISTA DE ROLES PARA SELECT (para editar rol)
+        // ============================================
+        public List<SelectListItem> GetRoles()
+        {
+            return _context.Roles
+                .OrderBy(r => r.Code)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Code
+                })
+                .ToList();
+        }
     }
 }

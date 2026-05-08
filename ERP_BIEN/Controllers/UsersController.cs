@@ -16,7 +16,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // INDEX (LECTURA)
+        // INDEX
         // ============================
         [Authorize(Policy = "USR_VIEW")]
         public IActionResult Index(
@@ -42,7 +42,18 @@ namespace ERP_BIEN.Controllers
                 LastName = u.LastName,
                 DomainUser = u.DomainUser,
                 TeamId = u.TeamId,
-                TeamName = u.Team?.Name
+                TeamName = u.Team?.Name,
+                IsActive = u.IsActive,
+
+                // ✅ ROL NOMBRE
+                RoleName = (u.UserRoles != null && u.UserRoles.Any())
+                    ? (u.UserRoles.FirstOrDefault()?.Role?.Code ?? "Sin Rol")
+                    : "Sin Rol",
+
+                // ✅ ROL ID (FIX DEFINITIVO)
+                RoleId = (u.UserRoles != null && u.UserRoles.Any())
+                    ? (int?)u.UserRoles.FirstOrDefault()?.RoleId
+                    : null
             }).ToList();
 
             ViewBag.PageNumber = pageNumber;
@@ -50,13 +61,15 @@ namespace ERP_BIEN.Controllers
             ViewBag.SearchName = searchName;
             ViewBag.SearchDomain = searchDomain;
             ViewBag.SearchTeamId = searchTeamId;
+
             ViewBag.TeamList = _service.GetTeams();
+            ViewBag.RoleList = _service.GetRoles();
 
             return View(users);
         }
 
         // ============================
-        // DETAILS (LECTURA)
+        // DETAILS
         // ============================
         [Authorize(Policy = "USR_VIEW")]
         public IActionResult Details(int id)
@@ -71,12 +84,20 @@ namespace ERP_BIEN.Controllers
                 lastName = u.LastName,
                 domainUser = u.DomainUser,
                 teamId = u.TeamId,
-                teamName = u.Team?.Name
+                teamName = u.Team?.Name,
+
+                roleName = (u.UserRoles != null && u.UserRoles.Any())
+                    ? (u.UserRoles.FirstOrDefault()?.Role?.Code ?? "Sin Rol")
+                    : "Sin Rol",
+
+                roleId = (u.UserRoles != null && u.UserRoles.Any())
+                    ? (int?)u.UserRoles.FirstOrDefault()?.RoleId
+                    : null
             });
         }
 
         // ============================
-        // CREATE (ESCRITURA)
+        // CREATE
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -106,7 +127,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // EDIT (ESCRITURA)
+        // EDIT
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -127,6 +148,9 @@ namespace ERP_BIEN.Controllers
                 TeamId = model.TeamId
             });
 
+            // ✅ ACTUALIZA ROL
+            _service.UpdateUserRole(model.Id, model.RoleId);
+
             return RedirectToAction("Index", new
             {
                 pageNumber,
@@ -137,7 +161,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DELETE (GET → NUNCA BORRA)
+        // DELETE (GET)
         // ============================
         [HttpGet]
         public IActionResult Delete(int id)
@@ -146,7 +170,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DELETE (POST REAL) (ESCRITURA)
+        // DELETE (POST)
         // ============================
         [Authorize(Policy = "WRITE")]
         [HttpPost]
@@ -165,5 +189,12 @@ namespace ERP_BIEN.Controllers
             public int Id { get; set; }
         }
 
+        [Authorize(Policy = "WRITE")]
+        [HttpPost]
+        public IActionResult ToggleActive(int id)
+        {
+            var newState = _service.ToggleUserActive(id); // <- devolvemos bool
+            return Json(new { isActive = newState });
+        }
     }
 }

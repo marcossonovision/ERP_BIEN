@@ -1,55 +1,182 @@
-﻿@model List<ERP_BIEN.Models.ViewModels.UserViewModel>
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model List<ERP_BIEN.Models.ViewModels.UserViewModel>
 
 @Html.AntiForgeryToken()
 
-<pre style="background:#111;color:#0f0;padding:10px">
-    MODULES:
-    @string.Join(", ", User.Claims.Where(c => c.Type == "module").Select(c => c.Value))
+<details class="mb-3">
+    <summary class="text-muted small">Ver claims (debug)</summary>
+    <pre style="background:#111;color:#0f0;padding:10px;margin-top:10px;border-radius:10px;overflow:auto;">
+MODULES:
+@string.Join(", ", User.Claims.Where(c => c.Type == "module").Select(c => c.Value))
 
-    PERMISSIONS:
-    @string.Join(", ", User.Claims.Where(c => c.Type == "permission").Select(c => c.Value))
-</pre>
+PERMISSIONS:
+@string.Join(", ", User.Claims.Where(c => c.Type == "permission").Select(c => c.Value))
+    </pre>
+</details>
 
-<h2 class="mb-4">Gestión de Usuarios</h2>
+<!-- HEADER PRO -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0 fw-semibold">Gestión de Usuarios</h2>
+        <small class="text-muted">Mostrando @(Model?.Count ?? 0) usuarios</small>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="ExportExcel" asp-controller="Users" class="btn btn-success">
+            📊 Excel
+        </a>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+            ➕ Crear Usuario
+        </button>
+    </div>
+</div>
 
 <style>
-    .user-row button {
-        pointer-events: auto !important;
-        position: relative;
-        z-index: 10;
+    /* ===== Chips ===== */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: .85rem;
+        font-weight: 500;
+        border: 1px solid rgba(0,0,0,.08);
+        background: #fff;
     }
 
-    .user-row {
-        position: relative;
-        z-index: 1;
+    .chip .x {
+        border: 0;
+        background: transparent;
+        padding: 0 4px;
         cursor: pointer;
+        font-weight: 700;
+        opacity: .7;
     }
 
-    .pagination .page-link {
-        pointer-events: auto !important;
+    .chip .x:hover { opacity: 1; }
+
+    /* ===== Layout ===== */
+    .card-pro {
+        background: #fff;
+        border: 0;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
+
+    .form-control, .form-select { border-radius: 10px; }
+
+    /* ===== Tabla “card rows” ===== */
+    .table-card {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+    .table-card thead th {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: #6c757d;
+    }
+
+    .table-card tbody tr {
+        background: #fff;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
+    }
+
+    .table-card tbody tr td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+
+    .table-card tbody tr td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+
+    .table-card tbody td {
+        border-top: none !important;
+        padding: 12px 14px;
+        vertical-align: middle;
+    }
+
+    .user-row { cursor: pointer; }
+
+    .user-row:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+
+    /* ===== Acciones en hover ===== */
+    .actions-col { width: 190px; white-space: nowrap; }
+    .actions-wrap { opacity: 0; transition: opacity .15s ease; }
+    .user-row:hover .actions-wrap { opacity: 1; }
+
+    /* ===== Badges ===== */
+    .badge-team {
+        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        color: #3730a3;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 999px;
+        font-weight: 600;
+        display: inline-block;
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .badge-role {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e3a8a;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 999px;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    /* ===== Botones acciones ===== */
+    .btn-group .btn {
+        border-radius: 10px !important;
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+    }
+
+    .btn-group .btn:hover { background: #f1f3f5; }
+    .btn-group .btn.text-danger:hover { background: #ffe5e5; }
+
+    /* Evitar que click de fila pise botones */
+    .user-row button { pointer-events: auto !important; position: relative; z-index: 10; }
+
+    .pagination .page-link { border-radius: 10px; margin: 0 2px; }
 </style>
 
 <!-- ========================= -->
-<!-- FILTROS + CREAR USUARIO -->
+<!-- FILTROS -->
 <!-- ========================= -->
-<form method="get" asp-action="Index" asp-controller="Users" class="card card-body mb-4" id="usersFiltersForm">
+<form method="get" asp-action="Index" asp-controller="Users" class="card-pro p-4 mb-3" id="usersFiltersForm">
     <div class="row g-3 align-items-end">
         <input type="hidden" name="pageNumber" value="1" />
 
         <div class="col-md-3">
-            <label class="form-label">Nombre</label>
+            <label class="form-label text-muted small">Nombre</label>
             <input name="searchName" value="@ViewBag.SearchName" class="form-control" placeholder="Buscar por nombre..." />
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">Usuario</label>
+            <label class="form-label text-muted small">Usuario</label>
             <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">Equipo</label>
-            <select name="searchTeamId" class="form-control" id="searchTeamId">
+            <label class="form-label text-muted small">Equipo</label>
+            <select name="searchTeamId" class="form-select" id="searchTeamId">
                 <option value="">Todos</option>
                 @foreach (var t in ViewBag.TeamList)
                 {
@@ -66,74 +193,174 @@
         </div>
 
         <div class="col-md-3 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-primary">
-                Filtrar
-            </button>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
 
-            <button type="button"
-                    id="clearFiltersBtn"
-                    class="btn btn-outline-secondary">
-                Limpiar filtros
-            </button>
-
-            <a asp-action="ExportExcel"
-                   asp-controller="Users"
-                   class="btn btn-success">
-                📊 Excel
-            </a>
-        </div>
-
-        <div class="col-12 d-flex justify-content-end mt-2">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-                + Crear Usuario
+            <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary">
+                Limpiar
             </button>
         </div>
     </div>
 </form>
 
+@{
+    var sn = ViewBag.SearchName as string;
+    var sd = ViewBag.SearchDomain as string;
+    var stId = ViewBag.SearchTeamId;
+}
+
+<!-- ========================= -->
+<!-- CHIPS FILTROS ACTIVOS -->
+<!-- ========================= -->
+@if (!string.IsNullOrEmpty(sn) || !string.IsNullOrEmpty(sd) || stId != null)
+{
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+
+        @if (!string.IsNullOrEmpty(sn))
+        {
+            <span class="chip">
+                <span class="text-primary">Nombre:</span> @sn
+                <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = (string)null, searchDomain = sd, searchTeamId = stId })"
+                   title="Quitar filtro Nombre">×</a>
+            </span>
+        }
+
+        @if (!string.IsNullOrEmpty(sd))
+        {
+            <span class="chip">
+                <span class="text-info">Usuario:</span> @sd
+                <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = (string)null, searchTeamId = stId })"
+                   title="Quitar filtro Usuario">×</a>
+            </span>
+        }
+
+        @if (stId != null)
+        {
+            var teamList = ViewBag.TeamList as IEnumerable<dynamic>;
+            var selectedTeam = teamList?.FirstOrDefault(t => t.Value.ToString() == stId?.ToString());
+
+            <span class="chip">
+                <span class="text-secondary">Equipo:</span> @(selectedTeam?.Text ?? "—")
+                <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = (int?)null })"
+                   title="Quitar filtro Equipo">×</a>
+            </span>
+        }
+
+        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index","Users")">
+            ✖ Limpiar todos
+        </a>
+    </div>
+}
+
 <!-- ========================= -->
 <!-- TABLA -->
 <!-- ========================= -->
-<table class="table table-hover">
-    <thead class="table-light">
-        <tr>
-            <th>Nombre</th>
-            <th>Usuario</th>
-            <th>Equipo</th>
-            <th style="width:150px;">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr class="user-row" data-id="@u.Id">
-                <td>@u.Name @u.LastName</td>
-                <td>@u.DomainUser</td>
-                <td>@u.TeamName</td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="@u.Id">Editar</button>
-                    <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="@u.Id">Eliminar</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="card-pro p-3 mb-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 table-card">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:35%">Nombre</th>
+                    <th style="width:35%">Usuario</th>
+                    <th style="width:20%">Equipo</th>
+                    <th style="width:15%">Rol</th>
+                    <th style="width:10%">Estado</th>
+                    <th style="width:10%" class="text-end">Acciones</th>
+                </tr>
+            </thead>
 
-@if (!Model.Any())
-{
-    <p class="text-muted">No se encontraron usuarios.</p>
-}
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No se encontraron usuarios.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var u in Model)
+                    {
+                        <tr class="user-row" data-id="@u.Id">
+                            <td>
+                                <div class="fw-semibold">@u.Name @u.LastName</div>
+                            </td>
+
+                            <td>
+                                <div class="fw-semibold">@u.DomainUser</div>
+                                <small class="text-muted">Usuario de dominio</small>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(u.TeamName))
+                                {
+                                    <span class="badge-team">@u.TeamName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Sin equipo</span>
+                                }
+                            </td>
+
+                            <!-- ROL -->
+                            <td>
+                                <span class="badge-role">@u.RoleName</span>
+                            </td>
+
+                            <!-- ESTADO (TOGGLE) -->
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-sm toggle-active-btn @(u.IsActive ? "btn-success" : "btn-secondary")"
+                                        data-id="@u.Id">
+                                    @(u.IsActive ? "Activo" : "Inactivo")
+                                </button>
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td class="actions-col text-end">
+                                <div class="actions-wrap">
+                                    <div class="btn-group" role="group">
+                                        <button type="button"
+                                                class="btn btn-sm btn-light edit-btn"
+                                                data-id="@u.Id"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="Editar">
+                                            ✏️
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-light delete-btn text-danger"
+                                                data-id="@u.Id"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="Eliminar">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
 
 <!-- ========================= -->
 <!-- PAGINACIÓN -->
 <!-- ========================= -->
 <nav aria-label="Paginación">
     <ul class="pagination justify-content-center">
+
         <li class="page-item @(((int)ViewBag.PageNumber) == 1 ? "disabled" : "")">
             @if (((int)ViewBag.PageNumber) > 1)
             {
                 <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
                     Anterior
                 </a>
             }
@@ -154,7 +381,7 @@
                 else
                 {
                     <a class="page-link"
-                           href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                       href="@Url.Action("Index", new { pageNumber = i, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
                         @i
                     </a>
                 }
@@ -165,7 +392,7 @@
             @if (((int)ViewBag.TotalPages) > 0 && ((int)ViewBag.PageNumber) < (int)ViewBag.TotalPages)
             {
                 <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
                     Siguiente
                 </a>
             }
@@ -174,6 +401,7 @@
                 <span class="page-link">Siguiente</span>
             }
         </li>
+
     </ul>
 </nav>
 
@@ -197,17 +425,17 @@
                 </div>
 
                 <div class="modal-body">
-                    <label>Nombre</label>
+                    <label class="form-label">Nombre</label>
                     <input name="Name" class="form-control" required />
 
-                    <label class="mt-3">Apellidos</label>
+                    <label class="form-label mt-3">Apellidos</label>
                     <input name="LastName" class="form-control" required />
 
-                    <label class="mt-3">Usuario de Dominio</label>
+                    <label class="form-label mt-3">Usuario de Dominio</label>
                     <input name="DomainUser" class="form-control" required />
 
-                    <label class="mt-3">Equipo</label>
-                    <select name="TeamId" class="form-control">
+                    <label class="form-label mt-3">Equipo</label>
+                    <select name="TeamId" class="form-select">
                         <option value="">-- Sin equipo --</option>
                         @foreach (var t in ViewBag.TeamList)
                         {
@@ -217,7 +445,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Crear</button>
                 </div>
             </form>
@@ -240,11 +468,13 @@
                 <p><strong>Nombre:</strong> <span id="det-name"></span></p>
                 <p><strong>Usuario:</strong> <span id="det-domain"></span></p>
                 <p><strong>Equipo:</strong> <span id="det-team"></span></p>
+                <p><strong>Rol:</strong> <span id="det-role">—</span></p>
+                <p><strong>Estado:</strong> <span id="det-status">—</span></p>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" id="openEditFromDetails">Editar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-outline-warning" id="openEditFromDetails">✏️ Editar</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -271,26 +501,35 @@
                 </div>
 
                 <div class="modal-body">
-                    <label>Nombre</label>
+                    <label class="form-label">Nombre</label>
                     <input name="Name" id="edit-name" class="form-control" />
 
-                    <label class="mt-3">Apellidos</label>
+                    <label class="form-label mt-3">Apellidos</label>
                     <input name="LastName" id="edit-lastname" class="form-control" />
 
-                    <label class="mt-3">Usuario de Dominio</label>
+                    <label class="form-label mt-3">Usuario de Dominio</label>
                     <input name="DomainUser" id="edit-domain" class="form-control" />
 
-                    <label class="mt-3">Equipo</label>
-                    <select name="TeamId" id="edit-team" class="form-control">
+                    <label class="form-label mt-3">Equipo</label>
+                    <select name="TeamId" id="edit-team" class="form-select">
                         @foreach (var t in ViewBag.TeamList)
                         {
                             <option value="@t.Value">@t.Text</option>
                         }
                     </select>
+
+                    <!-- Si ya tienes rol editable, añade aquí tu select RoleId -->
+                    @* <label class="form-label mt-3">Rol</label>
+                    <select name="RoleId" id="edit-role" class="form-select">
+                        @foreach (var r in ViewBag.RoleList)
+                        {
+                            <option value="@r.Value">@r.Text</option>
+                        }
+                    </select> *@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-warning">Guardar Cambios</button>
                 </div>
             </form>
@@ -315,12 +554,8 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
-                    Eliminar
-                </button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Eliminar</button>
             </div>
 
         </div>
@@ -330,10 +565,7 @@
 <!-- ========================= -->
 <!-- MODAL: ELIMINADO CORRECTAMENTE -->
 <!-- ========================= -->
-<div class="modal fade"
-     id="deleteSuccessModal"
-     data-bs-backdrop="static"
-     data-bs-keyboard="false">
+<div class="modal fade" id="deleteSuccessModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -346,9 +578,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" id="closeSuccessBtn" class="btn btn-primary">
-                    Aceptar
-                </button>
+                <button type="button" id="closeSuccessBtn" class="btn btn-primary">Aceptar</button>
             </div>
 
         </div>
@@ -356,139 +586,181 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-            console.log("Scripts de Usuarios cargados");
+    // Tooltips (Bootstrap)
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
-            // =========================
-            // CLICK EN FILA → VER DETALLES
-            // =========================
-            document.querySelectorAll(".user-row").forEach(row => {
-                row.addEventListener("click", async (e) => {
-                    if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
-                    const id = row.dataset.id;
-                    if (!id) return;
-                    await loadDetails(id);
-                });
-            });
-
-            // =========================
-            // EDITAR
-            // =========================
-            document.querySelectorAll(".edit-btn").forEach(btn => {
-                btn.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    const id = btn.dataset.id;
-                    if (!id) return;
-
-                    try {
-                        const res = await fetch(`/Users/Details/${id}`);
-                        if (!res.ok) throw new Error('Error fetching details');
-                        const u = await res.json();
-
-                        document.getElementById("edit-id").value = u.id ?? '';
-                        document.getElementById("edit-name").value = u.name ?? '';
-                        document.getElementById("edit-lastname").value = u.lastName ?? '';
-                        document.getElementById("edit-domain").value = u.domainUser ?? '';
-                        document.getElementById("edit-team").value = u.teamId ?? '';
-
-                        new bootstrap.Modal(document.getElementById("editModal")).show();
-                    } catch (err) {
-                        console.error('Error al cargar datos para editar:', err);
-                    }
-                });
-            });
-
-            // =========================
-            // ELIMINAR (AJAX + MODALES)
-            // =========================
-            let userIdToDelete = null;
-
-            document.querySelectorAll(".delete-btn").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    userIdToDelete = btn.dataset.id;
-                    new bootstrap.Modal(document.getElementById("deleteModal")).show();
-                });
-            });
-
-            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-            if (confirmDeleteBtn) {
-                confirmDeleteBtn.addEventListener("click", async () => {
-                    if (!userIdToDelete) return;
-
-                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-                    const response = await fetch('/Users/Delete', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': token
-                        },
-                        body: JSON.stringify({ id: userIdToDelete })
-                    });
-
-                    if (response.ok) {
-                        const deleteModalInstance = bootstrap.Modal.getInstance(document.getElementById("deleteModal"));
-                        if (deleteModalInstance) deleteModalInstance.hide();
-
-                        new bootstrap.Modal(document.getElementById("deleteSuccessModal")).show();
-                    } else {
-                        alert("No se pudo eliminar el usuario.");
-                    }
-                });
-            }
-
-            const closeSuccessBtn = document.getElementById("closeSuccessBtn");
-            if (closeSuccessBtn) {
-                closeSuccessBtn.addEventListener("click", () => {
-                    location.reload();
-                });
-            }
-
-            // =========================
-            // DETALLES (modal)
-            // =========================
-            async function loadDetails(id) {
-                try {
-                    const res = await fetch(`/Users/Details/${id}`);
-                    if (!res.ok) throw new Error('Error fetching details');
-                    const u = await res.json();
-
-                    document.getElementById("det-name").innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
-                    document.getElementById("det-domain").innerText = u.domainUser ?? '';
-                    document.getElementById("det-team").innerText = u.teamName ?? '—';
-
-                    new bootstrap.Modal(document.getElementById("detailsModal")).show();
-                } catch (err) {
-                    console.error('Error al cargar detalles:', err);
-                }
-            }
-
-           /* const openEditFromDetails = document.getElementById("openEditFromDetails");
-            if (openEditFromDetails) {
-                openEditFromDetails.addEventListener("click", () => {
-                    const detailsInstance = bootstrap.Modal.getInstance(document.getElementById("detailsModal"));
-                    if (detailsInstance) detailsInstance.hide();
-                    new bootstrap.Modal(document.getElementById("editModal")).show();
-                });
-            }*/
-
-            // =========================
-            // LIMPIAR FILTROS 
-            // =========================
-
-                   const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
-        if (clearFiltersBtnEl) {
-            clearFiltersBtnEl.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                // ✅ LIMPIAR FILTROS DE VERDAD
-                window.location.href = '/Users/Index';
-            });
-        }
-
+    // LIMPIAR FILTROS
+    const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
+    if (clearFiltersBtnEl) {
+        clearFiltersBtnEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = '/Users/Index';
         });
-    </script>
+    }
+
+    let lastDetailsUser = null;
+
+    // CLICK EN FILA → DETALLES
+    document.querySelectorAll(".user-row").forEach(row => {
+        row.addEventListener("click", async (e) => {
+            if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
+            const id = row.dataset.id;
+            if (!id) return;
+            await loadDetails(id);
+        });
+    });
+
+    // EDITAR
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            if (!id) return;
+
+            try {
+                const res = await fetch(`/Users/Details/${id}`);
+                if (!res.ok) throw new Error('Error fetching details');
+                const u = await res.json();
+
+                fillEditModal(u);
+                new bootstrap.Modal(document.getElementById("editModal")).show();
+            } catch (err) {
+                console.error('Error al cargar datos para editar:', err);
+            }
+        });
+    });
+
+    // ELIMINAR (AJAX)
+    let userIdToDelete = null;
+
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            userIdToDelete = btn.dataset.id;
+            new bootstrap.Modal(document.getElementById("deleteModal")).show();
+        });
+    });
+
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener("click", async () => {
+            if (!userIdToDelete) return;
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            const response = await fetch('/Users/Delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ id: userIdToDelete })
+            });
+
+            if (response.ok) {
+                bootstrap.Modal.getInstance(document.getElementById("deleteModal"))?.hide();
+                // quitar fila sin recargar
+                const row = document.querySelector(`tr.user-row[data-id="${userIdToDelete}"]`);
+                row?.remove();
+
+                new bootstrap.Modal(document.getElementById("deleteSuccessModal")).show();
+            } else {
+                alert("No se pudo eliminar el usuario.");
+            }
+        });
+    }
+
+    const closeSuccessBtn = document.getElementById("closeSuccessBtn");
+    if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener("click", () => {
+            bootstrap.Modal.getInstance(document.getElementById("deleteSuccessModal"))?.hide();
+        });
+    }
+
+    // DETALLES
+    async function loadDetails(id) {
+        try {
+            const res = await fetch(`/Users/Details/${id}`);
+            if (!res.ok) throw new Error('Error fetching details');
+            const u = await res.json();
+
+            lastDetailsUser = u;
+
+            document.getElementById("det-name").innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
+            document.getElementById("det-domain").innerText = u.domainUser ?? '';
+            document.getElementById("det-team").innerText = u.teamName ?? '—';
+            document.getElementById("det-role").innerText = u.roleName ?? '—';
+
+            if (typeof u.isActive !== "undefined") {
+                document.getElementById("det-status").innerText = u.isActive ? "Activo" : "Inactivo";
+            } else {
+                document.getElementById("det-status").innerText = '—';
+            }
+
+            new bootstrap.Modal(document.getElementById("detailsModal")).show();
+        } catch (err) {
+            console.error('Error al cargar detalles:', err);
+        }
+    }
+
+    function fillEditModal(u) {
+        document.getElementById("edit-id").value = u.id ?? '';
+        document.getElementById("edit-name").value = u.name ?? '';
+        document.getElementById("edit-lastname").value = u.lastName ?? '';
+        document.getElementById("edit-domain").value = u.domainUser ?? '';
+        document.getElementById("edit-team").value = u.teamId ?? '';
+
+        // Si activas RoleId editable:
+        // document.getElementById("edit-role").value = u.roleId ?? '';
+    }
+
+    // EDITAR desde DETALLES
+    const openEditFromDetails = document.getElementById("openEditFromDetails");
+    if (openEditFromDetails) {
+        openEditFromDetails.addEventListener("click", () => {
+            if (!lastDetailsUser) return;
+
+            fillEditModal(lastDetailsUser);
+
+            bootstrap.Modal.getInstance(document.getElementById("detailsModal"))?.hide();
+            new bootstrap.Modal(document.getElementById("editModal")).show();
+        });
+    }
+
+    // TOGGLE ACTIVO/INACTIVO (SIN RECARGAR)
+    document.querySelectorAll(".toggle-active-btn").forEach(btn => {
+        btn.addEventListener("click", async function (e) {
+            e.stopPropagation();
+
+            const id = this.dataset.id;
+            const oldText = this.innerText;
+
+            this.disabled = true;
+            this.innerText = "Guardando...";
+
+            try {
+                const response = await fetch(`/Users/ToggleActive?id=${id}`, { method: "POST" });
+                if (!response.ok) throw new Error();
+
+                const data = await response.json();
+                const isActive = !!data.isActive;
+
+                this.innerText = isActive ? "Activo" : "Inactivo";
+                this.classList.remove("btn-success", "btn-secondary");
+                this.classList.add(isActive ? "btn-success" : "btn-secondary");
+
+            } catch {
+                this.innerText = oldText;
+                alert("No se pudo cambiar el estado");
+            } finally {
+                this.disabled = false;
+            }
+        });
+    });
+
+});
+</script>
 }

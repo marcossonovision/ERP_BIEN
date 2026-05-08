@@ -24,6 +24,9 @@ namespace ERP_BIEN.Models
         public string DomainUser { get; set; }
 
 
+        // ✅ 🔥 NUEVO (ESTADO DEL USUARIO)
+        public bool IsActive { get; set; } = true;
+
 
         // =========================
         // RELACIONES EXISTENTES
