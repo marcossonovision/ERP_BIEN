@@ -39,96 +39,208 @@
     .device-row { cursor: pointer; }
 </style>
 
-<!-- FILTROS AVANZADOS (PRO) -->
-<form method="get" class="card shadow-sm border-0 mb-4 p-4">
+<!-- FILTROS AVANZADOS (PRO) CON TOGGLE -->
+<form method="get">
 
-    <div class="mb-3">
-        <h6 class="fw-bold text-muted">Filtros de búsqueda</h6>
-        <hr class="mt-1" />
-    </div>
+    <div class="card shadow-sm border-0 mb-4">
 
-    <div class="row g-3">
-        <div class="col-md-2">
-            <label class="form-label text-muted small">Tipo</label>
-            <select class="form-select" name="DeviceTypeFilter">
-                <option value="">Todos</option>
-                <option value="Computer" selected="@(Model.DeviceTypeFilter == "Computer")">Computer</option>
-                <option value="Phone" selected="@(Model.DeviceTypeFilter == "Phone")">Phone</option>
-                <option value="Screen" selected="@(Model.DeviceTypeFilter == "Screen")">Screen</option>
-                <option value="DockStation" selected="@(Model.DeviceTypeFilter == "DockStation")">DockStation</option>
-            </select>
+        <!-- CABECERA CON FLECHA -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom"
+             style="cursor:pointer;"
+             onclick="toggleFilters()">
+
+            <h6 class="fw-bold text-muted mb-0">
+                Filtros de búsqueda
+            </h6>
+
+            <span id="filterArrow">▼</span>
         </div>
 
-        <div class="col-md-2">
-            <label class="form-label text-muted small">Estado</label>
-            <select class="form-select" name="StatusFilter">
-                <option value="">Todos</option>
-                @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
-                {
-                    <option value="@s" selected="@(Model.StatusFilter == s)">@s</option>
-                }
-            </select>
-        </div>
+        <!-- CONTENIDO -->
+        <div id="filtersBody" class="p-4">
 
-        <div class="col-md-2">
-            <label class="form-label text-muted small">Usuario</label>
-            <select class="form-select" name="UserIdFilter">
-                <option value="">Todos</option>
-                @foreach (var u in Model.Users)
-                {
-                    <option value="@u.Id" selected="@(Model.UserIdFilter == u.Id)">@u.Name @u.LastName</option>
-                }
-            </select>
-        </div>
+            <!-- FILA 1 -->
+            <div class="row g-3">
 
-        <div class="col-md-2">
-            <label class="form-label text-muted small">Hostname</label>
-            <input class="form-control" name="HostnameFilter" value="@Model.HostnameFilter" />
-        </div>
+                <!-- TIPO -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Tipo
+                    </label>
 
-        <div class="col-md-2">
-            <label class="form-label text-muted small">Modelo</label>
-            <input class="form-control" name="ModelFilter" value="@Model.ModelFilter" />
-        </div>
+                    <select class="form-select" name="DeviceTypeFilter">
+                        <option value="">Todos</option>
 
-        <div class="col-md-2">
-            <label class="form-label text-muted small">SN</label>
-            <input class="form-control" name="SNFilter" value="@Model.SNFilter" />
-        </div>
-    </div>
+                        <option value="Computer"
+                                selected="@(Model.DeviceTypeFilter == "Computer")">
+                            Computer
+                        </option>
 
-    <div class="row g-3 mt-3">
-        <div class="col-md-3">
-            <label class="form-label text-muted small">Fabricación</label>
-            <div class="d-flex gap-2">
-                <input type="date" class="form-control" name="ManufacturingFrom"
-                       value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
-                <input type="date" class="form-control" name="ManufacturingTo"
-                       value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+                        <option value="Phone"
+                                selected="@(Model.DeviceTypeFilter == "Phone")">
+                            Phone
+                        </option>
+
+                        <option value="Screen"
+                                selected="@(Model.DeviceTypeFilter == "Screen")">
+                            Screen
+                        </option>
+
+                        <option value="DockStation"
+                                selected="@(Model.DeviceTypeFilter == "DockStation")">
+                            DockStation
+                        </option>
+                    </select>
+                </div>
+
+                <!-- ESTADO -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Estado
+                    </label>
+
+                    <select class="form-select" name="StatusFilter">
+                        <option value="">Todos</option>
+
+                        @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
+                        {
+                            <option value="@s"
+                                    selected="@(Model.StatusFilter == s)">
+                                @s
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- USUARIO -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Usuario
+                    </label>
+
+                    <select class="form-select" name="UserIdFilter">
+                        <option value="">Todos</option>
+
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.Id"
+                                    selected="@(Model.UserIdFilter == u.Id)">
+                                @u.Name @u.LastName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- HOSTNAME -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Hostname
+                    </label>
+
+                    <input class="form-control"
+                           name="HostnameFilter"
+                           value="@Model.HostnameFilter" />
+                </div>
+
+                <!-- MODELO -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Modelo
+                    </label>
+
+                    <input class="form-control"
+                           name="ModelFilter"
+                           value="@Model.ModelFilter" />
+                </div>
+
+                <!-- SERIAL NUMBER -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        SN
+                    </label>
+
+                    <input class="form-control"
+                           name="SNFilter"
+                           value="@Model.SNFilter" />
+                </div>
+
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <label class="form-label text-muted small">Uso</label>
-            <div class="d-flex gap-2">
-                <input type="date" class="form-control" name="UseFrom"
-                       value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
-                <input type="date" class="form-control" name="UseTo"
-                       value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+            <!-- FILA 2 -->
+            <div class="row g-3 mt-3">
+
+                <!-- FABRICACION -->
+                <div class="col-md-3">
+
+                    <label class="form-label text-muted small">
+                        Fabricación
+                    </label>
+
+                    <div class="d-flex gap-2">
+
+                        <input type="date"
+                               class="form-control"
+                               name="ManufacturingFrom"
+                               value="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))" />
+
+                        <input type="date"
+                               class="form-control"
+                               name="ManufacturingTo"
+                               value="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))" />
+
+                    </div>
+                </div>
+
+                <!-- USO -->
+                <div class="col-md-3">
+
+                    <label class="form-label text-muted small">
+                        Uso
+                    </label>
+
+                    <div class="d-flex gap-2">
+
+                        <input type="date"
+                               class="form-control"
+                               name="UseFrom"
+                               value="@(Model.UseFrom?.ToString("yyyy-MM-dd"))" />
+
+                        <input type="date"
+                               class="form-control"
+                               name="UseTo"
+                               value="@(Model.UseTo?.ToString("yyyy-MM-dd"))" />
+
+                    </div>
+                </div>
+
             </div>
+
+            <!-- BOTONES -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+
+                <div>
+
+                    <!-- FILTRAR -->
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+                        Filtrar
+                    </button>
+
+                    <!-- LIMPIAR -->
+                    <a asp-controller="Devices"
+                       asp-action="Index"
+                       class="btn btn-light border ms-2">
+                        Limpiar
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <div>
-            <button type="submit" class="btn btn-primary px-4">Filtrar</button>
-            <button type="button" class="btn btn-light border ms-2"
-                    onclick="window.location.href='@Url.Action("Index","Devices")'">
-                Limpiar
-            </button>
-        </div>
-        <div class="text-muted small">Ajusta los filtros para refinar resultados</div>
-    </div>
 </form>
 
 <div class="d-flex justify-content-end mb-2">
@@ -862,6 +974,55 @@ document.getElementById("createModal")?.addEventListener("show.bs.modal", functi
     step = 1;
 });
 
+function toggleFilters() {
+    const body = document.getElementById("filtersBody");
+    const arrow = document.getElementById("filterArrow");
+
+    if (body.style.display === "none") {
+        body.style.display = "block";
+        arrow.innerText = "▼";
+    } else {
+        body.style.display = "none";
+        arrow.innerText = "▲";
+    }
+}
+
+
 
     </script>
+    @if (Model.TotalPages > 1)
+{
+    <nav class="mt-1">
+        <ul class="pagination justify-content-center">
+
+            <!-- Anterior -->
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = Model.PageNumber - 1 })">
+                    «
+                </a>
+            </li>
+
+            <!-- Números -->
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("Index", new { pageNumber = i })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Siguiente -->
+            <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { pageNumber = Model.PageNumber + 1 })">
+                    »
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}
 }

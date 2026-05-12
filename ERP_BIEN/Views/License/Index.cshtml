@@ -111,6 +111,28 @@
 
     </div>
 </form>
+<!-- ========================= -->
+<!-- CHIPS FILTROS ACTIVOS -->
+<!-- ========================= -->
+@{
+    var license = ViewBag.SearchLicense;
+}
+
+@if (!string.IsNullOrEmpty(license))
+{
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+
+        <span class="chip">
+            <span class="text-primary">Licencia:</span> @license
+        </span>
+
+        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index", "Licenses")">
+            ✖ Limpiar todos
+        </a>
+
+    </div>
+}
+
 
 <!-- TABLA -->
 <div class="table-responsive">

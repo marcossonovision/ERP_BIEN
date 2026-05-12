@@ -9,6 +9,10 @@
         background-color: #f8f9fa;
         transition: 0.2s;
     }
+
+    .role-row {
+        cursor: pointer;
+    }
 </style>
 
 <div class="page-header d-flex justify-content-between align-items-center mb-3">
@@ -18,7 +22,7 @@
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#createModal">
-         Crear Rol
+        Crear Rol
     </button>
 </div>
 
@@ -68,6 +72,31 @@
 
     </div>
 </form>
+<!-- ========================= -->
+<!-- CHIPS FILTROS ACTIVOS -->
+<!-- ========================= -->
+@{
+    var search = Model.Search;
+}
+
+@if (!string.IsNullOrEmpty(search))
+{
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+
+        <span class="chip">
+            <span class="text-primary">Búsqueda:</span> @search
+            <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, search = (string)null })">
+                ×
+            </a>
+        </span>
+
+        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index", "Role")">
+            ✖ Limpiar todos
+        </a>
+
+    </div>
+}
 
 <!-- ========================= -->
 <!-- TABLA -->
@@ -93,14 +122,17 @@
         {
             foreach (var role in Model.Roles)
             {
-                <tr>
+                <tr class="role-row"
+                    data-id="@role.Id"
+                    data-code="@role.Code"
+                    data-name="@role.Name">
+
                     <td>@role.Code</td>
                     <td>@role.Name</td>
                     <td>
-
                         <!-- ✅ EDITAR -->
                         <button type="button"
-                                class="btn btn-sm btn-outline-warning"
+                                class="btn btn-sm btn-outline-warning btn-edit-role"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editModal"
                                 data-id="@role.Id"
@@ -111,14 +143,13 @@
 
                         <!-- ✅ ELIMINAR -->
                         <button type="button"
-                                class="btn btn-sm btn-outline-danger"
+                                class="btn btn-sm btn-outline-danger btn-delete-role"
                                 data-bs-toggle="modal"
                                 data-bs-target="#deleteModal"
                                 data-id="@role.Id"
                                 data-name="@role.Name">
                             🗑️ Eliminar
                         </button>
-
                     </td>
                 </tr>
             }
@@ -182,9 +213,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Crear Rol</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
@@ -200,14 +229,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Crear
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear</button>
                 </div>
             </form>
         </div>
@@ -225,9 +248,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Rol</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
@@ -245,14 +266,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-warning">
-                        Guardar cambios
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Guardar cambios</button>
                 </div>
             </form>
         </div>
@@ -270,9 +285,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar Rol</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
@@ -289,37 +302,83 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        Eliminar
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<!-- ========================= -->
+<!-- DETAILS MODAL -->
+<!-- ========================= -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p><strong>Código:</strong> <span id="det-code"></span></p>
+                <p><strong>Nombre:</strong> <span id="det-name"></span></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        document.getElementById('editModal')?.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            if (!button) return;
+        document.addEventListener("DOMContentLoaded", () => {
 
-            document.getElementById("edit-id").value = button.getAttribute("data-id");
-            document.getElementById("edit-code").value = button.getAttribute("data-code");
-            document.getElementById("edit-name").value = button.getAttribute("data-name");
-        });
+            // =========================
+            // RELLENAR EDIT MODAL (CLICK)
+            // =========================
+            document.querySelectorAll(".btn-edit-role").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation(); // para que NO abra details
 
-        document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            if (!button) return;
+                    document.getElementById("edit-id").value = this.dataset.id || "";
+                    document.getElementById("edit-code").value = this.dataset.code || "";
+                    document.getElementById("edit-name").value = this.dataset.name || "";
+                });
+            });
 
-            document.getElementById("delete-id").value = button.getAttribute("data-id");
-            document.getElementById("delete-name").innerText = button.getAttribute("data-name");
+            // =========================
+            // RELLENAR DELETE MODAL (CLICK)
+            // =========================
+            document.querySelectorAll(".btn-delete-role").forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.stopPropagation(); // para que NO abra details
+
+                    document.getElementById("delete-id").value = this.dataset.id || "";
+                    document.getElementById("delete-name").innerText = this.dataset.name || "";
+                });
+            });
+
+            // =========================
+            // CLICK EN FILA → DETALLES
+            // =========================
+            document.querySelectorAll(".role-row").forEach(row => {
+                row.addEventListener("click", function (e) {
+
+                    // Si click en un botón, no abrir detalles
+                    if (e.target.closest("button")) return;
+
+                    const code = this.dataset.code || "";
+                    const name = this.dataset.name || "";
+
+                    document.getElementById("det-code").innerText = code;
+                    document.getElementById("det-name").innerText = name;
+
+                    new bootstrap.Modal(document.getElementById("detailsModal")).show();
+                });
+            });
+
         });
     </script>
 }

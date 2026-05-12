@@ -1,41 +1,146 @@
+/* ========================= */
+/* BASE */
+/* ========================= */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #f8fafc;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* ========================= */
+/* FOCUS */
+/* ========================= */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #ffffff, 0 0 0 0.25rem #258cfb;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* ========================= */
+/* FORMULARIOS */
+/* ========================= */
+.form-control,
+.form-select {
+    border-radius: 10px;
+    transition: 0.2s;
 }
-/* Modal Asignar - mejora visual */
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #258cfb;
+    }
+
+/* ========================= */
+/* FORM FLOATING */
+/* ========================= */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* ========================= */
+/* MODALES PRO */
+/* ========================= */
+.modal-content {
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* ========================= */
+/* BOTONES */
+/* ========================= */
+.btn {
+    border-radius: 10px;
+}
+
+/* ========================= */
+/* CHIPS FILTROS */
+/* ========================= */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+}
+
+    .chip .x {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 0 4px;
+        font-weight: bold;
+        opacity: .7;
+    }
+
+        .chip .x:hover {
+            opacity: 1;
+        }
+
+/* ========================= */
+/* LISTA DE USUARIOS (ASSIGN) */
+/* ========================= */
 #assignUserResults .list-group-item {
     cursor: pointer;
+    transition: 0.2s;
 }
+
+    #assignUserResults .list-group-item:hover {
+        background-color: #f1f3f5;
+    }
 
     #assignUserResults .list-group-item.active {
         background-color: #0d6efd;
         border-color: #0d6efd;
         color: #fff;
     }
+
+/* ========================= */
+/* RESPONSIVE EXTRA */
+/* ========================= */
+@media (max-width: 576px) {
+
+    .chip {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+
+    body {
+        margin-bottom: 40px;
+    }
+}

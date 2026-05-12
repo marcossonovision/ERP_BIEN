@@ -1058,4 +1058,4 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\refint\ERP
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.pdb
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ERP_BIEN.genruntimeconfig.cache
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\ref\ERP_BIEN.dll
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\iuvewsjssr-{0}-bpnlv9evlo-bpnlv9evlo.gz
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\obj\Debug\net10.0\compressed\iuvewsjssr-{0}-2mvlcd7x8e-2mvlcd7x8e.gz
