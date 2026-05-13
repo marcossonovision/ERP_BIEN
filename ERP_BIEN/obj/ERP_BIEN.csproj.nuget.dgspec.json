@@ -57,7 +57,7 @@
             },
             "EPPlus": {
               "target": "Package",
-              "version": "[8.5.3, )"
+              "version": "[8.5.4, )"
             },
             "Microsoft.AspNetCore.Authentication.Negotiate": {
               "target": "Package",

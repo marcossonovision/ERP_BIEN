@@ -1,4 +1,7 @@
-﻿using ERP_BIEN.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,14 +18,38 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // PAGINACIÓN + FILTROS
-        // (Incluye Team + UserRoles.Role para RBAC)
+        // PAGINACIÓN + FILTROS (firma antigua)
+        // Se mantiene para no romper llamadas viejas
         // ============================================
         public (List<User> Users, int TotalPages) GetPagedUsers(
             string searchName,
             string searchDomain,
             int? searchTeamId,
             int pageNumber,
+            int pageSize = 10)
+        {
+            return GetPagedUsers(
+                searchName,
+                searchDomain,
+                searchTeamId,
+                pageNumber,
+                searchRoleId: null,
+                searchIsActive: null,
+                pageSize: pageSize
+            );
+        }
+
+        // ============================================
+        // PAGINACIÓN + FILTROS (firma nueva)
+        // ✅ Añade Rol + Estado
+        // ============================================
+        public (List<User> Users, int TotalPages) GetPagedUsers(
+            string searchName,
+            string searchDomain,
+            int? searchTeamId,
+            int pageNumber,
+            int? searchRoleId,
+            bool? searchIsActive,
             int pageSize = 10)
         {
             if (pageNumber < 1) pageNumber = 1;
@@ -33,10 +60,7 @@ namespace ERP_BIEN.Services
                     .ThenInclude(ur => ur.Role)
                 .AsQueryable();
 
-            // ============================
-            // FILTRO POR NOMBRE / APELLIDO
-            // (prefijo)
-            // ============================
+            // FILTRO NOMBRE/APELLIDO
             if (!string.IsNullOrWhiteSpace(searchName))
             {
                 var nameFilter = searchName.Trim().ToLower();
@@ -47,10 +71,7 @@ namespace ERP_BIEN.Services
                 );
             }
 
-            // ============================
-            // FILTRO POR USUARIO DE DOMINIO
-            // (prefijo)
-            // ============================
+            // FILTRO DOMAIN USER
             if (!string.IsNullOrWhiteSpace(searchDomain))
             {
                 var domainFilter = searchDomain.Trim().ToLower();
@@ -61,26 +82,35 @@ namespace ERP_BIEN.Services
                 );
             }
 
-            // ============================
-            // FILTRO POR EQUIPO
-            // ============================
+            // FILTRO EQUIPO
             if (searchTeamId.HasValue)
             {
                 query = query.Where(u => u.TeamId == searchTeamId.Value);
             }
 
-            // ============================
-            // TOTAL DE PÁGINAS
-            // ============================
+            // ✅ FILTRO ROL (UserRoles)
+            if (searchRoleId.HasValue)
+            {
+                query = query.Where(u =>
+                    u.UserRoles != null &&
+                    u.UserRoles.Any(ur => ur.RoleId == searchRoleId.Value)
+                );
+            }
+
+            // ✅ FILTRO ESTADO
+            if (searchIsActive.HasValue)
+            {
+                query = query.Where(u => u.IsActive == searchIsActive.Value);
+            }
+
+            // TOTAL PÁGINAS
             int totalUsers = query.Count();
             int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
 
             if (totalPages > 0 && pageNumber > totalPages)
                 pageNumber = totalPages;
 
-            // ============================
             // PAGINACIÓN
-            // ============================
             var users = query
                 .OrderBy(u => u.Name)
                 .ThenBy(u => u.LastName)
@@ -104,22 +134,21 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // CREAR USUARIO
+        // CREAR USUARIO ✅ (CORREGIDO: devuelve User)
         // ============================================
-        public void CreateUser(User user)
+        public User CreateUser(User user)
         {
             _context.Users.Add(user);
             _context.SaveChanges();
+            return user; // ✅ para poder usar user.Id
         }
 
         // ============================================
-        // EDITAR USUARIO (CORRECTO)
+        // EDITAR USUARIO
         // ============================================
         public void UpdateUser(User updated)
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Id == updated.Id);
-
+            var user = _context.Users.FirstOrDefault(u => u.Id == updated.Id);
             if (user == null)
                 throw new Exception("Usuario no encontrado");
 
@@ -128,12 +157,14 @@ namespace ERP_BIEN.Services
             user.DomainUser = updated.DomainUser;
             user.TeamId = updated.TeamId;
 
+            // ✅ CLAVE: si no pones esto, “editar estado” nunca se guarda
+            user.IsActive = updated.IsActive;
+
             _context.SaveChanges();
         }
 
         // ============================================
         // ✅ ACTUALIZAR ROL DEL USUARIO (1 rol)
-        // (si quieres multi-rol luego lo ampliamos)
         // ============================================
         public void UpdateUserRole(int userId, int? roleId)
         {
@@ -144,13 +175,9 @@ namespace ERP_BIEN.Services
             if (user == null)
                 throw new Exception("Usuario no encontrado");
 
-            // limpiar roles actuales
             if (user.UserRoles != null && user.UserRoles.Any())
-            {
                 _context.UserRoles.RemoveRange(user.UserRoles);
-            }
 
-            // asignar nuevo rol si viene informado
             if (roleId.HasValue)
             {
                 _context.UserRoles.Add(new UserRole
@@ -164,7 +191,7 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // ELIMINAR USUARIO (HARD DELETE REAL)
+        // ELIMINAR USUARIO
         // ============================================
         public void DeleteUser(int id)
         {
@@ -197,27 +224,22 @@ namespace ERP_BIEN.Services
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
+
         // ============================================
-        // ACTIVAR / DESACTIVAR USUARIO (TOGGLE)
+        // TOGGLE ACTIVO/INACTIVO
         // ============================================
         public bool ToggleUserActive(int userId)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-
-            if (user == null)
-                return false;
+            if (user == null) return false;
 
             user.IsActive = !user.IsActive;
-
             _context.SaveChanges();
-
             return user.IsActive;
         }
 
-
         // ============================================
-        // ✅ LISTA DE EQUIPOS PARA SELECT (SelectListItem)
-        // (esto arregla el cast del chip)
+        // LISTA DE EQUIPOS
         // ============================================
         public List<SelectListItem> GetTeams()
         {
@@ -232,7 +254,7 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // ✅ LISTA DE ROLES PARA SELECT (para editar rol)
+        // LISTA DE ROLES
         // ============================================
         public List<SelectListItem> GetRoles()
         {
@@ -244,6 +266,18 @@ namespace ERP_BIEN.Services
                     Text = r.Code
                 })
                 .ToList();
+        }
+        public bool DomainUserExists(string domainUser, int? excludeUserId = null)
+        {
+            domainUser = (domainUser ?? "").Trim();
+
+            if (string.IsNullOrEmpty(domainUser))
+                return false;
+
+            return _context.Users.Any(u =>
+                u.DomainUser == domainUser &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value)
+            );
         }
     }
 }

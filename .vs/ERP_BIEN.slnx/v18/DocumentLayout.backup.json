@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\devices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\devices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +22,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "ERP_BIEN\\Services\\UserService.cs",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Services\\UserService.cs*",
+              "RelativeToolTip": "ERP_BIEN\\Services\\UserService.cs*",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAlwKQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T11:56:56.737Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "ERP_BIEN\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "ERP_BIEN\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAP0BAAAAAAAAAAAgwAgCAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T11:32:35.447Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Users\\Index.cshtml",
               "RelativeDocumentMoniker": "ERP_BIEN\\Views\\Users\\Index.cshtml",
               "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Users\\Index.cshtml",
               "RelativeToolTip": "ERP_BIEN\\Views\\Users\\Index.cshtml",
-              "ViewState": "AgIAAMIBAAAAAAAAAADwv9gBAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAABIDAAAAAAAAAAAYwCYDAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-05-12T05:25:59.132Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "RelativeDocumentMoniker": "ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "RelativeToolTip": "ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "ViewState": "AgIAANoDAAAAAAAAAAAAAOIDAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-11T07:36:50.628Z",
               "EditorCaption": ""
             }
           ]

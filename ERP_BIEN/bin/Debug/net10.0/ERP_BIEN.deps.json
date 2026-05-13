@@ -9,7 +9,7 @@
       "ERP_BIEN/1.0.0": {
         "dependencies": {
           "Bogus": "35.6.5",
-          "EPPlus": "8.5.3",
+          "EPPlus": "8.5.4",
           "Microsoft.AspNetCore.Authentication.Negotiate": "10.0.7",
           "Microsoft.EntityFrameworkCore": "10.0.7",
           "Microsoft.EntityFrameworkCore.Design": "10.0.7",
@@ -56,16 +56,16 @@
           }
         }
       },
-      "EPPlus/8.5.3": {
+      "EPPlus/8.5.4": {
         "dependencies": {
           "EPPlus.Interfaces": "8.4.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
-          "System.Security.Cryptography.Pkcs": "10.0.6"
+          "System.Security.Cryptography.Pkcs": "10.0.7"
         },
         "runtime": {
           "lib/net10.0/EPPlus.dll": {
-            "assemblyVersion": "8.5.3.0",
-            "fileVersion": "8.5.3.0"
+            "assemblyVersion": "8.5.4.0",
+            "fileVersion": "8.5.4.0"
           }
         }
       },
@@ -1154,7 +1154,7 @@
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "7.7.1",
           "Microsoft.SqlServer.Server": "1.0.0",
           "System.Configuration.ConfigurationManager": "9.0.4",
-          "System.Security.Cryptography.Pkcs": "10.0.6"
+          "System.Security.Cryptography.Pkcs": "10.0.7"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Data.SqlClient.dll": {
@@ -1738,7 +1738,7 @@
           "Newtonsoft.Json": "13.0.3",
           "NuGet.Configuration": "7.3.1",
           "NuGet.Versioning": "7.3.1",
-          "System.Security.Cryptography.Pkcs": "10.0.6"
+          "System.Security.Cryptography.Pkcs": "10.0.7"
         },
         "runtime": {
           "lib/net8.0/NuGet.Packaging.dll": {
@@ -1923,11 +1923,11 @@
           }
         }
       },
-      "System.Security.Cryptography.Pkcs/10.0.6": {
+      "System.Security.Cryptography.Pkcs/10.0.7": {
         "runtime": {
           "lib/net10.0/System.Security.Cryptography.Pkcs.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.626.17701"
+            "fileVersion": "10.0.726.21808"
           }
         },
         "runtimeTargets": {
@@ -1935,7 +1935,7 @@
             "rid": "win",
             "assetType": "runtime",
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.626.17701"
+            "fileVersion": "10.0.726.21808"
           }
         }
       },
@@ -1976,12 +1976,12 @@
       "path": "bogus/35.6.5",
       "hashPath": "bogus.35.6.5.nupkg.sha512"
     },
-    "EPPlus/8.5.3": {
+    "EPPlus/8.5.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wU+ogF8qJTLoAqmD+X7ZCWAj2uUsIV8omXm4SkHhIGS4LPfWxlFDQhLb5FPedNp+0dDEA2S8dEpvtCezpzUgBA==",
-      "path": "epplus/8.5.3",
-      "hashPath": "epplus.8.5.3.nupkg.sha512"
+      "sha512": "sha512-dHIYNqU4MDbkZPNyCF76bcQPSbx7/WhgDZw5hmDgGzRB1wn9+q/TMy4LC5gw00DamlqiWRnw4AVUXMdV1mGtOg==",
+      "path": "epplus/8.5.4",
+      "hashPath": "epplus.8.5.4.nupkg.sha512"
     },
     "EPPlus.Interfaces/8.4.0": {
       "type": "package",
@@ -2823,12 +2823,12 @@
       "path": "system.reflection.metadataloadcontext/8.0.0",
       "hashPath": "system.reflection.metadataloadcontext.8.0.0.nupkg.sha512"
     },
-    "System.Security.Cryptography.Pkcs/10.0.6": {
+    "System.Security.Cryptography.Pkcs/10.0.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-88tquaGJ1htm4DHWS6x9jwER7sFET2SVRN7HqO1FYZwE0diDcUmz0ajhVa8ZD2HGhDJBueSPjP/gqyP3gXtT2A==",
-      "path": "system.security.cryptography.pkcs/10.0.6",
-      "hashPath": "system.security.cryptography.pkcs.10.0.6.nupkg.sha512"
+      "sha512": "sha512-dbdKfF3eA5l+CXiAbDxiCxdezoxeanbue1ck8m49ih1L9uZG6ry8Ul8On6vpragyMDJJP4rQHUY/SWgk66tCYA==",
+      "path": "system.security.cryptography.pkcs/10.0.7",
+      "hashPath": "system.security.cryptography.pkcs.10.0.7.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/9.0.6": {
       "type": "package",

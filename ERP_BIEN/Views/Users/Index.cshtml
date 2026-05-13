@@ -22,9 +22,17 @@ PERMISSIONS:
     </div>
 
     <div class="d-flex gap-2">
-        <a asp-action="ExportExcel" asp-controller="Users" class="btn btn-success">
-            📊 Excel
-        </a>
+        <a asp-action="ExportExcel"
+   asp-controller="Users"
+   asp-route-searchName="@ViewBag.SearchName"
+   asp-route-searchDomain="@ViewBag.SearchDomain"
+   asp-route-searchTeamId="@ViewBag.SearchTeamId"
+   asp-route-searchRoleId="@ViewBag.SearchRoleId"
+   asp-route-searchIsActive="@ViewBag.SearchIsActive"
+   class="btn btn-success">
+    📊 Excel
+</a>
+
 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
             ➕ Crear Usuario
@@ -174,31 +182,47 @@ PERMISSIONS:
             <input name="searchDomain" value="@ViewBag.SearchDomain" class="form-control" placeholder="Buscar por usuario..." />
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label class="form-label text-muted small">Equipo</label>
-            <select name="searchTeamId" class="form-select" id="searchTeamId">
+            <select name="searchTeamId" class="form-select">
                 <option value="">Todos</option>
                 @foreach (var t in ViewBag.TeamList)
                 {
-                    if (ViewBag.SearchTeamId?.ToString() == t.Value)
-                    {
-                        <option value="@t.Value" selected>@t.Text</option>
-                    }
-                    else
-                    {
-                        <option value="@t.Value">@t.Text</option>
-                    }
+                    <option value="@t.Value" selected="@(ViewBag.SearchTeamId?.ToString() == t.Value)">
+                        @t.Text
+                    </option>
                 }
             </select>
         </div>
 
-        <div class="col-md-3 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-
-            <button type="button" id="clearFiltersBtn" class="btn btn-outline-secondary">
-                Limpiar
-            </button>
+        <!-- ✅ NUEVO → ROL -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small">Rol</label>
+            <select name="searchRoleId" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var r in ViewBag.RoleList)
+                {
+                    <option value="@r.Value" selected="@(ViewBag.SearchRoleId?.ToString() == r.Value)">
+                        @r.Text
+                    </option>
+                }
+            </select>
         </div>
+
+        <!-- ✅ NUEVO → ESTADO -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small">Estado</label>
+            <select name="searchIsActive" class="form-select">
+                <option value="">Todos</option>
+                <option value="true" selected="@(ViewBag.SearchIsActive?.ToString() == "true")">Activo</option>
+                <option value="false" selected="@(ViewBag.SearchIsActive?.ToString() == "false")">Inactivo</option>
+            </select>
+        </div>
+
+        <div class="col-md-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+
     </div>
 </form>
 
@@ -206,35 +230,42 @@ PERMISSIONS:
     var sn = ViewBag.SearchName as string;
     var sd = ViewBag.SearchDomain as string;
     var stId = ViewBag.SearchTeamId;
+    var srId = ViewBag.SearchRoleId;
+    var sa = ViewBag.SearchIsActive;
 }
 
 <!-- ========================= -->
 <!-- CHIPS FILTROS ACTIVOS -->
 <!-- ========================= -->
-@if (!string.IsNullOrEmpty(sn) || !string.IsNullOrEmpty(sd) || stId != null)
+@if (!string.IsNullOrEmpty(sn) || !string.IsNullOrEmpty(sd) || stId != null || srId != null || sa != null)
 {
     <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
 
+        <!-- NOMBRE -->
         @if (!string.IsNullOrEmpty(sn))
         {
             <span class="chip">
                 <span class="text-primary">Nombre:</span> @sn
                 <a class="x text-decoration-none"
-                   href="@Url.Action("Index", new { pageNumber = 1, searchName = (string)null, searchDomain = sd, searchTeamId = stId })"
-                   title="Quitar filtro Nombre">×</a>
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = (string)null, searchDomain = sd, searchTeamId = stId, searchRoleId = srId, searchIsActive = sa })">
+                    ×
+                </a>
             </span>
         }
 
+        <!-- USUARIO -->
         @if (!string.IsNullOrEmpty(sd))
         {
             <span class="chip">
                 <span class="text-info">Usuario:</span> @sd
                 <a class="x text-decoration-none"
-                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = (string)null, searchTeamId = stId })"
-                   title="Quitar filtro Usuario">×</a>
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = (string)null, searchTeamId = stId, searchRoleId = srId, searchIsActive = sa })">
+                    ×
+                </a>
             </span>
         }
 
+        <!-- EQUIPO -->
         @if (stId != null)
         {
             var teamList = ViewBag.TeamList as IEnumerable<dynamic>;
@@ -243,16 +274,50 @@ PERMISSIONS:
             <span class="chip">
                 <span class="text-secondary">Equipo:</span> @(selectedTeam?.Text ?? "—")
                 <a class="x text-decoration-none"
-                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = (int?)null })"
-                   title="Quitar filtro Equipo">×</a>
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = (int?)null, searchRoleId = srId, searchIsActive = sa })">
+                    ×
+                </a>
             </span>
         }
 
-        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index","Users")">
-            ✖ Limpiar todos
+        <!-- ROL -->
+        @if (srId != null)
+        {
+            var roleList = ViewBag.RoleList as IEnumerable<dynamic>;
+            var selectedRole = roleList?.FirstOrDefault(r => r.Value.ToString() == srId?.ToString());
+
+            <span class="chip">
+                <span class="text-info">Rol:</span> @(selectedRole?.Text ?? "—")
+                <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = stId, searchRoleId = (int?)null, searchIsActive = sa })">
+                    ×
+                </a>
+            </span>
+        }
+
+        <!-- ESTADO -->
+        @if (sa != null)
+        {
+            <span class="chip">
+                <span class="text-secondary">Estado:</span> @(sa.ToString() == "true" ? "Activo" : "Inactivo")
+                <a class="x text-decoration-none"
+                   href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = stId, searchRoleId = srId, searchIsActive = (bool?)null })">
+                    ×
+                </a>
+            </span>
+        }
+
+        <!-- ✅ LIMPIAR TODO (NUEVO) -->
+        <a class="chip text-danger fw-semibold text-decoration-none"
+           href="@Url.Action("Index", "Users")"
+           title="Limpiar todos los filtros">
+            ✖ Limpiar todo
         </a>
+
     </div>
 }
+
+
 
 <!-- ========================= -->
 <!-- TABLA -->
@@ -411,48 +476,92 @@ PERMISSIONS:
 <div class="modal fade" id="createModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <form method="post" asp-action="Create" asp-controller="Users">
                 @Html.AntiForgeryToken()
 
+                <!-- MANTENER FILTROS -->
                 <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
                 <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
                 <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
                 <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+                <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
+                <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Crear Usuario</h5>
+                    <h5 class="modal-title fw-semibold">Crear Usuario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <label class="form-label">Nombre</label>
-                    <input name="Name" class="form-control" required />
 
-                    <label class="form-label mt-3">Apellidos</label>
-                    <input name="LastName" class="form-control" required />
+                    <!-- NOMBRE -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Nombre</label>
+                        <input name="Name" class="form-control" required />
+                    </div>
 
-                    <label class="form-label mt-3">Usuario de Dominio</label>
-                    <input name="DomainUser" class="form-control" required />
+                    <!-- APELLIDOS -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Apellidos</label>
+                        <input name="LastName" class="form-control" required />
+                    </div>
 
-                    <label class="form-label mt-3">Equipo</label>
-                    <select name="TeamId" class="form-select">
-                        <option value="">-- Sin equipo --</option>
-                        @foreach (var t in ViewBag.TeamList)
-                        {
-                            <option value="@t.Value">@t.Text</option>
-                        }
-                    </select>
+                    <!-- DOMAIN USER -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Usuario de Dominio</label>
+                        <input name="DomainUser" class="form-control" required />
+                    </div>
+
+                    <!-- EQUIPO -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Equipo</label>
+                        <select name="TeamId" class="form-select">
+                            <option value="">-- Sin equipo --</option>
+                            @foreach (var t in ViewBag.TeamList)
+                            {
+                                <option value="@t.Value">@t.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ NUEVO → ROL -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Rol</label>
+                        <select name="RoleId" class="form-select" required>
+                            @foreach (var r in ViewBag.RoleList)
+                            {
+                                <option value="@r.Value">@r.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ NUEVO → ESTADO -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Estado</label>
+                        <select name="IsActive" class="form-select">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Crear Usuario
+                    </button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
-
 <!-- ========================= -->
 <!-- MODAL: DETALLES -->
 <!-- ========================= -->
@@ -486,6 +595,7 @@ PERMISSIONS:
 <div class="modal fade" id="editModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <form method="post" asp-action="Edit" asp-controller="Users">
                 @Html.AntiForgeryToken()
 
@@ -494,6 +604,8 @@ PERMISSIONS:
                 <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
                 <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
                 <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+                <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
+                <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
 
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Usuario</h5>
@@ -501,41 +613,73 @@ PERMISSIONS:
                 </div>
 
                 <div class="modal-body">
-                    <label class="form-label">Nombre</label>
-                    <input name="Name" id="edit-name" class="form-control" />
 
-                    <label class="form-label mt-3">Apellidos</label>
-                    <input name="LastName" id="edit-lastname" class="form-control" />
+                    <!-- NOMBRE -->
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input name="Name" id="edit-name" class="form-control" />
+                    </div>
 
-                    <label class="form-label mt-3">Usuario de Dominio</label>
-                    <input name="DomainUser" id="edit-domain" class="form-control" />
+                    <!-- APELLIDOS -->
+                    <div class="mb-3">
+                        <label class="form-label">Apellidos</label>
+                        <input name="LastName" id="edit-lastname" class="form-control" />
+                    </div>
 
-                    <label class="form-label mt-3">Equipo</label>
-                    <select name="TeamId" id="edit-team" class="form-select">
-                        @foreach (var t in ViewBag.TeamList)
-                        {
-                            <option value="@t.Value">@t.Text</option>
-                        }
-                    </select>
+                    <!-- DOMAIN -->
+                    <div class="mb-3">
+                        <label class="form-label">Usuario de Dominio</label>
+                        <input name="DomainUser" id="edit-domain" class="form-control" />
+                    </div>
 
-                    <!-- Si ya tienes rol editable, añade aquí tu select RoleId -->
-                    @* <label class="form-label mt-3">Rol</label>
-                    <select name="RoleId" id="edit-role" class="form-select">
-                        @foreach (var r in ViewBag.RoleList)
-                        {
-                            <option value="@r.Value">@r.Text</option>
-                        }
-                    </select> *@
+                    <!-- EQUIPO -->
+                    <div class="mb-3">
+                        <label class="form-label">Equipo</label>
+                        <select name="TeamId" id="edit-team" class="form-select">
+                            @foreach (var t in ViewBag.TeamList)
+                            {
+                                <option value="@t.Value">@t.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ NUEVO → ROL -->
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select name="RoleId" id="edit-role" class="form-select">
+                            @foreach (var r in ViewBag.RoleList)
+                            {
+                                <option value="@r.Value">@r.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ NUEVO → ESTADO -->
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select name="IsActive" id="edit-isactive" class="form-select">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        Guardar Cambios
+                    </button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
+
 
 <!-- ========================= -->
 <!-- MODAL: CONFIRMAR ELIMINACIÓN -->
@@ -589,21 +733,124 @@ PERMISSIONS:
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Tooltips (Bootstrap)
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+    // ============================
+    // ✅ TOAST GLOBAL USERS (CORRECTO)
+    // ============================
+    function showToast(message, type = "success") {
+        let toastEl = document.getElementById("usersToast");
 
-    // LIMPIAR FILTROS
-    const clearFiltersBtnEl = document.getElementById('clearFiltersBtn');
-    if (clearFiltersBtnEl) {
-        clearFiltersBtnEl.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/Users/Index';
-        });
+        if (!toastEl) {
+            const container = document.createElement("div");
+            container.className = "toast-container position-fixed bottom-0 end-0 p-3";
+            container.style.zIndex = "9999";
+
+            // ✅ AQUÍ ESTABA TU ERROR: NO puede haber &lt;div&gt;. Tiene que ser HTML real.
+            container.innerHTML = `
+                <div id="usersToast" class="toast text-white border-0 shadow-lg">
+                    <div class="d-flex">
+                        <div class="toast-body fw-semibold" id="usersToastMsg"></div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(container);
+            toastEl = document.getElementById("usersToast");
+        }
+
+        const msgEl = document.getElementById("usersToastMsg");
+        if (msgEl) msgEl.textContent = message;
+
+        toastEl.className = "toast text-white border-0 shadow-lg";
+        if (type === "success") toastEl.classList.add("bg-success");
+        if (type === "error") toastEl.classList.add("bg-danger");
+        if (type === "info") toastEl.classList.add("bg-primary");
+
+        new bootstrap.Toast(toastEl, { delay: 2500 }).show();
     }
+
+    // ============================
+    // ✅ TOAST DESDE BACKEND (TempData)
+    // (si tu Create/Edit meten TempData["ToastMsg"])
+    // ============================
+    const serverToastMsg = '@(TempData["ToastMsg"] ?? "")';
+    const serverToastType = '@(TempData["ToastType"] ?? "")';
+    if (serverToastMsg) {
+        showToast(serverToastMsg, serverToastType || "info");
+    }
+
+    // ============================
+    // ✅ VALIDACIÓN FRONT
+    // ============================
+    function validateUserForm(form) {
+        const name = form.querySelector('[name="Name"]');
+        const last = form.querySelector('[name="LastName"]');
+        const domain = form.querySelector('[name="DomainUser"]');
+        const role = form.querySelector('[name="RoleId"]');
+
+        let ok = true;
+
+        // limpiar errores previos
+        form.querySelectorAll(".is-invalid").forEach(i => i.classList.remove("is-invalid"));
+
+        if (!name || name.value.trim().length < 2) {
+            name?.classList.add("is-invalid");
+            ok = false;
+        }
+
+        if (!last || last.value.trim().length < 2) {
+            last?.classList.add("is-invalid");
+            ok = false;
+        }
+
+        // ✅ AQUÍ ESTABA TU OTRO ERROR: faltaba 
+        // Permite letras/números y . _ - \ 
+        const re = /^[A-Za-z0-9.\-_\\]+$/;
+
+        const vDomain = (domain?.value || "").trim();
+        if (!domain || vDomain.length < 3 || vDomain.length > 100 || !re.test(vDomain)) {
+            domain?.classList.add("is-invalid");
+            ok = false;
+        }
+
+        // Rol obligatorio (si en tu select tienes opción vacía)
+        if (!role || !role.value) {
+            role?.classList.add("is-invalid");
+            ok = false;
+        }
+
+        if (!ok) showToast("Revisa los campos ❌", "error");
+        return ok;
+    }
+
+    // ============================
+    // ✅ ENGANCHE FORMULARIOS
+    // ============================
+    const createForm = document.querySelector('#createModal form');
+    const editForm   = document.querySelector('#editModal form');
+
+    console.log("CreateForm:", createForm);
+    console.log("EditForm:", editForm);
+
+    createForm?.addEventListener("submit", function (e) {
+        console.log("Submit CREATE");
+        if (!validateUserForm(this)) e.preventDefault();
+    });
+
+    editForm?.addEventListener("submit", function (e) {
+        console.log("Submit EDIT");
+        if (!validateUserForm(this)) e.preventDefault();
+    });
+
+    // ============================
+    // TOOLTIPS
+    // ============================
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
     let lastDetailsUser = null;
 
+    // ============================
     // CLICK EN FILA → DETALLES
+    // ============================
     document.querySelectorAll(".user-row").forEach(row => {
         row.addEventListener("click", async (e) => {
             if (e.target.closest("button") || e.target.closest("[data-bs-toggle]")) return;
@@ -613,7 +860,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ============================
     // EDITAR
+    // ============================
     document.querySelectorAll(".edit-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
@@ -622,18 +871,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const res = await fetch(`/Users/Details/${id}`);
-                if (!res.ok) throw new Error('Error fetching details');
+                if (!res.ok) throw new Error("Error fetching details");
                 const u = await res.json();
 
                 fillEditModal(u);
                 new bootstrap.Modal(document.getElementById("editModal")).show();
-            } catch (err) {
-                console.error('Error al cargar datos para editar:', err);
+            } catch {
+                showToast("No se pudo cargar el usuario ❌", "error");
             }
         });
     });
 
-    // ELIMINAR (AJAX)
+    // ============================
+    // DELETE
+    // ============================
     let userIdToDelete = null;
 
     document.querySelectorAll(".delete-btn").forEach(btn => {
@@ -644,93 +895,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener("click", async () => {
-            if (!userIdToDelete) return;
+    document.getElementById("confirmDeleteBtn")?.addEventListener("click", async () => {
+        if (!userIdToDelete) return;
 
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
-            const response = await fetch('/Users/Delete', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
-                },
-                body: JSON.stringify({ id: userIdToDelete })
-            });
-
-            if (response.ok) {
-                bootstrap.Modal.getInstance(document.getElementById("deleteModal"))?.hide();
-                // quitar fila sin recargar
-                const row = document.querySelector(`tr.user-row[data-id="${userIdToDelete}"]`);
-                row?.remove();
-
-                new bootstrap.Modal(document.getElementById("deleteSuccessModal")).show();
-            } else {
-                alert("No se pudo eliminar el usuario.");
-            }
+        const response = await fetch("/Users/Delete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": token
+            },
+            body: JSON.stringify({ id: userIdToDelete })
         });
-    }
 
-    const closeSuccessBtn = document.getElementById("closeSuccessBtn");
-    if (closeSuccessBtn) {
-        closeSuccessBtn.addEventListener("click", () => {
-            bootstrap.Modal.getInstance(document.getElementById("deleteSuccessModal"))?.hide();
-        });
-    }
-
-    // DETALLES
-    async function loadDetails(id) {
-        try {
-            const res = await fetch(`/Users/Details/${id}`);
-            if (!res.ok) throw new Error('Error fetching details');
-            const u = await res.json();
-
-            lastDetailsUser = u;
-
-            document.getElementById("det-name").innerText = (u.name ?? '') + ' ' + (u.lastName ?? '');
-            document.getElementById("det-domain").innerText = u.domainUser ?? '';
-            document.getElementById("det-team").innerText = u.teamName ?? '—';
-            document.getElementById("det-role").innerText = u.roleName ?? '—';
-
-            if (typeof u.isActive !== "undefined") {
-                document.getElementById("det-status").innerText = u.isActive ? "Activo" : "Inactivo";
-            } else {
-                document.getElementById("det-status").innerText = '—';
-            }
-
-            new bootstrap.Modal(document.getElementById("detailsModal")).show();
-        } catch (err) {
-            console.error('Error al cargar detalles:', err);
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("deleteModal"))?.hide();
+            document.querySelector(`tr[data-id="${userIdToDelete}"]`)?.remove();
+            showToast("Usuario eliminado correctamente ✅", "success");
+        } else {
+            showToast("Error al eliminar usuario ❌", "error");
         }
-    }
+    });
 
-    function fillEditModal(u) {
-        document.getElementById("edit-id").value = u.id ?? '';
-        document.getElementById("edit-name").value = u.name ?? '';
-        document.getElementById("edit-lastname").value = u.lastName ?? '';
-        document.getElementById("edit-domain").value = u.domainUser ?? '';
-        document.getElementById("edit-team").value = u.teamId ?? '';
-
-        // Si activas RoleId editable:
-        // document.getElementById("edit-role").value = u.roleId ?? '';
-    }
-
-    // EDITAR desde DETALLES
-    const openEditFromDetails = document.getElementById("openEditFromDetails");
-    if (openEditFromDetails) {
-        openEditFromDetails.addEventListener("click", () => {
-            if (!lastDetailsUser) return;
-
-            fillEditModal(lastDetailsUser);
-
-            bootstrap.Modal.getInstance(document.getElementById("detailsModal"))?.hide();
-            new bootstrap.Modal(document.getElementById("editModal")).show();
-        });
-    }
-
-    // TOGGLE ACTIVO/INACTIVO (SIN RECARGAR)
+    // ============================
+    // TOGGLE ACTIVO
+    // ============================
     document.querySelectorAll(".toggle-active-btn").forEach(btn => {
         btn.addEventListener("click", async function (e) {
             e.stopPropagation();
@@ -752,14 +942,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.classList.remove("btn-success", "btn-secondary");
                 this.classList.add(isActive ? "btn-success" : "btn-secondary");
 
+                showToast(isActive ? "Usuario activado ✅" : "Usuario desactivado ✅", "info");
             } catch {
                 this.innerText = oldText;
-                alert("No se pudo cambiar el estado");
+                showToast("Error al cambiar el estado ❌", "error");
             } finally {
                 this.disabled = false;
             }
         });
     });
+
+    // ============================
+    // EXPORT EXCEL
+    // ============================
+    document.getElementById("btnExportExcel")?.addEventListener("click", () => {
+        showToast("Generando archivo Excel...", "info");
+    });
+
+    // ============================
+    // DETAILS
+    // ============================
+    async function loadDetails(id) {
+        try {
+            const res = await fetch(`/Users/Details/${id}`);
+            if (!res.ok) throw new Error();
+            const u = await res.json();
+
+            lastDetailsUser = u;
+
+            document.getElementById("det-name").innerText = `${u.name ?? ''} ${u.lastName ?? ''}`;
+            document.getElementById("det-domain").innerText = u.domainUser ?? '';
+            document.getElementById("det-team").innerText = u.teamName ?? '—';
+            document.getElementById("det-role").innerText = u.roleName ?? '—';
+            document.getElementById("det-status").innerText = u.isActive ? "Activo" : "Inactivo";
+
+            new bootstrap.Modal(document.getElementById("detailsModal")).show();
+        } catch {
+            showToast("No se pudieron cargar los detalles ❌", "error");
+        }
+    }
+
+    function fillEditModal(u) {
+        document.getElementById("edit-id").value = u.id ?? '';
+        document.getElementById("edit-name").value = u.name ?? '';
+        document.getElementById("edit-lastname").value = u.lastName ?? '';
+        document.getElementById("edit-domain").value = u.domainUser ?? '';
+        document.getElementById("edit-team").value = u.teamId ?? '';
+        document.getElementById("edit-role").value = u.roleId ?? '';
+        document.getElementById("edit-isactive").value = u.isActive ? "true" : "false";
+    }
 
 });
 </script>
