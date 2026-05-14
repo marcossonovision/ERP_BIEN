@@ -744,7 +744,6 @@ document.addEventListener('DOMContentLoaded', () => {
             container.className = "toast-container position-fixed bottom-0 end-0 p-3";
             container.style.zIndex = "9999";
 
-            // ✅ AQUÍ ESTABA TU ERROR: NO puede haber &lt;div&gt;. Tiene que ser HTML real.
             container.innerHTML = `
                 <div id="usersToast" class="toast text-white border-0 shadow-lg">
                     <div class="d-flex">
@@ -769,8 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================
-    // ✅ TOAST DESDE BACKEND (TempData)
-    // (si tu Create/Edit meten TempData["ToastMsg"])
+    // ✅ TOAST BACKEND
     // ============================
     const serverToastMsg = '@(TempData["ToastMsg"] ?? "")';
     const serverToastType = '@(TempData["ToastType"] ?? "")';
@@ -779,66 +777,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================
-    // ✅ VALIDACIÓN FRONT
+    // ✅ SIN VALIDACIÓN (QUITADO)
     // ============================
-    function validateUserForm(form) {
-        const name = form.querySelector('[name="Name"]');
-        const last = form.querySelector('[name="LastName"]');
-        const domain = form.querySelector('[name="DomainUser"]');
-        const role = form.querySelector('[name="RoleId"]');
 
-        let ok = true;
-
-        // limpiar errores previos
-        form.querySelectorAll(".is-invalid").forEach(i => i.classList.remove("is-invalid"));
-
-        if (!name || name.value.trim().length < 2) {
-            name?.classList.add("is-invalid");
-            ok = false;
-        }
-
-        if (!last || last.value.trim().length < 2) {
-            last?.classList.add("is-invalid");
-            ok = false;
-        }
-
-        // ✅ AQUÍ ESTABA TU OTRO ERROR: faltaba 
-        // Permite letras/números y . _ - \ 
-        const re = /^[A-Za-z0-9.\-_\\]+$/;
-
-        const vDomain = (domain?.value || "").trim();
-        if (!domain || vDomain.length < 3 || vDomain.length > 100 || !re.test(vDomain)) {
-            domain?.classList.add("is-invalid");
-            ok = false;
-        }
-
-        // Rol obligatorio (si en tu select tienes opción vacía)
-        if (!role || !role.value) {
-            role?.classList.add("is-invalid");
-            ok = false;
-        }
-
-        if (!ok) showToast("Revisa los campos ❌", "error");
-        return ok;
-    }
-
-    // ============================
-    // ✅ ENGANCHE FORMULARIOS
-    // ============================
     const createForm = document.querySelector('#createModal form');
     const editForm   = document.querySelector('#editModal form');
 
     console.log("CreateForm:", createForm);
     console.log("EditForm:", editForm);
 
-    createForm?.addEventListener("submit", function (e) {
-        console.log("Submit CREATE");
-        if (!validateUserForm(this)) e.preventDefault();
+    createForm?.addEventListener("submit", function () {
+        console.log("Submit CREATE OK");
     });
 
-    editForm?.addEventListener("submit", function (e) {
-        console.log("Submit EDIT");
-        if (!validateUserForm(this)) e.preventDefault();
+    editForm?.addEventListener("submit", function () {
+        console.log("Submit EDIT OK");
     });
 
     // ============================

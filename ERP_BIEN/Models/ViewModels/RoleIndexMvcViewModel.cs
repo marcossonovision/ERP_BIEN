@@ -2,7 +2,7 @@
 
 namespace ERP_BIEN.Models.ViewModels
 {
-    internal class RoleIndexMvcViewModel
+    public class RoleIndexMvcViewModel
     {
         public List<Role> Roles { get; set; }
         public int PageNumber { get; set; }

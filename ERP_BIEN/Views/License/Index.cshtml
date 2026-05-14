@@ -49,107 +49,319 @@
 </div>
 
 <!-- FILTROS -->
-<form method="get" asp-action="Index" asp-controller="License" class="card card-body mb-3">
-    <div class="row g-2 align-items-end">
+<form method="get" asp-action="Index" asp-controller="License">
 
-        <div class="col-auto">
-            <label class="form-label">Búsqueda</label>
-            <input type="text" name="Search" value="@Model.Search"
-                   class="form-control" placeholder="Buscar código o producto" />
+    <div class="card shadow-sm border-0 mb-4">
+
+        <!-- HEADER TOGGLE -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom"
+             style="cursor:pointer;"
+             onclick="toggleFilters()">
+
+            <h6 class="fw-bold text-muted mb-0">
+                Filtros de búsqueda
+            </h6>
+
+            <span id="filterArrow">▼</span>
         </div>
 
-        <div class="col-auto">
-            <label class="form-label">Proveedor</label>
-            <input type="text" name="SearchProveedor" value="@Model.SearchProveedor"
-                   class="form-control" placeholder="Proveedor" />
-        </div>
+        <!-- BODY -->
+        <div id="filtersBody" class="p-4" style="display:none;">
 
-        <div class="col-auto">
-            <label class="form-label">Producto</label>
-            <input type="text" name="SearchProducto" value="@Model.SearchProducto"
-                   class="form-control" placeholder="Producto" />
-        </div>
+            <div class="row g-3">
 
-        <div class="col-auto">
-            <label class="form-label">Asignada</label>
-            <select name="SearchAsignada" class="form-select">
-                <option value="" selected="@(string.IsNullOrWhiteSpace(Model.SearchAsignada))">Todas</option>
-                <option value="true" selected="@(Model.SearchAsignada == "true")">Sí</option>
-                <option value="false" selected="@(Model.SearchAsignada == "false")">No</option>
-            </select>
-        </div>
+                <!-- BUSQUEDA -->
+                <div class="col-md-3">
+                    <label class="form-label text-muted small">
+                        Búsqueda
+                    </label>
 
-        <div class="col-auto">
-            <label class="form-label">Page size</label>
-            <select name="PageSize" class="form-select">
-                <option value="5" selected="@(Model.PageSize == 5)">5</option>
-                <option value="10" selected="@(Model.PageSize == 10)">10</option>
-                <option value="25" selected="@(Model.PageSize == 25)">25</option>
-                <option value="50" selected="@(Model.PageSize == 50)">50</option>
-            </select>
-        </div>
+                    <input type="text"
+                           name="Search"
+                           value="@Model.Search"
+                           class="form-control"
+                           placeholder="Código o producto" />
+                </div>
 
-        <div class="col-auto">
-            <input type="hidden" name="PageNumber" value="1" />
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
+                <!-- PROVEEDOR -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Proveedor
+                    </label>
 
-        <div class="col-auto">
-            <button type="button" class="btn btn-outline-secondary"
-                    onclick="window.erpClearFiltersAndSubmit(this.closest('form'))">
-                Limpiar filtros
-            </button>
-        </div>
+                    <input type="text"
+                           name="SearchProveedor"
+                           value="@Model.SearchProveedor"
+                           class="form-control" />
+                </div>
 
-        <div class="col-auto ms-auto">
-            <button type="button" class="btn btn-success"
-                    data-bs-toggle="modal" data-bs-target="#createEditModal"
-                    id="btnOpenCreate">
-                Crear licencia
-            </button>
+                <!-- PRODUCTO -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Producto
+                    </label>
+
+                    <input type="text"
+                           name="SearchProducto"
+                           value="@Model.SearchProducto"
+                           class="form-control" />
+                </div>
+
+                <!-- ASIGNADA -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Asignada
+                    </label>
+
+                    <select name="SearchAsignada" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="true" selected="@(Model.SearchAsignada == "true")">Sí</option>
+                        <option value="false" selected="@(Model.SearchAsignada == "false")">No</option>
+                    </select>
+                </div>
+
+                <!-- PAGE SIZE -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">
+                        Page Size
+                    </label>
+
+                    <select name="PageSize" class="form-select">
+                        <option value="5" selected="@(Model.PageSize == 5)">5</option>
+                        <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                        <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+
+                <div>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+                        Filtrar
+                    </button>
+
+                
+                </div>
+
+                
+            </div>
+
         </div>
 
     </div>
+
 </form>
+
 <!-- ========================= -->
 <!-- CHIPS FILTROS ACTIVOS -->
 <!-- ========================= -->
-@{
-    var license = ViewBag.SearchLicense;
-}
+<div class="mb-3 d-flex flex-wrap gap-2">
 
-@if (!string.IsNullOrEmpty(license))
-{
-    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
-
+    @if (!string.IsNullOrWhiteSpace(Model.Search))
+    {
         <span class="chip">
-            <span class="text-primary">Licencia:</span> @license
+            Búsqueda: @Model.Search
+            <a class="x"
+               href="@Url.Action("Index", new {
+                   Search = (string)null,
+                   SearchProveedor = Model.SearchProveedor,
+                   SearchProducto = Model.SearchProducto,
+                   SearchAsignada = Model.SearchAsignada
+               })">✕</a>
         </span>
+    }
 
-        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index", "Licenses")">
-            ✖ Limpiar todos
+    @if (!string.IsNullOrWhiteSpace(Model.SearchProveedor))
+    {
+        <span class="chip">
+            Proveedor: @Model.SearchProveedor
+            <a class="x"
+               href="@Url.Action("Index", new {
+                   Search = Model.Search,
+                   SearchProveedor = (string)null,
+                   SearchProducto = Model.SearchProducto,
+                   SearchAsignada = Model.SearchAsignada
+               })">✕</a>
+        </span>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.SearchProducto))
+    {
+        <span class="chip">
+            Producto: @Model.SearchProducto
+            <a class="x"
+               href="@Url.Action("Index", new {
+                   Search = Model.Search,
+                   SearchProveedor = Model.SearchProveedor,
+                   SearchProducto = (string)null,
+                   SearchAsignada = Model.SearchAsignada
+               })">✕</a>
+        </span>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.SearchAsignada))
+    {
+        <span class="chip">
+            Asignada: @(Model.SearchAsignada == "true" ? "Sí" : "No")
+            <a class="x"
+               href="@Url.Action("Index", new {
+                   Search = Model.Search,
+                   SearchProveedor = Model.SearchProveedor,
+                   SearchProducto = Model.SearchProducto,
+                   SearchAsignada = (string)null
+               })">✕</a>
+        </span>
+    }
+
+    @{
+        var hasFilters =
+            !string.IsNullOrWhiteSpace(Model.Search) ||
+            !string.IsNullOrWhiteSpace(Model.SearchProveedor) ||
+            !string.IsNullOrWhiteSpace(Model.SearchProducto) ||
+            !string.IsNullOrWhiteSpace(Model.SearchAsignada);
+    }
+
+    @if (hasFilters)
+    {
+        <a class="btn btn-sm btn-outline-danger ms-2"
+           href="@Url.Action("Index")">
+            ✖ Limpiar todo
         </a>
+    }
 
-    </div>
+</div>
+
+
+<!-- BOTÓN CREAR -->
+<div class="d-flex justify-content-end mb-2">
+    <button type="button"
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#createEditModal">
+        + Crear licencia
+    </button>
+</div>
+<style>
+
+/* ===== TABLA EXACTA DEVICES ===== */
+
+.table.table-ortec {
+    border-radius: 6px;
+    overflow: hidden;
 }
 
+.table.table-ortec thead {
+    background-color: #0d2f6f !important;
+}
+
+.table.table-ortec thead th {
+    color: white !important;
+    text-align: center !important;
+}
+
+.table.table-ortec tbody tr:nth-child(odd) {
+    background-color: #a9c4d2 !important;
+}
+
+.table.table-ortec tbody tr:nth-child(even) {
+    background-color: #d2d2d2 !important;
+}
+
+/* ===== BOTONES ===== */
+
+button.btn-edit {
+    background-color: #0d2f6f !important;
+    color: white !important;
+    border: none !important;
+}
+
+button.btn-delete {
+    background-color: #d60000 !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* 🔥 MUY IMPORTANTE: quitar estilo raro de tus CSS antiguos */
+.btn-delete,
+.btn-edit {
+    text-decoration: none !important;
+}
+.table-ortec thead {
+    display: table-header-group !important;
+    visibility: visible !important;
+}
+thead.thead-ortec {
+    display: table-header-group !important;
+    position: relative !important;
+    z-index: 2;
+    background-color: #0d2f6f !important;
+}
+
+thead.thead-ortec th {
+    color: white !important;
+    text-align: center;
+    background-color: #0d2f6f !important;
+}
+.timeline {
+    position: relative;
+    border-left: 2px solid #ddd;
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -9px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    background-color: #0d2f6f; /* azul empresa */
+    border-radius: 50%;
+}
+
+.timeline-content {
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 13px;
+}
+.timeline-item {
+    margin-bottom: 12px;
+}
+
+
+
+</style>
 
 <!-- TABLA -->
-<div class="table-responsive">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>Código</th>
-                <th>Producto</th>
-                <th>Proveedor</th>
-                <th>Precio</th>
-                <th>Caducidad</th>
-                <th>Asignada</th>
-                <th>Disponible</th>
-                <th>Usuario</th>
-                <th class="text-end">Acciones</th>
-            </tr>
-        </thead>
+<div class="table-responsive" style="overflow: visible;">
+    <table class="table table-ortec table-hover align-middle text-center">
+        
+<thead class="thead-ortec">
+    <tr>
+        <th>Código</th>
+        <th>Producto</th>
+        <th>Proveedor</th>
+        <th>Precio</th>
+        <th>Caducidad</th>
+        <th>Asignada</th>
+        <th>Disponible</th>
+        <th>Usuario</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
+
 
         <tbody>
             @if (Model.Licenses == null || !Model.Licenses.Any())
@@ -169,17 +381,38 @@
                         <td>@item.Price</td>
                         <td>@(item.Caducidad?.ToString("yyyy-MM-dd") ?? "-")</td>
 
-                        <td>@(item.UserId != null ? "Sí" : "No")</td>
-                        <td>@(item.UserId == null ? "Sí" : "No")</td>
+                        <td>
+                            @if (item.UserId != null)
+                            {
+                                <span class="badge bg-success">Asignada</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Libre</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.UserId == null)
+                            {
+                                <span class="badge bg-success">Disponible</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Ocupada</span>
+                            }
+                        </td>
 
                         <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
 
-                        <td class="text-end" style="min-width: 430px;">
+                        <td>
+                            <div class="device-actions">
+
                            
 
                             <!-- HISTÓRICO -->
                             <button type="button"
-                                    class="btn btn-sm btn-outline-dark me-1 btn-history"
+                                    class="btn btn-sm btn-edit btn-history"
                                     data-id="@item.Id"
                                     data-code="@item.Code">
                                 Histórico
@@ -196,7 +429,7 @@
                             }
                             else
                             {
-                                <form class="d-inline" method="post" asp-action="Unassign" asp-controller="License">
+                                <form class="d-inline" method="post" asp-action="Unassign" asp-controller="License" onsubmit="showToast('Quitando asignación...', 'info')">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />
                                     @{
@@ -210,12 +443,13 @@
 
                             <!-- ELIMINAR -->
                             <button type="button"
-                                    class="btn btn-sm btn-danger btn-delete"
+                                        class="btn btn-sm btn-delete"
                                     data-id="@item.Id"
                                     data-bs-toggle="modal"
                                     data-bs-target="#deleteModal">
                                 Eliminar
                             </button>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -352,7 +586,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form id="createEditForm" method="post" asp-action="Create" asp-controller="License">
+            <form id="createEditForm" method="post" asp-action="Create" asp-controller="License" onsubmit="showToast('Guardando licencia...', 'info')">
                 @Html.AntiForgeryToken()
                 @{
                     RenderQpHidden();
@@ -383,7 +617,7 @@
 
                     <div class="mb-2">
                         <label class="form-label">Precio</label>
-                        <input class="form-control" id="Price" name="Price" />
+                        <input type="number" step="0.01" class="form-control" id="Price" name="Price" />
                     </div>
 
                     <div class="mb-2">
@@ -423,7 +657,8 @@
             </div>
 
             <div class="modal-footer">
-                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="License">
+                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="License" onsubmit="showToast('Eliminando licencia...', 'info')">
+
                     @Html.AntiForgeryToken()
                     @{
                         RenderQpHidden();
@@ -444,7 +679,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form id="assignForm" method="post" asp-action="Assign" asp-controller="License">
+            <form id="assignForm" method="post" asp-action="Assign" asp-controller="License" onsubmit="showToast('Asignando licencia...', 'info')">
                 @Html.AntiForgeryToken()
                 @{
                     RenderQpHidden();
@@ -484,6 +719,27 @@
     </div>
 </div>
 
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+
+    <div id="appToast" class="toast align-items-center text-white border-0" role="alert">
+
+        <div class="d-flex">
+
+            <div id="toastMessage" class="toast-body">
+                Mensaje
+            </div>
+
+            <button type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -511,54 +767,69 @@
                 });
             });
 
-            // Histórico
-            const historyModal = new bootstrap.Modal(document.getElementById("historyModal"));
-            document.querySelectorAll(".btn-history").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation();
+            // Histórico (TIMELINE PRO)
+const historyModal = new bootstrap.Modal(document.getElementById("historyModal"));
 
-                    const licId = this.dataset.id;
-                    const code = this.dataset.code;
+document.querySelectorAll(".btn-history").forEach(btn => {
+    btn.addEventListener("click", function (e) {
+        e.stopPropagation();
 
-                    document.getElementById("historyTitle").innerText = `Histórico - ${code}`;
-                    const body = document.getElementById("historyBody");
-                    body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+        const licId = this.dataset.id;
+        const code = this.dataset.code;
 
-                    fetch(`/License/HistoryJson?licenseId=${licId}`)
-                        .then(r => r.json())
-                        .then(rows => {
+        document.getElementById("historyTitle").innerText = `Histórico - ${code}`;
 
-                            let html = `
-                                <div class="table-responsive">
-                                  <table class="table table-sm table-striped">
-                                    <thead>
-                                      <tr>
-                                         <th>Usuario</th>
-                                         <th>Inicio</th>
-                                         <th>Fin</th>
-                                         <th>Duración</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                            `;
+        const body = document.getElementById("historyBody");
+        body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
 
-                            rows.forEach(r => {
-                                html += `
-                                    <tr>
-                                        <td>${r.userName}</td>
-                                        <td>${r.startDate}</td>
-                                        <td>${r.endDate ?? "ACTUAL"}</td>
-                                        <td>${r.duration}</td>
-                                    </tr>
-                                `;
-                            });
+        fetch(`/License/HistoryJson?licenseId=${licId}`)
+            .then(r => r.json())
+            .then(rows => {
 
-                            html += `</tbody></table></div>`;
-                            body.innerHTML = html;
-                            historyModal.show();
-                        });
-                });
+                let html = '<div class="timeline">';
+
+                if (!rows.length) {
+                    html += `<div class="text-muted">Sin histórico</div>`;
+                } else {
+
+                    rows.forEach(r => {
+                        html += `
+                            <div class="timeline-item">
+
+                                <div class="timeline-dot"></div>
+
+                                <div class="timeline-content">
+
+                                    <div class="fw-bold">${r.userName}</div>
+
+
+                                    <div class="small text-muted">
+                                        Inicio: ${r.startDate}
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Fin: ${r.endDate ?? "ACTUAL"}
+                                    </div>
+
+                                    <div class="badge bg-secondary mt-1" style="font-size:11px;">
+                                        ${Math.round(parseFloat(r.duration))} min
+                                    </div>
+
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                }
+
+                html += '</div>';
+
+                body.innerHTML = html;
+                historyModal.show();
             });
+    });
+});
+
 
             // ASIGNAR
             const assignModal = new bootstrap.Modal(document.getElementById("assignModal"));
@@ -633,24 +904,71 @@
             renderUserResults(filtered);
         });
 
-            // ✅ DETAILS
-            function loadDetails(id) {
-                window.currentLicenseId = id;
+            // ✅ DETAILS NIVEL EMPRESA
+function loadDetails(id) {
+    window.currentLicenseId = id;
 
-                const body = document.getElementById("detailsBody");
-                body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
+    const body = document.getElementById("detailsBody");
+    body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
 
-                fetch(`/License/DetailsJson?id=${id}`)
-                    .then(r => r.json())
-                    .then(d => {
-                        body.innerHTML = `
-                            <p><strong>Código:</strong> ${d.code ?? ""}</p>
-                            <p><strong>Producto:</strong> ${d.producto ?? ""}</p>
-                            <p><strong>Usuario:</strong> ${d.userName ?? "-"}</p>
-                        `;
-                        new bootstrap.Modal(document.getElementById("detailsModal")).show();
-                    });
-            }
+    fetch(`/License/DetailsJson?id=${id}`)
+        .then(r => r.json())
+        .then(d => {
+
+            body.innerHTML = `
+                <div class="container-fluid">
+
+                    <div class="row g-3">
+
+                        <!-- COLUMNA IZQUIERDA -->
+                        <div class="col-md-6">
+
+                            <div class="card p-3 shadow-sm">
+                                <h6 class="text-muted mb-2">Información general</h6>
+
+                                <p><strong>Código:</strong><br>${d.code ?? "-"}</p>
+                                <p><strong>Producto:</strong><br>${d.producto ?? "-"}</p>
+                                <p><strong>Proveedor:</strong><br>${d.proveedor ?? "-"}</p>
+                            </div>
+
+                        </div>
+
+                        <!-- COLUMNA DERECHA -->
+                        <div class="col-md-6">
+
+                            <div class="card p-3 shadow-sm">
+                                <h6 class="text-muted mb-2">Estado y datos</h6>
+
+                                <p><strong>Precio:</strong><br>${d.price ?? "-"}</p>
+                                <p><strong>Caducidad:</strong><br>${d.caducidad ?? "-"}</p>
+
+                                <p>
+                                    <strong>Asignada:</strong><br>
+                                    ${d.userId
+                                        ? '<span class="badge bg-success">Asignada</span>'
+                                        : '<span class="badge bg-secondary">Libre</span>'}
+                                </p>
+
+                                <p>
+                                    <strong>Disponible:</strong><br>
+                                    ${d.userId
+                                        ? '<span class="badge bg-danger">Ocupada</span>'
+                                        : '<span class="badge bg-success">Disponible</span>'}
+                                </p>
+
+                                <p><strong>Usuario:</strong><br>${d.userName ?? "-"}</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById("detailsModal")).show();
+        });
+}
 
         });
 
@@ -692,5 +1010,58 @@
             form.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
             form.submit();
         };
+                function toggleFilters() {
+
+            const body = document.getElementById("filtersBody");
+            const arrow = document.getElementById("filterArrow");
+
+            if (body.style.display === "none") {
+                body.style.display = "block";
+                arrow.innerText = "▲";
+            } else {
+                body.style.display = "none";
+                arrow.innerText = "▼";
+            }
+        }
+
+     
+// ==============================
+// ✅ TOAST FUNCION GLOBAL
+// ==============================
+function showToast(message, type = "success") {
+
+    const toastEl = document.getElementById('appToast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    if (!toastEl || !toastMessage) return;
+
+    toastMessage.innerText = message;
+
+    toastEl.className = "toast align-items-center text-white border-0";
+
+    if (type === "success") toastEl.classList.add("bg-success");
+    if (type === "error") toastEl.classList.add("bg-danger");
+    if (type === "info") toastEl.classList.add("bg-primary");
+
+    new bootstrap.Toast(toastEl).show();
+}
+
+
+// ==============================
+// ✅ TOAST DESPUÉS DE RECARGA
+// ==============================
+window.addEventListener("load", function () {
+
+    const msg = '@TempData["ToastMsg"]';
+    const type = '@TempData["ToastType"]';
+
+    if (msg && msg !== "") {
+        showToast(msg, type || "success");
+    }
+
+});
+
+
+
     </script>
 }

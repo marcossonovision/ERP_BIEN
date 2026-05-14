@@ -24,7 +24,7 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // INDEX (LECTURA)
+        // INDEX
         // ============================
         [Authorize(Policy = "LIC_VIEW")]
         public async Task<IActionResult> Index([FromQuery] LicenseQueryParameters qp)
@@ -44,25 +44,9 @@ namespace ERP_BIEN.Controllers
                 (items, total) = await _svc.GetPagedAsync(qp);
             }
 
-            var topUsers = items
-                .Where(l => l.User != null)
-                .GroupBy(l => l.User.Name + " " + l.User.LastName)
-                .Select(g => new { Name = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .Take(3)
-                .ToList();
-
             var allLicenses = await _db.Licenses
                 .Include(l => l.User)
                 .ToListAsync();
-
-            var totalLicenses = allLicenses.Count;
-            var assignedLicenses = allLicenses.Count(l => l.UserId != null);
-            var freeLicenses = allLicenses.Count(l => l.UserId == null);
-
-            var usage = totalLicenses > 0
-                ? (int)((assignedLicenses * 100.0) / totalLicenses)
-                : 0;
 
             var vm = new LicenseIndexMvcViewModel
             {
@@ -71,19 +55,18 @@ namespace ERP_BIEN.Controllers
                 PageSize = qp.PageSize,
                 TotalItems = total,
                 TotalPages = totalPages,
+
                 Search = qp.Search,
                 SearchProveedor = qp.SearchProveedor,
                 SearchProducto = qp.SearchProducto,
                 SearchAsignada = qp.SearchAsignada,
 
-                TotalLicenses = totalLicenses,
-                AssignedLicenses = assignedLicenses,
-                FreeLicenses = freeLicenses,
-                UsagePercentage = usage,
-
-                TopUsers = topUsers
-                    .Select(x => $"{x.Name} ({x.Count})")
-                    .ToList()
+                TotalLicenses = allLicenses.Count,
+                AssignedLicenses = allLicenses.Count(l => l.UserId != null),
+                FreeLicenses = allLicenses.Count(l => l.UserId == null),
+                UsagePercentage = allLicenses.Count > 0
+                    ? (int)((allLicenses.Count(l => l.UserId != null) * 100.0) / allLicenses.Count)
+                    : 0
             };
 
             vm.Users = (await _svc.GetAllUsersAsync()).ToList();
@@ -91,9 +74,8 @@ namespace ERP_BIEN.Controllers
         }
 
         // ============================
-        // DETAILS (JSON)
+        // DETAILS
         // ============================
-        [Authorize(Policy = "LIC_VIEW")]
         [HttpGet]
         public async Task<JsonResult> DetailsJson(int id)
         {
@@ -108,28 +90,23 @@ namespace ERP_BIEN.Controllers
                 proveedor = lic.Proveedor,
                 price = lic.Price,
                 caducidad = lic.Caducidad?.ToString("yyyy-MM-dd"),
-                asignada = lic.Asignada,
-                disponible = lic.Disponible,
                 userId = lic.UserId,
                 userName = lic.User != null ? $"{lic.User.Name} {lic.User.LastName}" : null
             });
         }
 
         // ============================
-        // HISTÓRICO (JSON)
+        // HISTÓRICO
         // ============================
-        [Authorize(Policy = "LIC_VIEW")]
         [HttpGet]
         public async Task<JsonResult> HistoryJson(int licenseId)
         {
             var rows = await _db.LicenseHistories
-                .AsNoTracking()
                 .Where(h => h.LicenseId == licenseId)
                 .Include(h => h.User)
                 .OrderByDescending(h => h.StartDate)
                 .Select(h => new
                 {
-                    id = h.Id,
                     userName = h.User != null
                         ? h.User.Name + " " + h.User.LastName
                         : "User " + h.UserId,
@@ -138,7 +115,7 @@ namespace ERP_BIEN.Controllers
                         ? h.EndDate.Value.ToString("yyyy-MM-dd HH:mm")
                         : null,
                     duration = h.EndDate.HasValue
-                        ? ((h.EndDate.Value - h.StartDate).TotalMinutes).ToString("0") + " min"
+                        ? ((h.EndDate.Value - h.StartDate).TotalMinutes) + " min"
                         : "ACTUAL"
                 })
                 .ToListAsync();
@@ -149,17 +126,30 @@ namespace ERP_BIEN.Controllers
         // ============================
         // CREATE
         // ============================
-        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(LicenseViewModel vm, LicenseQueryParameters qp)
+        public async Task<IActionResult> Create(LicenseViewModel vm)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction(nameof(Index), qp);
+            {
+                var errores = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                TempData["ToastMsg"] = "Error: " + string.Join(" | ", errores);
+                TempData["ToastType"] = "error";
+
+                return RedirectToAction(nameof(Index));
+            }
 
             if (vm.UserId.HasValue &&
                 !await _db.Users.AnyAsync(u => u.Id == vm.UserId.Value))
-                return RedirectToAction(nameof(Index), qp);
+            {
+                TempData["ToastMsg"] = "Usuario inválido ";
+                TempData["ToastType"] = "error";
+                return RedirectToAction(nameof(Index));
+            }
 
             var lic = new License
             {
@@ -174,27 +164,27 @@ namespace ERP_BIEN.Controllers
             ApplyAssignmentState(lic);
 
             await _svc.CreateAsync(lic);
-            return RedirectToAction(nameof(Index), qp);
+            TempData["HighlightId"] = lic.Id;
+            TempData["ToastMsg"] = "Guardado correctamente ";
+            TempData["ToastType"] = "success";
+
+            return RedirectToAction(nameof(Index));
         }
 
         // ============================
         // EDIT
         // ============================
-        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LicenseViewModel vm, LicenseQueryParameters qp)
         {
-            if (!ModelState.IsValid)
-                return RedirectToAction(nameof(Index), qp);
-
             var lic = await _svc.GetByIdAsync(vm.Id);
             if (lic == null)
+            {
+                TempData["ToastMsg"] = "Error al editar";
+                TempData["ToastType"] = "error";
                 return RedirectToAction(nameof(Index), qp);
-
-            if (vm.UserId.HasValue &&
-                !await _db.Users.AnyAsync(u => u.Id == vm.UserId.Value))
-                return RedirectToAction(nameof(Index), qp);
+            }
 
             lic.Code = vm.Code?.Trim();
             lic.Producto = vm.Producto?.Trim();
@@ -206,64 +196,41 @@ namespace ERP_BIEN.Controllers
             ApplyAssignmentState(lic);
 
             await _svc.UpdateAsync(lic);
+            TempData["HighlightId"] = lic.Id;
+
+
+            TempData["ToastMsg"] = "Guardado correctamente";
+            TempData["ToastType"] = "success";
+
             return RedirectToAction(nameof(Index), qp);
         }
 
         // ============================
         // ASSIGN
         // ============================
-        [Authorize(Policy = "LIC_ASSIGN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, int userId, LicenseQueryParameters qp)
         {
-            if (!await _db.Users.AnyAsync(u => u.Id == userId))
-                return RedirectToAction(nameof(Index), qp);
+            await _svc.AssignToUserAsync(id, userId);
 
-            try
-            {
-                await _svc.AssignToUserAsync(id, userId);
-            }
-            catch (InvalidOperationException)
-            {
-                return RedirectToAction(nameof(Index), qp);
-            }
+            TempData["ToastMsg"] = "Asignado correctamente ";
+            TempData["ToastType"] = "success";
 
-            var open = await _db.LicenseHistories
-                .Where(h => h.LicenseId == id && h.EndDate == null)
-                .FirstOrDefaultAsync();
-
-            if (open != null)
-                open.EndDate = DateTime.Now;
-
-            _db.LicenseHistories.Add(new LicenseHistory
-            {
-                LicenseId = id,
-                UserId = userId,
-                StartDate = DateTime.Now
-            });
-
-            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index), qp);
         }
 
         // ============================
         // UNASSIGN
         // ============================
-        [Authorize(Policy = "LIC_ASSIGN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unassign(int id, LicenseQueryParameters qp)
         {
-            var open = await _db.LicenseHistories
-                .Where(h => h.LicenseId == id && h.EndDate == null)
-                .FirstOrDefaultAsync();
-
-            if (open != null)
-                open.EndDate = DateTime.Now;
-
             await _svc.UnassignAsync(id);
-            await _db.SaveChangesAsync();
+
+            TempData["ToastMsg"] = "Quitado correctamente";
+            TempData["ToastType"] = "success";
 
             return RedirectToAction(nameof(Index), qp);
         }
@@ -271,12 +238,15 @@ namespace ERP_BIEN.Controllers
         // ============================
         // DELETE
         // ============================
-        [Authorize(Policy = "WRITE")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, LicenseQueryParameters qp)
         {
             await _svc.DeleteAsync(id);
+
+            TempData["ToastMsg"] = "Eliminado correctamente";
+            TempData["ToastType"] = "error";
+
             return RedirectToAction(nameof(Index), qp);
         }
 

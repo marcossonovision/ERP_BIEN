@@ -19,7 +19,6 @@ namespace ERP_BIEN.Services
 
         // ============================================
         // PAGINACIÓN + FILTROS (firma antigua)
-        // Se mantiene para no romper llamadas viejas
         // ============================================
         public (List<User> Users, int TotalPages) GetPagedUsers(
             string searchName,
@@ -60,35 +59,29 @@ namespace ERP_BIEN.Services
                     .ThenInclude(ur => ur.Role)
                 .AsQueryable();
 
-            // FILTRO NOMBRE/APELLIDO
             if (!string.IsNullOrWhiteSpace(searchName))
             {
                 var nameFilter = searchName.Trim().ToLower();
-
                 query = query.Where(u =>
                     (u.Name != null && u.Name.ToLower().StartsWith(nameFilter)) ||
                     (u.LastName != null && u.LastName.ToLower().StartsWith(nameFilter))
                 );
             }
 
-            // FILTRO DOMAIN USER
             if (!string.IsNullOrWhiteSpace(searchDomain))
             {
                 var domainFilter = searchDomain.Trim().ToLower();
-
                 query = query.Where(u =>
                     u.DomainUser != null &&
                     u.DomainUser.ToLower().StartsWith(domainFilter)
                 );
             }
 
-            // FILTRO EQUIPO
             if (searchTeamId.HasValue)
             {
                 query = query.Where(u => u.TeamId == searchTeamId.Value);
             }
 
-            // ✅ FILTRO ROL (UserRoles)
             if (searchRoleId.HasValue)
             {
                 query = query.Where(u =>
@@ -97,20 +90,17 @@ namespace ERP_BIEN.Services
                 );
             }
 
-            // ✅ FILTRO ESTADO
             if (searchIsActive.HasValue)
             {
                 query = query.Where(u => u.IsActive == searchIsActive.Value);
             }
 
-            // TOTAL PÁGINAS
             int totalUsers = query.Count();
             int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
 
             if (totalPages > 0 && pageNumber > totalPages)
                 pageNumber = totalPages;
 
-            // PAGINACIÓN
             var users = query
                 .OrderBy(u => u.Name)
                 .ThenBy(u => u.LastName)
@@ -134,13 +124,13 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // CREAR USUARIO ✅ (CORREGIDO: devuelve User)
+        // CREAR USUARIO ✅ (devuelve User)
         // ============================================
         public User CreateUser(User user)
         {
             _context.Users.Add(user);
             _context.SaveChanges();
-            return user; // ✅ para poder usar user.Id
+            return user;
         }
 
         // ============================================
@@ -156,15 +146,13 @@ namespace ERP_BIEN.Services
             user.LastName = updated.LastName;
             user.DomainUser = updated.DomainUser;
             user.TeamId = updated.TeamId;
-
-            // ✅ CLAVE: si no pones esto, “editar estado” nunca se guarda
             user.IsActive = updated.IsActive;
 
             _context.SaveChanges();
         }
 
         // ============================================
-        // ✅ ACTUALIZAR ROL DEL USUARIO (1 rol)
+        // ACTUALIZAR ROL DEL USUARIO (1 rol)
         // ============================================
         public void UpdateUserRole(int userId, int? roleId)
         {
@@ -191,10 +179,11 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================
-        // ELIMINAR USUARIO
+        // ✅ ELIMINAR USUARIO (CORREGIDO: evita DbUpdateConcurrencyException)
         // ============================================
         public void DeleteUser(int id)
         {
+            // Cargamos el usuario con todo lo que tú estabas borrando manualmente
             var user = _context.Users
                 .Include(u => u.UserRoles)
                 .Include(u => u.Devices)
@@ -206,6 +195,11 @@ namespace ERP_BIEN.Services
             if (user == null)
                 return;
 
+            // Guardamos IDs para limpiar después (si quieres evitar huérfanos)
+            var personalInfoId = user.PersonalInfoId;
+            var companyInfoId = user.CompanyInfoId;
+
+            // 1) Romper relaciones que puedan dar FK
             if (user.UserRoles != null && user.UserRoles.Any())
                 _context.UserRoles.RemoveRange(user.UserRoles);
 
@@ -215,13 +209,37 @@ namespace ERP_BIEN.Services
             if (user.Licenses != null && user.Licenses.Any())
                 _context.Licenses.RemoveRange(user.Licenses);
 
-            if (user.PersonalInfo != null)
-                _context.PersonalInformation.Remove(user.PersonalInfo);
-
-            if (user.CompanyInfo != null)
-                _context.CompanyInformation.Remove(user.CompanyInfo);
+            // 2) CLAVE:
+            // NO borres PersonalInfo / CompanyInfo ANTES del User
+            // porque en tu modelo hay cascada desde esas tablas hacia User.
+            // (Borrar el principal puede borrar el User y luego EF intenta borrarlo otra vez => Concurrency) 
 
             _context.Users.Remove(user);
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Si por cascada u otro proceso ya no existe, el resultado final (usuario borrado) ya se cumple
+                return;
+            }
+
+            // 3) Limpieza opcional de tablas 1:1 (después de borrar el User ya no hay cascada peligrosa)
+            // Solo si existen y quieres que no queden registros huérfanos
+            if (personalInfoId.HasValue)
+            {
+                var pi = _context.PersonalInformation.FirstOrDefault(x => x.Id == personalInfoId.Value);
+                if (pi != null) _context.PersonalInformation.Remove(pi);
+            }
+
+            if (companyInfoId.HasValue)
+            {
+                var ci = _context.CompanyInformation.FirstOrDefault(x => x.Id == companyInfoId.Value);
+                if (ci != null) _context.CompanyInformation.Remove(ci);
+            }
+
             _context.SaveChanges();
         }
 
@@ -267,10 +285,13 @@ namespace ERP_BIEN.Services
                 })
                 .ToList();
         }
+
+        // ============================================
+        // DUPLICADOS DomainUser
+        // ============================================
         public bool DomainUserExists(string domainUser, int? excludeUserId = null)
         {
             domainUser = (domainUser ?? "").Trim();
-
             if (string.IsNullOrEmpty(domainUser))
                 return false;
 
