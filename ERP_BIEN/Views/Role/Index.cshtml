@@ -5,25 +5,278 @@
 }
 
 <style>
-    tr:hover {
-        background-color: #f8f9fa;
-        transition: 0.2s;
-    }
+/* =========================================================
+   0) PALETA (MISMA QUE USERS)
+   ========================================================= */
+:root{
+  --w:#ffffff;
+  --b:#000000;
 
-    .role-row {
-        cursor: pointer;
-    }
+  --c-cyan:#0090E0;
+  --c-navy:#032966;
+  --c-navy2:#004080;
+
+  --c-success:#28A745;
+  --c-warning:#FFC107;
+  --c-danger:#DC3545;
+  --c-info:#17A2B8;
+
+  --border:#E6EAF2;
+
+  --row-alt:#D9F1FF;
+  --row-hover:#C7EBFF;
+}
+
+/* =========================================================
+   1) HEADER PRO + BOTONES
+   ========================================================= */
+.header-pro{
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.btn-pill{
+  border-radius:999px !important;
+  padding:10px 16px !important;
+  font-weight:800 !important;
+  border:0 !important;
+}
+.btn-create{
+  background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
+  color:#fff !important;
+}
+.btn-create:hover{ filter:brightness(.95); }
+
+/* =========================================================
+   2) CARD PRO (como Users)
+   ========================================================= */
+.card-pro{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+/* =========================================================
+   3) FILTROS PRO
+   ========================================================= */
+.filters-pro{
+  padding:20px;
+}
+.filters-pro .form-label{
+  font-weight:800;
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:rgba(0,0,0,.60);
+  margin-bottom:6px;
+}
+.filters-pro .form-control,
+.filters-pro .form-select{
+  border-radius:12px;
+  border:1px solid #dbe6f4;
+  padding:10px 12px;
+  min-height:42px;
+}
+.filters-pro .form-control:focus,
+.filters-pro .form-select:focus{
+  border-color: var(--c-cyan);
+  box-shadow:0 0 0 3px rgba(0,144,224,.15);
+}
+.btn-filter{
+  background: var(--c-cyan) !important;
+  color:#fff !important;
+}
+.btn-clear{
+  background:#fff !important;
+  border:1px solid rgba(0,0,0,.18) !important;
+  color:rgba(0,0,0,.75) !important;
+}
+.btn-filter:hover, .btn-clear:hover{ filter:brightness(.97); }
+
+/* =========================================================
+   4) CHIPS (como Users)
+   ========================================================= */
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:.78rem;
+  font-weight:800;
+  border:1px solid rgba(0,0,0,.10);
+  background:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+.chip .x{
+  border:0;
+  background:transparent;
+  padding:0 4px;
+  cursor:pointer;
+  font-weight:900;
+  opacity:.8;
+}
+.chip .x:hover{ opacity:1; }
+.chip-danger{
+  background: var(--c-danger);
+  color:#fff;
+  border:0;
+  text-decoration:none;
+}
+.chip-danger:hover{ filter:brightness(.95); }
+
+/* =========================================================
+   5) TABLA (MISMO LOOK QUE USERS: table-shell + table-style)
+   ========================================================= */
+.table-shell{
+  background:var(--w);
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.table-style{
+  width:100%;
+  margin:0;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.table-style thead th{
+  background:var(--c-navy);
+  color:var(--w);
+  font-weight:900;
+  padding:14px 12px;
+  border-bottom:0;
+  white-space:nowrap;
+  font-size:.9rem;
+}
+.table-style tbody td{
+  padding:12px 12px;
+  border-top:0;
+  vertical-align:middle;
+}
+.table-style tbody tr:nth-child(even){
+  background:var(--row-alt);
+}
+.table-style tbody tr:hover{
+  background:var(--row-hover);
+}
+.cell-muted{
+  color:rgba(0,0,0,.55);
+  font-size:.85rem;
+}
+
+/* =========================================================
+   6) BOTONES ACCIÓN EN TABLA (pill)
+   ========================================================= */
+.actions-wrap{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+.btn-action{
+  border:0 !important;
+  border-radius:999px !important;
+  padding:7px 12px !important;
+  font-weight:900 !important;
+  font-size:.78rem !important;
+  line-height:1 !important;
+  color:#fff !important;
+  white-space:nowrap;
+}
+.btn-action.btn-edit{ background: var(--c-warning) !important; color:#111 !important; }
+.btn-action.btn-delete{ background: var(--c-danger) !important; color:#fff !important; }
+.btn-action:hover{ filter:brightness(.95); }
+
+/* fila clicable */
+.role-row{ cursor:pointer; }
+.role-row button{ pointer-events:auto !important; position:relative; z-index:10; }
+
+/* =========================================================
+   7) PAGINACIÓN PRO
+   ========================================================= */
+.pagination .page-link{
+  border-radius:10px;
+  margin:0 2px;
+}
+
+/* =========================================================
+   8) MODALES PRO (IGUAL QUE USERS)
+   ========================================================= */
+.modal-pro .modal-content{
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.20);
+}
+.modal-pro .modal-header{
+  background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+  color:#fff;
+  border-bottom:0;
+}
+.modal-pro .modal-header .btn-close{
+  filter: invert(1);
+  opacity:.95;
+}
+.modal-pro .modal-body{ background:#f7fbff; }
+.modal-pro .modal-footer{
+  background:#fff;
+  border-top:1px solid var(--border);
+}
+.modal-pro .modal-icon{
+  width:46px;height:46px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+.modal-pro .modal-icon.warning{ background: var(--c-warning); color:#111; }
+.modal-pro .modal-icon.danger{ background: var(--c-danger); color:#fff; }
+.modal-pro .modal-icon.navy{ background: var(--c-navy2); color:#fff; }
+
+.modal-pro .preview-box{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 14px;
+}
+.modal-pro .preview-title{ font-weight:900; font-size:1.05rem; }
+.modal-pro .preview-sub{ font-size:.85rem; color:rgba(0,0,0,.55); }
+
+.modal-pro .btn-outline-pro{
+  border:1px solid rgba(0,0,0,.20) !important;
+  background:#fff !important;
+  color:rgba(0,0,0,.75) !important;
+}
+.modal-pro .btn-save{
+  background: var(--c-warning) !important;
+  color:#111 !important;
+}
+.modal-pro .btn-danger-pro{
+  background: var(--c-danger) !important;
+  color:#fff !important;
+}
 </style>
 
-<div class="page-header d-flex justify-content-between align-items-center mb-3">
-    <h2>Gestión de Roles</h2>
+<!-- ========================= -->
+<!-- HEADER PRO -->
+<!-- ========================= -->
+<div class="header-pro d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0 fw-bold">Gestión de Roles</h2>
+        <small class="text-muted">Mostrando @Model.Roles.Count() roles</small>
+    </div>
 
-    <button type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#createModal">
-        Crear Rol
-    </button>
+    <div class="d-flex gap-2">
+        <button type="button"
+                class="btn btn-pill btn-create"
+                data-bs-toggle="modal"
+                data-bs-target="#createModal">
+            ➕ Crear Rol
+        </button>
+    </div>
 </div>
 
 <!-- ========================= -->
@@ -32,21 +285,25 @@
 <form method="get"
       asp-action="Index"
       asp-controller="Role"
-      class="card shadow-sm border-0 mb-4 p-4">
+      class="card-pro filters-pro mb-4">
 
     <div class="row g-3 align-items-end">
 
-        <div class="col-auto">
-            <label class="form-label text-muted small">Búsqueda</label>
+        <!-- BUSQUEDA -->
+        <div class="col-md-5">
+            <label class="form-label">Búsqueda</label>
+
             <input type="text"
                    name="Search"
                    value="@Model.Search"
                    class="form-control"
-                   placeholder="Buscar código o nombre" />
+                   placeholder="Buscar código o nombre..." />
         </div>
 
-        <div class="col-auto">
-            <label class="form-label text-muted small">Page size</label>
+        <!-- PAGE SIZE -->
+        <div class="col-md-3">
+            <label class="form-label">Page size</label>
+
             <select name="PageSize" class="form-select">
                 <option value="5" selected="@(Model.PageSize == 5)">5</option>
                 <option value="10" selected="@(Model.PageSize == 10)">10</option>
@@ -55,43 +312,47 @@
             </select>
         </div>
 
-        <div class="col-auto">
+        <!-- BOTONES -->
+        <div class="col-md-4 d-flex gap-2 justify-content-end">
             <input type="hidden" name="PageNumber" value="1" />
-            <button type="submit" class="btn btn-primary">
-                Filtrar
-            </button>
-        </div>
 
-        <div class="col-auto">
+            <button type="submit"
+                    class="btn btn-pill btn-filter">
+                🔍 Filtrar
+            </button>
+
             <button type="button"
-                    class="btn btn-outline-secondary"
-                    onclick="window.location.href='/Roles'">
-                Limpiar filtros
+                    class="btn btn-pill btn-clear"
+                    onclick="window.location.href='@Url.Action("Index","Role")'">
+                Limpiar
             </button>
         </div>
 
     </div>
 </form>
+
 <!-- ========================= -->
-<!-- CHIPS FILTROS ACTIVOS -->
+<!-- FILTROS ACTIVOS -->
 <!-- ========================= -->
 @{
-    var search = Model.Search;
+    string? search = Model.Search;
 }
 
-@if (!string.IsNullOrEmpty(search))
+@if (!string.IsNullOrWhiteSpace(search))
 {
     <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
 
         <span class="chip">
             <span class="text-primary">Búsqueda:</span> @search
             <a class="x text-decoration-none"
-                   href="@Url.Action("Index", new { pageNumber = 1, search = (string)null })">
+               href="@Url.Action("Index", new { PageNumber = 1, Search = (string?)null, PageSize = Model.PageSize })">
                 ×
             </a>
         </span>
 
-        <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Index", "Role")">
+        <a class="chip chip-danger"
+           href="@Url.Action("Index", "Role")"
+           title="Limpiar todos">
             ✖ Limpiar todos
         </a>
 
@@ -99,128 +360,159 @@
 }
 
 <!-- ========================= -->
-<!-- TABLA -->
+<!-- TABLA (MISMO LOOK QUE USERS) -->
 <!-- ========================= -->
-<table class="table table-hover align-middle shadow-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th style="width:220px;">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (!Model.Roles.Any())
-        {
-            <tr>
-                <td colspan="3" class="text-center text-muted">
-                    No se encontraron roles.
-                </td>
-            </tr>
-        }
-        else
-        {
-            foreach (var role in Model.Roles)
-            {
-                <tr class="role-row"
-                    data-id="@role.Id"
-                    data-code="@role.Code"
-                    data-name="@role.Name">
-
-                    <td>@role.Code</td>
-                    <td>@role.Name</td>
-                    <td>
-                        <!-- ✅ EDITAR -->
-                        <button type="button"
-                                class="btn btn-sm btn-outline-warning btn-edit-role"
-                                data-bs-toggle="modal"
-                                data-bs-target="#editModal"
-                                data-id="@role.Id"
-                                data-code="@role.Code"
-                                data-name="@role.Name">
-                            ✏️ Editar
-                        </button>
-
-                        <!-- ✅ ELIMINAR -->
-                        <button type="button"
-                                class="btn btn-sm btn-outline-danger btn-delete-role"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteModal"
-                                data-id="@role.Id"
-                                data-name="@role.Name">
-                            🗑️ Eliminar
-                        </button>
-                    </td>
+<div class="table-shell mb-3">
+    <div class="table-responsive">
+        <table class="table-style align-middle">
+            <thead>
+                <tr>
+                    <th style="width:25%;">Código</th>
+                    <th>Nombre</th>
+                    <th style="width:260px;" class="text-end">Acciones</th>
                 </tr>
-            }
-        }
-    </tbody>
-</table>
+            </thead>
+
+            <tbody>
+                @if (!Model.Roles.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            No se encontraron roles.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var role in Model.Roles)
+                    {
+                        <tr class="role-row"
+                            data-id="@role.Id"
+                            data-code="@role.Code"
+                            data-name="@role.Name">
+
+                            <td>
+                                <div class="fw-bold">@role.Code</div>
+                                <div class="cell-muted">ID: @role.Id</div>
+                            </td>
+
+                            <td>
+                                <div class="fw-semibold">@role.Name</div>
+                                <div class="cell-muted">Nombre del rol</div>
+                            </td>
+
+                            <td class="text-end">
+                                <div class="actions-wrap">
+                                    <button type="button"
+                                            class="btn-action btn-edit btn-edit-role"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editModal"
+                                            data-id="@role.Id"
+                                            data-code="@role.Code"
+                                            data-name="@role.Name">
+                                        ✏️ Editar
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn-action btn-delete btn-delete-role"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-id="@role.Id"
+                                            data-name="@role.Name">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <!-- ========================= -->
 <!-- PAGINACIÓN -->
 <!-- ========================= -->
 <nav aria-label="Page navigation" class="mt-3">
+
     <ul class="pagination justify-content-center">
 
+        <!-- PREV -->
         <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+
             <a class="page-link"
-                   asp-action="Index"
-                   asp-controller="Role"
-                   asp-route-PageNumber="@(Model.PageNumber - 1)"
-                   asp-route-PageSize="@Model.PageSize"
-                   asp-route-Search="@Model.Search">
+               asp-action="Index"
+               asp-controller="Role"
+               asp-route-PageNumber="@(Model.PageNumber - 1)"
+               asp-route-PageSize="@Model.PageSize"
+               asp-route-Search="@Model.Search">
+
                 Anterior
+
             </a>
+
         </li>
 
-        @for (int i = 1; i <= Model.TotalPages; i++)
-        {
-            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-controller="Role"
-                       asp-route-PageNumber="@i"
-                       asp-route-PageSize="@Model.PageSize"
-                       asp-route-Search="@Model.Search">
-                    @i
-                </a>
-            </li>
-        }
+        <!-- CURRENT -->
+        <li class="page-item active">
 
-        <li class="page-item @(Model.PageNumber == Model.TotalPages || Model.TotalPages == 0 ? "disabled" : "")">
+            <span class="page-link">
+                @Model.PageNumber
+            </span>
+
+        </li>
+
+        <!-- NEXT -->
+        <li class="page-item @(Model.Roles.Count() < Model.PageSize ? "disabled" : "")">
+
             <a class="page-link"
-                   asp-action="Index"
-                   asp-controller="Role"
-                   asp-route-PageNumber="@(Model.PageNumber + 1)"
-                   asp-route-PageSize="@Model.PageSize"
-                   asp-route-Search="@Model.Search">
+               asp-action="Index"
+               asp-controller="Role"
+               asp-route-PageNumber="@(Model.PageNumber + 1)"
+               asp-route-PageSize="@Model.PageSize"
+               asp-route-Search="@Model.Search">
+
                 Siguiente
+
             </a>
+
         </li>
 
     </ul>
+
 </nav>
 
 <!-- ========================= -->
-<!-- CREATE MODAL -->
+<!-- CREATE MODAL (PRO) -->
 <!-- ========================= -->
-<div class="modal fade" id="createModal" tabindex="-1">
+<div class="modal fade modal-pro" id="createModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form asp-action="Create" asp-controller="Role" method="post">
-                @Html.AntiForgeryToken()
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear Rol</h5>
+            <form asp-action="Create" asp-controller="Role" method="post">
+                <div class="modal-header">  
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="modal-icon navy">➕</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Crear Rol</h5>
+                            <div class="small opacity-75">Define código y nombre del rol</div>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <label>Código</label>
+                    <div class="preview-box mb-3">
+                        <div class="preview-title">Nuevo rol</div>
+                        <div class="preview-sub">Se añadirá al catálogo de roles</div>
+                    </div>
+
+                    <label class="form-label">Código</label>
                     <input class="form-control" name="Code" required />
 
-                    <label class="mt-2">Nombre</label>
+                    <label class="form-label mt-3">Nombre</label>
                     <input class="form-control" name="Name" required />
 
                     <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
@@ -229,35 +521,47 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="button" class="btn btn-pill btn-outline-pro" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pill btn-create">Crear</button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
 
 <!-- ========================= -->
-<!-- EDIT MODAL -->
+<!-- EDIT MODAL (PRO) -->
 <!-- ========================= -->
-<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal fade modal-pro" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form asp-action="Edit" asp-controller="Role" method="post">
-                @Html.AntiForgeryToken()
 
+            <form asp-action="Edit" asp-controller="Role" method="post" id="editRoleForm">
                 <div class="modal-header">
-                    <h5 class="modal-title">Editar Rol</h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="modal-icon warning">✏️</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Editar Rol</h5>
+                            <div class="small opacity-75">Actualiza código y nombre</div>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
                     <input type="hidden" id="edit-id" name="Id" />
 
-                    <label>Código</label>
+                    <div class="preview-box mb-3">
+                        <div class="preview-title" id="edit-preview-title">—</div>
+                        <div class="preview-sub" id="edit-preview-sub">—</div>
+                    </div>
+
+                    <label class="form-label">Código</label>
                     <input class="form-control" id="edit-code" name="Code" required />
 
-                    <label class="mt-2">Nombre</label>
+                    <label class="form-label mt-3">Nombre</label>
                     <input class="form-control" id="edit-name" name="Name" required />
 
                     <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
@@ -266,35 +570,44 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning">Guardar cambios</button>
+                    <button type="button" class="btn btn-pill btn-outline-pro" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pill btn-save" id="btnEditRoleSave">Guardar cambios</button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
 
 <!-- ========================= -->
-<!-- DELETE MODAL -->
+<!-- DELETE MODAL (PRO) -->
 <!-- ========================= -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal fade modal-pro" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form asp-action="Delete" asp-controller="Role" method="post">
-                @Html.AntiForgeryToken()
 
+            <form asp-action="Delete" asp-controller="Role" method="post" id="deleteRoleForm">
                 <div class="modal-header">
-                    <h5 class="modal-title">Eliminar Rol</h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="modal-icon danger">🗑️</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Eliminar Rol</h5>
+                            <div class="small opacity-75">Esta acción no se puede deshacer</div>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
                     <input type="hidden" id="delete-id" name="id" />
 
-                    <p>
-                        ¿Seguro que deseas eliminar el rol
-                        <strong id="delete-name"></strong>?
-                    </p>
+                    <div class="preview-box">
+                        <div class="preview-title">¿Seguro?</div>
+                        <div class="preview-sub">
+                            Vas a eliminar el rol <strong id="delete-name"></strong>.
+                        </div>
+                    </div>
 
                     <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
                     <input type="hidden" name="PageSize" value="@Model.PageSize" />
@@ -302,16 +615,18 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-pill btn-outline-pro" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pill btn-danger-pro" id="btnDeleteRoleConfirm">Eliminar</button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
 
 <!-- ========================= -->
-<!-- DETAILS MODAL -->
+<!-- DETAILS MODAL (puedes dejarlo simple o hacerlo PRO después) -->
 <!-- ========================= -->
 <div class="modal fade" id="detailsModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -332,53 +647,51 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-            // =========================
-            // RELLENAR EDIT MODAL (CLICK)
-            // =========================
-            document.querySelectorAll(".btn-edit-role").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation(); // para que NO abra details
+    // =========================
+    // RELLENAR EDIT MODAL (CLICK)
+    // =========================
+    document.querySelectorAll(".btn-edit-role").forEach(btn => {
+        btn.addEventListener("click", function (e) {
+            e.stopPropagation();
 
-                    document.getElementById("edit-id").value = this.dataset.id || "";
-                    document.getElementById("edit-code").value = this.dataset.code || "";
-                    document.getElementById("edit-name").value = this.dataset.name || "";
-                });
-            });
+            document.getElementById("edit-id").value = this.dataset.id || "";
+            document.getElementById("edit-code").value = this.dataset.code || "";
+            document.getElementById("edit-name").value = this.dataset.name || "";
 
-            // =========================
-            // RELLENAR DELETE MODAL (CLICK)
-            // =========================
-            document.querySelectorAll(".btn-delete-role").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation(); // para que NO abra details
-
-                    document.getElementById("delete-id").value = this.dataset.id || "";
-                    document.getElementById("delete-name").innerText = this.dataset.name || "";
-                });
-            });
-
-            // =========================
-            // CLICK EN FILA → DETALLES
-            // =========================
-            document.querySelectorAll(".role-row").forEach(row => {
-                row.addEventListener("click", function (e) {
-
-                    // Si click en un botón, no abrir detalles
-                    if (e.target.closest("button")) return;
-
-                    const code = this.dataset.code || "";
-                    const name = this.dataset.name || "";
-
-                    document.getElementById("det-code").innerText = code;
-                    document.getElementById("det-name").innerText = name;
-
-                    new bootstrap.Modal(document.getElementById("detailsModal")).show();
-                });
-            });
-
+            // preview PRO
+            document.getElementById("edit-preview-title").textContent = this.dataset.code || "—";
+            document.getElementById("edit-preview-sub").textContent   = this.dataset.name || "—";
         });
-    </script>
+    });
+
+    // =========================
+    // RELLENAR DELETE MODAL (CLICK)
+    // =========================
+    document.querySelectorAll(".btn-delete-role").forEach(btn => {
+        btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            document.getElementById("delete-id").value = this.dataset.id || "";
+            document.getElementById("delete-name").innerText = this.dataset.name || "";
+        });
+    });
+
+    // =========================
+    // CLICK EN FILA → DETALLES
+    // =========================
+    document.querySelectorAll(".role-row").forEach(row => {
+        row.addEventListener("click", function (e) {
+            if (e.target.closest("button")) return;
+
+            document.getElementById("det-code").innerText = this.dataset.code || "";
+            document.getElementById("det-name").innerText = this.dataset.name || "";
+
+            bootstrap.Modal.getOrCreateInstance(document.getElementById("detailsModal")).show();
+        });
+    });
+
+});
+</script>
 }

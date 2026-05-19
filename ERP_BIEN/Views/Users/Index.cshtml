@@ -29,146 +29,537 @@ PERMISSIONS:
    asp-route-searchTeamId="@ViewBag.SearchTeamId"
    asp-route-searchRoleId="@ViewBag.SearchRoleId"
    asp-route-searchIsActive="@ViewBag.SearchIsActive"
-   class="btn btn-success">
+   class="btn-excel">
     📊 Excel
 </a>
 
 
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            ➕ Crear Usuario
-        </button>
+        <button type="button"
+        class="btn-save-pro"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal">
+    ➕ Crear Usuario
+</button>
     </div>
 </div>
 
 <style>
-    /* ===== Chips ===== */
-    .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: .85rem;
-        font-weight: 500;
-        border: 1px solid rgba(0,0,0,.08);
-        background: #fff;
-    }
+/* =========================================================
+   0) PALETA (TU GUÍA)
+   ========================================================= */
+:root{
+  --w:#ffffff;
+  --b:#000000;
 
-    .chip .x {
-        border: 0;
-        background: transparent;
-        padding: 0 4px;
-        cursor: pointer;
-        font-weight: 700;
-        opacity: .7;
-    }
+  --c-cyan:#0090E0;
+  --c-navy:#032966;   /* Azul marino profundo (principal) */
+  --c-navy2:#004080;  /* Azul oscuro profundo (secundario) */
 
-    .chip .x:hover { opacity: 1; }
+  --c-success:#28A745;
+  --c-warning:#FFC107;
+  --c-danger:#DC3545;
+  --c-info:#17A2B8;
 
-    /* ===== Layout ===== */
-    .card-pro {
-        background: #fff;
-        border: 0;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,.06);
-    }
+  --border:#E6EAF2;
 
-    .form-control, .form-select { border-radius: 10px; }
+  /* Zebra azul claro estilo tu ejemplo */
+  --row-alt:#D9F1FF;
+  --row-hover:#C7EBFF;
+}
 
-    /* ===== Tabla “card rows” ===== */
-    .table-card {
-        border-collapse: separate;
-        border-spacing: 0 8px;
-    }
+/* =========================================================
+   1) CHIPS (filtros activos)
+   ========================================================= */
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:.85rem;
+  font-weight:500;
+  border:1px solid rgba(0,0,0,.08);
+  background:#fff;
+}
+.chip .x{
+  border:0;
+  background:transparent;
+  padding:0 4px;
+  cursor:pointer;
+  font-weight:700;
+  opacity:.7;
+}
+.chip .x:hover{ opacity:1; }
 
-    .table-card thead th {
-        font-size: .78rem;
-        text-transform: uppercase;
-        letter-spacing: .6px;
-        color: #6c757d;
-    }
+/* =========================================================
+   2) LAYOUT GENERAL
+   ========================================================= */
+.card-pro{
+  background:#fff;
+  border:0;
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.form-control, .form-select{ border-radius:10px; }
+.pagination .page-link{ border-radius:10px; margin:0 2px; }
 
-    .table-card tbody tr {
-        background: #fff;
-        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-        transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
-    }
+/* =========================================================
+   3) TABLA "CARD ROWS" (lo que ya tenías)
+   - La dejamos por compatibilidad (por si la usas en otras páginas)
+   ========================================================= */
+.table-card{
+  border-collapse:separate;
+  border-spacing:0 8px;
+}
+.table-card thead th{
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:#6c757d;
+}
+.table-card tbody tr{
+  background:#fff;
+  box-shadow:0 1px 6px rgba(0,0,0,0.05);
+  transition:transform .12s ease, background-color .12s ease, box-shadow .12s ease;
+}
+.table-card tbody tr td:first-child{
+  border-top-left-radius:12px;
+  border-bottom-left-radius:12px;
+}
+.table-card tbody tr td:last-child{
+  border-top-right-radius:12px;
+  border-bottom-right-radius:12px;
+}
+.table-card tbody td{
+  border-top:none !important;
+  padding:12px 14px;
+  vertical-align:middle;
+}
 
-    .table-card tbody tr td:first-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-    }
+/* Hover fila (si lo usas) */
+.user-row{ cursor:pointer; }
+.user-row:hover{
+  background-color:#f8fafc;
+  transform:scale(1.001);
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
 
-    .table-card tbody tr td:last-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-    }
+/* Acciones en hover (si lo usas) */
+.actions-col{ width:190px; white-space:nowrap; }
+.actions-wrap{ opacity:0; transition:opacity .15s ease; }
+.user-row:hover .actions-wrap{ opacity:1; }
 
-    .table-card tbody td {
-        border-top: none !important;
-        padding: 12px 14px;
-        vertical-align: middle;
-    }
+/* Evitar que click de fila pise botones */
+.user-row button{ pointer-events:auto !important; position:relative; z-index:10; }
 
-    .user-row { cursor: pointer; }
+/* =========================================================
+   4) BADGES (los tuyos originales, por compatibilidad)
+   ========================================================= */
+.badge-team{
+  background:linear-gradient(135deg, #eef2ff, #e0e7ff);
+  color:#3730a3;
+  padding:6px 12px;
+  font-size:.75rem;
+  border-radius:999px;
+  font-weight:600;
+  display:inline-block;
+  max-width:260px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.badge-role{
+  background:linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color:#1e3a8a;
+  padding:6px 12px;
+  font-size:.75rem;
+  border-radius:999px;
+  font-weight:500;
+  display:inline-block;
+  white-space:nowrap;
+}
 
-    .user-row:hover {
-        background-color: #f8fafc;
-        transform: scale(1.001);
-        box-shadow: 0 4px 16px rgba(0,0,0,.08);
-    }
+/* =========================================================
+   5) TABLA ESTILO (LA DE TU IMAGEN / GUÍA)
+   - Compatibilidad: sirve si usas .table-shell/.table-style
+   ========================================================= */
+.table-shell{
+  background:var(--w);
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.table-style{
+  width:100%;
+  margin:0;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.table-style thead th{
+  background:var(--c-navy);
+  color:var(--w);
+  font-weight:800;
+  padding:14px 12px;
+  border-bottom:0;
+  white-space:nowrap;
+  font-size:.9rem;
+}
+.table-style tbody td{
+  padding:12px 12px;
+  border-top:0;
+  vertical-align:middle;
+}
+.table-style tbody tr:nth-child(even){
+  background:var(--row-alt);
+}
+.table-style tbody tr:hover{
+  background:var(--row-hover);
+}
 
-    /* ===== Acciones en hover ===== */
-    .actions-col { width: 190px; white-space: nowrap; }
-    .actions-wrap { opacity: 0; transition: opacity .15s ease; }
-    .user-row:hover .actions-wrap { opacity: 1; }
+/* Texto auxiliar */
+.cell-muted{
+  color:rgba(0,0,0,.55);
+  font-size:.85rem;
+}
 
-    /* ===== Badges ===== */
-    .badge-team {
-        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-        color: #3730a3;
-        padding: 6px 12px;
-        font-size: 0.75rem;
-        border-radius: 999px;
-        font-weight: 600;
-        display: inline-block;
-        max-width: 260px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+/* =========================================================
+   6) TABLA "Licenses look" (USERS)
+   - Compatibilidad: sirve si usas .users-table-wrap/.table-users
+   - La mapeamos a la MISMA estética de tu guía
+   ========================================================= */
+.users-table-wrap{
+  background:var(--w);
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.table-users{
+  width:100%;
+  margin:0;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.table-users thead th{
+  background:var(--c-navy) !important;
+  color:var(--w) !important;
+  font-weight:800;
+  padding:14px 12px;
+  border-bottom:0 !important;
+  white-space:nowrap;
+  font-size:.9rem;
+}
+.table-users tbody td{
+  padding:12px 12px;
+  vertical-align:middle;
+  border-top:0 !important;
+}
+.table-users tbody tr:nth-child(even){
+  background:var(--row-alt);
+}
+.table-users tbody tr:hover{
+  background:var(--row-hover);
+}
 
-    .badge-role {
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        color: #1e3a8a;
-        padding: 6px 12px;
-        font-size: 0.75rem;
-        border-radius: 999px;
-        font-weight: 500;
-        display: inline-block;
-    }
+/* =========================================================
+   7) PILLS (para equipo/rol/estado como tu tabla ejemplo)
+   ========================================================= */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:.78rem;
+  line-height:1;
+  white-space:nowrap;
+}
+.pill-team{
+  background:rgba(0,0,0,.55);
+  color:#fff;
+}
+.pill-role{
+  background:var(--c-navy2);
+  color:#fff;
+}
+.pill-active{ background:var(--c-success); color:#fff; }
+.pill-inactive{ background:var(--c-danger); color:#fff; }
 
-    /* ===== Botones acciones ===== */
-    .btn-group .btn {
-        border-radius: 10px !important;
-        padding: 6px 10px;
-        border: 1px solid #dee2e6;
-        background: #fff;
-    }
+/* =========================================================
+   8) BOTONES ACCIÓN (Editar/Borrar estilo tu ejemplo)
+   - Importante: No usamos el mismo .btn-edit para 2 cosas distintas.
+   ========================================================= */
+.actions-wrap{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:nowrap;
+}
 
-    .btn-group .btn:hover { background: #f1f3f5; }
-    .btn-group .btn.text-danger:hover { background: #ffe5e5; }
+/* Botón acción redondeado */
+.btn-action{
+  border:0 !important;
+  border-radius:999px !important;
+  padding:7px 12px !important;
+  font-weight:800 !important;
+  font-size:.78rem !important;
+  line-height:1 !important;
+  color:#fff !important;
+  white-space:nowrap;
+}
 
-    /* Evitar que click de fila pise botones */
-    .user-row button { pointer-events: auto !important; position: relative; z-index: 10; }
+/* Variantes (paleta tu guía) */
+.btn-action.btn-edit{
+  background:var(--c-navy2) !important;
+}
+.btn-action.btn-delete{
+  background:var(--c-danger) !important;
+}
+.btn-action:hover{ filter:brightness(.95); }
 
-    .pagination .page-link { border-radius: 10px; margin: 0 2px; }
+/* =========================================================
+   9) TOGGLE ACTIVO (píldora con colores)
+   - Solo define estética; el JS debe poner/quitar pill-active/pill-inactive
+   ========================================================= */
+.toggle-active-btn{
+  border:0 !important;
+  border-radius:999px !important;
+  padding:7px 12px !important;
+  font-weight:800 !important;
+  font-size:.78rem !important;
+  line-height:1 !important;
+  color:#fff !important;
+  white-space:nowrap;
+  box-shadow:none !important;
+}
+
+/* =========================================================
+   10) (Opcional) Botonera en tablas tipo Licenses
+   - Si lo usas (users-actions), queda consistente
+   ========================================================= */
+.users-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  align-items:center;
+  flex-wrap:nowrap;
+}
+/* ===== Modal PRO (coherente con tu paleta guía) ===== */
+.modal-pro .modal-pro-card{
+  border:1px solid var(--border, #E6EAF2);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.20);
+}
+
+.modal-pro .modal-pro-header{
+  background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
+  color:#fff;
+  border-bottom:0;
+}
+
+.modal-pro .modal-pro-footer{
+  background:#fff;
+  border-top:1px solid var(--border, #E6EAF2);
+  padding:14px 16px;
+}
+
+.modal-pro .modal-pro-icon{
+  width:46px;height:46px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+.modal-pro .modal-pro-icon.danger{
+  background: var(--c-danger, #DC3545);
+  color:#fff;
+}
+
+/* Caja warning bonita */
+.modal-pro-warning{
+  background: rgba(255, 193, 7, .20);
+  border:1px solid rgba(255, 193, 7, .35);
+  border-radius:14px;
+  padding:14px 16px;
+  color:#111;
+}
+
+/* Caja de usuario seleccionado */
+.modal-pro-target{
+  background:#fff;
+  border:1px solid var(--border, #E6EAF2);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+/* Botones pill */
+.btn-pill{
+  border-radius:999px !important;
+  padding:10px 16px !important;
+  font-weight:900 !important;
+}
+
+/* ✅ Eliminar rojo PRO */
+.btn-danger-pro{
+  background: var(--c-danger, #DC3545) !important;
+  border:0 !important;
+  color:#fff !important;
+}
+.btn-danger-pro:hover{
+  filter:brightness(.95);
+}
+/* =========================================
+   BOTÓN SAVE PRO
+   ========================================= */
+.btn-save-pro{
+    border:0;
+    border-radius:999px;
+    padding:12px 20px;
+    font-weight:800;
+    font-size:.9rem;
+    color:#fff;
+    background:linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:all .18s ease;
+    box-shadow:0 6px 18px rgba(3,41,102,.25);
+}
+
+.btn-save-pro:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.03);
+    box-shadow:0 10px 24px rgba(3,41,102,.35);
+}
+
+.btn-save-pro:active{
+    transform:scale(.98);
+}
+
+.btn-save-pro:disabled{
+    opacity:.7;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+}
+.btn-excel{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    padding:10px 16px;
+    border-radius:999px;
+
+    font-weight:800;
+    font-size:.85rem;
+
+    color:#fff;
+    background:linear-gradient(135deg, #28A745, #1f8a38);
+
+    border:0;
+    text-decoration:none;
+
+    box-shadow:0 6px 18px rgba(40,167,69,.25);
+    transition:all .18s ease;
+}
+
+.btn-excel:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.05);
+    box-shadow:0 10px 24px rgba(40,167,69,.35);
+}
+
+.btn-excel:active{
+    transform:scale(.98);
+}
+/* ================================
+   FILTROS PRO (CONSISTENCIA UI)
+   ================================ */
+.filters-shell{
+    background:var(--w);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    padding:18px;
+}
+
+/* labels */
+.filters-shell .form-label{
+    font-size:.75rem;
+    font-weight:700;
+    color:#6c757d;
+    margin-bottom:6px;
+}
+
+/* inputs coherentes con tu sistema */
+.filters-shell .form-control,
+.filters-shell .form-select{
+    border-radius:10px;
+    border:1px solid #e3e6ee;
+    font-size:.9rem;
+    padding:10px 12px;
+    transition:all .15s ease;
+}
+
+.filters-shell .form-control:focus,
+.filters-shell .form-select:focus{
+    border-color:var(--c-navy2);
+    box-shadow:0 0 0 3px rgba(0,64,128,.15);
+}
+
+/* botón filtrar alineado con sistema */
+.btn-filter-pro{
+    background:linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color:#fff;
+    border:0;
+    border-radius:999px;
+    padding:10px 18px;
+    font-weight:800;
+    font-size:.85rem;
+    transition:all .18s ease;
+}
+
+.btn-filter-pro:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.05);
+}
+.btn-cancel-pro{
+    border:1px solid var(--border);
+    background:#fff;
+    color:#6c757d;
+
+    border-radius:999px;
+    padding:10px 16px;
+
+    font-weight:800;
+    font-size:.85rem;
+
+    transition:all .15s ease;
+}
+
+.btn-cancel-pro:hover{
+    background:#f8f9fa;
+    color:#000;
+    border-color:#d0d5dd;
+}
+
+.btn-cancel-pro:active{
+    transform:scale(.98);
+}
+
+
 </style>
+
 
 <!-- ========================= -->
 <!-- FILTROS -->
 <!-- ========================= -->
-<form method="get" asp-action="Index" asp-controller="Users" class="card-pro p-4 mb-3" id="usersFiltersForm">
+<form method="get" asp-action="Index" asp-controller="Users" class="filters-shell mb-3" id="usersFiltersForm">
     <div class="row g-3 align-items-end">
         <input type="hidden" name="pageNumber" value="1" />
 
@@ -220,7 +611,9 @@ PERMISSIONS:
         </div>
 
         <div class="col-md-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <button type="submit" class="btn-filter-pro">
+    🔎 Filtrar
+</button>
         </div>
 
     </div>
@@ -320,99 +713,93 @@ PERMISSIONS:
 
 
 <!-- ========================= -->
-<!-- TABLA -->
+<!-- TABLA USERS (ESTILO GUÍA) -->
+<!-- Wrapper: table-shell | Tabla: table-style -->
 <!-- ========================= -->
-<div class="card-pro p-3 mb-3">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0 table-card">
-            <thead class="table-light">
-                <tr>
-                    <th style="width:35%">Nombre</th>
-                    <th style="width:35%">Usuario</th>
-                    <th style="width:20%">Equipo</th>
-                    <th style="width:15%">Rol</th>
-                    <th style="width:10%">Estado</th>
-                    <th style="width:10%" class="text-end">Acciones</th>
-                </tr>
-            </thead>
+<div class="table-shell mb-3">
+  <div class="table-responsive">
+    <table class="table-style align-middle">
+      <thead>
+        <tr>
+          <th style="width:28%">Nombre</th>
+          <th style="width:22%">Usuario</th>
+          <th style="width:18%">Equipo</th>
+          <th style="width:12%">Rol</th>
+          <th style="width:10%">Estado</th>
+          <th style="width:10%" class="text-end">Acciones</th>
+        </tr>
+      </thead>
 
-            <tbody>
-                @if (Model == null || !Model.Any())
+      <tbody>
+        @if (Model == null || !Model.Any())
+        {
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">
+              No se encontraron usuarios.
+            </td>
+          </tr>
+        }
+        else
+        {
+          foreach (var u in Model)
+          {
+            <tr class="user-row" data-id="@u.Id">
+              <td>
+                <div class="fw-bold">@u.Name @u.LastName</div>
+                <div class="cell-muted">@u.Id</div>
+              </td>
+
+              <td>
+                <div class="fw-semibold">@u.DomainUser</div>
+                <div class="cell-muted">Usuario dominio</div>
+              </td>
+
+              <td>
+                @if (!string.IsNullOrWhiteSpace(u.TeamName))
                 {
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No se encontraron usuarios.
-                        </td>
-                    </tr>
+                  <span class="pill pill-team">@u.TeamName</span>
                 }
                 else
                 {
-                    @foreach (var u in Model)
-                    {
-                        <tr class="user-row" data-id="@u.Id">
-                            <td>
-                                <div class="fw-semibold">@u.Name @u.LastName</div>
-                            </td>
-
-                            <td>
-                                <div class="fw-semibold">@u.DomainUser</div>
-                                <small class="text-muted">Usuario de dominio</small>
-                            </td>
-
-                            <td>
-                                @if (!string.IsNullOrWhiteSpace(u.TeamName))
-                                {
-                                    <span class="badge-team">@u.TeamName</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Sin equipo</span>
-                                }
-                            </td>
-
-                            <!-- ROL -->
-                            <td>
-                                <span class="badge-role">@u.RoleName</span>
-                            </td>
-
-                            <!-- ESTADO (TOGGLE) -->
-                            <td class="text-center">
-                                <button type="button"
-                                        class="btn btn-sm toggle-active-btn @(u.IsActive ? "btn-success" : "btn-secondary")"
-                                        data-id="@u.Id">
-                                    @(u.IsActive ? "Activo" : "Inactivo")
-                                </button>
-                            </td>
-
-                            <!-- ACCIONES -->
-                            <td class="actions-col text-end">
-                                <div class="actions-wrap">
-                                    <div class="btn-group" role="group">
-                                        <button type="button"
-                                                class="btn btn-sm btn-light edit-btn"
-                                                data-id="@u.Id"
-                                                data-bs-toggle="tooltip"
-                                                data-bs-title="Editar">
-                                            ✏️
-                                        </button>
-
-                                        <button type="button"
-                                                class="btn btn-sm btn-light delete-btn text-danger"
-                                                data-id="@u.Id"
-                                                data-bs-toggle="tooltip"
-                                                data-bs-title="Eliminar">
-                                            🗑️
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                  <span class="cell-muted">—</span>
                 }
-            </tbody>
+              </td>
 
-        </table>
-    </div>
+              <td>
+                <span class="pill pill-role">@u.RoleName</span>
+              </td>
+
+              <td class="text-center">
+                <!-- ✅ Toggle: mantiene tu funcionalidad -->
+                <button type="button"
+                        class="toggle-active-btn @(u.IsActive ? "pill-active" : "pill-inactive")"
+                        data-id="@u.Id">
+                  @(u.IsActive ? "Activo" : "Inactivo")
+                </button>
+              </td>
+
+              <td class="text-end">
+                <div class="actions-wrap">
+                  <!-- ✅ Mantiene tu JS (edit-btn/delete-btn) -->
+                  <button type="button"
+                          class="btn-action btn-edit edit-btn"
+                          data-id="@u.Id">
+                    Editar
+                  </button>
+
+                  <button type="button"
+                          class="btn-action btn-delete delete-btn"
+                          data-id="@u.Id">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- ========================= -->
@@ -473,14 +860,14 @@ PERMISSIONS:
 <!-- ========================= -->
 <!-- MODAL: CREAR USUARIO -->
 <!-- ========================= -->
-<div class="modal fade" id="createModal">
+<div class="modal fade modal-pro" id="createModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content modal-pro-card">
 
             <form method="post" asp-action="Create" asp-controller="Users">
                 @Html.AntiForgeryToken()
 
-                <!-- MANTENER FILTROS -->
+                <!-- mantener filtros -->
                 <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
                 <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
                 <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
@@ -488,73 +875,88 @@ PERMISSIONS:
                 <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
                 <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
 
-                <div class="modal-header">
-                    <h5 class="modal-title fw-semibold">Crear Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- HEADER -->
+                <div class="modal-header modal-pro-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="modal-pro-icon">➕</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Crear usuario</h5>
+                            <div class="small opacity-75">Nuevo registro en el sistema</div>
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
                 </div>
 
+                <!-- BODY -->
                 <div class="modal-body">
 
-                    <!-- NOMBRE -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Nombre</label>
-                        <input name="Name" class="form-control" required />
-                    </div>
+                    <div class="row g-3">
 
-                    <!-- APELLIDOS -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Apellidos</label>
-                        <input name="LastName" class="form-control" required />
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Nombre</label>
+                            <input name="Name" class="form-control" required />
+                        </div>
 
-                    <!-- DOMAIN USER -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Usuario de Dominio</label>
-                        <input name="DomainUser" class="form-control" required />
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Apellidos</label>
+                            <input name="LastName" class="form-control" required />
+                        </div>
 
-                    <!-- EQUIPO -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Equipo</label>
-                        <select name="TeamId" class="form-select">
-                            <option value="">-- Sin equipo --</option>
-                            @foreach (var t in ViewBag.TeamList)
-                            {
-                                <option value="@t.Value">@t.Text</option>
-                            }
-                        </select>
-                    </div>
+                        <div class="col-12">
+                            <label class="form-label small text-muted">Usuario de dominio</label>
+                            <input name="DomainUser" class="form-control" required />
+                        </div>
 
-                    <!-- ✅ NUEVO → ROL -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Rol</label>
-                        <select name="RoleId" class="form-select" required>
-                            @foreach (var r in ViewBag.RoleList)
-                            {
-                                <option value="@r.Value">@r.Text</option>
-                            }
-                        </select>
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Equipo</label>
+                            <select name="TeamId" class="form-select">
+                                <option value="">-- Sin equipo --</option>
+                                @foreach (var t in ViewBag.TeamList)
+                                {
+                                    <option value="@t.Value">@t.Text</option>
+                                }
+                            </select>
+                        </div>
 
-                    <!-- ✅ NUEVO → ESTADO -->
-                    <div class="mb-3">
-                        <label class="form-label small text-muted">Estado</label>
-                        <select name="IsActive" class="form-select">
-                            <option value="true">Activo</option>
-                            <option value="false">Inactivo</option>
-                        </select>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Rol</label>
+                            <select name="RoleId" class="form-select" required>
+                                @foreach (var r in ViewBag.RoleList)
+                                {
+                                    <option value="@r.Value">@r.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small text-muted">Estado</label>
+                            <select name="IsActive" class="form-select">
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                        </div>
+
                     </div>
 
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                <!-- FOOTER -->
+                <div class="modal-footer modal-pro-footer">
+
+                    <button type="button"
+                            class="btn-cancel-pro"
+                            data-bs-dismiss="modal">
                         Cancelar
                     </button>
 
-                    <button type="submit" class="btn btn-primary">
-                        Crear Usuario
+                    <button type="submit" class="btn-save-pro">
+                        <span>💾</span>
+                        Crear usuario
                     </button>
+
                 </div>
 
             </form>
@@ -563,148 +965,115 @@ PERMISSIONS:
     </div>
 </div>
 <!-- ========================= -->
-<!-- MODAL: DETALLES -->
+<!-- MODAL: DETALLES (USER PRO) -->
 <!-- ========================= -->
 <div class="modal fade" id="detailsModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
-                <h5 class="modal-title">Detalles del Usuario</h5>
+                <h5 class="modal-title fw-semibold">👤 Detalles del Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-                <p><strong>Nombre:</strong> <span id="det-name"></span></p>
-                <p><strong>Usuario:</strong> <span id="det-domain"></span></p>
-                <p><strong>Equipo:</strong> <span id="det-team"></span></p>
-                <p><strong>Rol:</strong> <span id="det-role">—</span></p>
-                <p><strong>Estado:</strong> <span id="det-status">—</span></p>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-warning" id="openEditFromDetails">✏️ Editar</button>
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========================= -->
-<!-- MODAL: EDITAR -->
-<!-- ========================= -->
-<div class="modal fade" id="editModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <form method="post" asp-action="Edit" asp-controller="Users">
-                @Html.AntiForgeryToken()
-
-                <input type="hidden" name="Id" id="edit-id" />
-                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
-                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
-                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
-                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
-                <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
-                <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- CABECERA -->
+                <div class="p-3 rounded-3 border mb-3 bg-light">
+                    <div class="fw-semibold fs-5 mb-1" id="det-name"></div>
+                    <div class="text-muted small" id="det-domain"></div>
                 </div>
 
-                <div class="modal-body">
-
-                    <!-- NOMBRE -->
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input name="Name" id="edit-name" class="form-control" />
-                    </div>
-
-                    <!-- APELLIDOS -->
-                    <div class="mb-3">
-                        <label class="form-label">Apellidos</label>
-                        <input name="LastName" id="edit-lastname" class="form-control" />
-                    </div>
-
-                    <!-- DOMAIN -->
-                    <div class="mb-3">
-                        <label class="form-label">Usuario de Dominio</label>
-                        <input name="DomainUser" id="edit-domain" class="form-control" />
-                    </div>
+                <!-- GRID -->
+                <div class="row g-3">
 
                     <!-- EQUIPO -->
-                    <div class="mb-3">
-                        <label class="form-label">Equipo</label>
-                        <select name="TeamId" id="edit-team" class="form-select">
-                            @foreach (var t in ViewBag.TeamList)
-                            {
-                                <option value="@t.Value">@t.Text</option>
-                            }
-                        </select>
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3">
+                            <div class="text-muted small">Equipo</div>
+                            <div class="fw-semibold" id="det-team"></div>
+                        </div>
                     </div>
 
-                    <!-- ✅ NUEVO → ROL -->
-                    <div class="mb-3">
-                        <label class="form-label">Rol</label>
-                        <select name="RoleId" id="edit-role" class="form-select">
-                            @foreach (var r in ViewBag.RoleList)
-                            {
-                                <option value="@r.Value">@r.Text</option>
-                            }
-                        </select>
+                    <!-- ROL -->
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3">
+                            <div class="text-muted small">Rol</div>
+                            <div id="det-role"></div>
+                        </div>
                     </div>
 
-                    <!-- ✅ NUEVO → ESTADO -->
-                    <div class="mb-3">
-                        <label class="form-label">Estado</label>
-                        <select name="IsActive" id="edit-isactive" class="form-select">
-                            <option value="true">Activo</option>
-                            <option value="false">Inactivo</option>
-                        </select>
+                    <!-- ESTADO -->
+                    <div class="col-12">
+                        <div class="border rounded-3 p-3">
+                            <div class="text-muted small">Estado</div>
+                            <div id="det-status"></div>
+                        </div>
                     </div>
 
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-warning">
-                        Guardar Cambios
-                    </button>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-</div>
-
-
-<!-- ========================= -->
-<!-- MODAL: CONFIRMAR ELIMINACIÓN -->
-<!-- ========================= -->
-<div class="modal fade" id="deleteModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Eliminar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <p>¿Seguro que deseas eliminar este usuario?</p>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Eliminar</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
             </div>
 
         </div>
     </div>
 </div>
+
+<!-- ========================= -->
+<!-- MODAL: ELIMINAR (PRO+) -->
+<!-- ========================= -->
+<div class="modal fade modal-pro" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-pro-card">
+
+      <div class="modal-header modal-pro-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-pro-icon danger">🗑️</div>
+          <div>
+            <h5 class="modal-title fw-bold mb-0">Eliminar usuario</h5>
+            <div class="small opacity-75">Esta acción no se puede deshacer</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-pro-warning">
+          <div class="fw-bold mb-1">¿Seguro que deseas eliminar este usuario?</div>
+          <div class="small">Se eliminará el registro.</div>
+        </div>
+
+        <!-- Opcional: si quieres mostrar a quién estás borrando -->
+        <div class="modal-pro-target mt-3">
+          <div class="text-muted small mb-1">Usuario seleccionado</div>
+          <div class="fw-bold" id="deleteUserName">—</div>
+          <div class="text-muted small" id="deleteUserDomain"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer modal-pro-footer">
+        <button type="button" class="btn btn-outline-secondary btn-pill" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+
+        <!-- ✅ Botón rojo PRO (mantengo el ID para tu JS) -->
+        <button type="button" id="confirmDeleteBtn" class="btn btn-pill btn-danger-pro">
+          Eliminar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 <!-- ========================= -->
 <!-- MODAL: ELIMINADO CORRECTAMENTE -->
@@ -724,6 +1093,146 @@ PERMISSIONS:
             <div class="modal-footer">
                 <button type="button" id="closeSuccessBtn" class="btn btn-primary">Aceptar</button>
             </div>
+
+        </div>
+    </div>
+</div>
+<!-- ========================= -->
+<!-- MODAL: EDITAR USUARIO -->
+<!-- ========================= -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" asp-action="Edit" asp-controller="Users">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" id="edit-id" name="Id" />
+
+                <!-- mantener filtros -->
+                <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+                <input type="hidden" name="searchName" value="@ViewBag.SearchName" />
+                <input type="hidden" name="searchDomain" value="@ViewBag.SearchDomain" />
+                <input type="hidden" name="searchTeamId" value="@ViewBag.SearchTeamId" />
+                <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
+                <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">
+                        ✏️ Editar Usuario
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- preview -->
+                    <div class="border rounded-3 p-3 bg-light mb-3">
+                        <div class="fw-bold" id="edit-preview-name">—</div>
+                        <div class="text-muted small" id="edit-preview-domain">—</div>
+                    </div>
+
+                    <!-- nombre -->
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input id="edit-name"
+                               name="Name"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <!-- apellido -->
+                    <div class="mb-3">
+                        <label class="form-label">Apellido</label>
+                        <input id="edit-lastname"
+                               name="LastName"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <!-- domain -->
+                    <div class="mb-3">
+                        <label class="form-label">Usuario dominio</label>
+                        <input id="edit-domain"
+                               name="DomainUser"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <!-- team -->
+                    <div class="mb-3">
+                        <label class="form-label">Equipo</label>
+
+                        <select id="edit-team"
+                                name="TeamId"
+                                class="form-select">
+
+                            <option value="">-- Sin equipo --</option>
+
+                            @foreach (var t in ViewBag.TeamList)
+                            {
+                                <option value="@t.Value">
+                                    @t.Text
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <!-- role -->
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+
+                        <select id="edit-role"
+                                name="RoleId"
+                                class="form-select">
+
+                            @foreach (var r in ViewBag.RoleList)
+                            {
+                                <option value="@r.Value">
+                                    @r.Text
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <!-- active -->
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+
+                        <select id="edit-isactive"
+                                name="IsActive"
+                                class="form-select">
+
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+        class="btn-cancel-pro"
+        data-bs-dismiss="modal">
+    Cancelar
+</button>
+
+                    <button type="submit" class="btn-save-pro">
+    <span>💾</span>
+    Guardar cambios
+</button>
+                </div>
+
+            </form>
 
         </div>
     </div>
@@ -791,9 +1300,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     editForm?.addEventListener("submit", function () {
-        console.log("Submit EDIT OK");
-    });
 
+    console.log("Submit EDIT OK");
+
+    // Botón guardar
+    const btn = this.querySelector(".btn-save-pro");
+
+    if (btn) {
+
+        // Deshabilitar para evitar doble submit
+        btn.disabled = true;
+
+        // Cambiar contenido visual
+        btn.innerHTML = `
+            <span class="spinner-border spinner-border-sm"></span>
+            Guardando...
+        `;
+    }
+});
     // ============================
     // TOOLTIPS
     // ============================
@@ -836,23 +1360,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================
-    // DELETE
-    // ============================
-    let userIdToDelete = null;
+// DELETE (PRO + ROBUSTO)
+// ============================
+let userIdToDelete = null;
 
-    document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            userIdToDelete = btn.dataset.id;
-            new bootstrap.Modal(document.getElementById("deleteModal")).show();
-        });
+document.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        userIdToDelete = btn.dataset.id;
+
+        // ✅ OPCIONAL: mostrar info del usuario en el modal (si existen estos IDs)
+        // (Si no existen, no pasa nada)
+        const row = document.querySelector(`tr[data-id="${userIdToDelete}"]`);
+        const fullName = row?.querySelector("td:nth-child(1)")?.innerText?.trim();
+        const domain = row?.querySelector("td:nth-child(2)")?.innerText?.trim();
+
+        const nameEl = document.getElementById("deleteUserName");
+        const domEl  = document.getElementById("deleteUserDomain");
+        if (nameEl) nameEl.textContent = fullName || "—";
+        if (domEl)  domEl.textContent  = domain || "";
+
+        // ✅ Abrir modal (evita instancias duplicadas)
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("deleteModal")).show();
     });
+});
 
-    document.getElementById("confirmDeleteBtn")?.addEventListener("click", async () => {
-        if (!userIdToDelete) return;
+document.getElementById("confirmDeleteBtn")?.addEventListener("click", async () => {
+    if (!userIdToDelete) return;
 
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+    const btn = document.getElementById("confirmDeleteBtn");
+    const oldBtnText = btn?.innerText;
 
+    // ✅ Evitar doble click
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Eliminando...";
+    }
+
+    // ✅ Antiforgery token (desde tu input global)
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+    try {
         const response = await fetch("/Users/Delete", {
             method: "POST",
             headers: {
@@ -862,48 +1411,66 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ id: userIdToDelete })
         });
 
-        if (response.ok) {
-            bootstrap.Modal.getInstance(document.getElementById("deleteModal"))?.hide();
-            document.querySelector(`tr[data-id="${userIdToDelete}"]`)?.remove();
-            showToast("Usuario eliminado correctamente ✅", "success");
-        } else {
-            showToast("Error al eliminar usuario ❌", "error");
+        if (!response.ok) throw new Error();
+
+        // ✅ Cerrar modal
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("deleteModal")).hide();
+
+        // ✅ Quitar fila
+        document.querySelector(`tr[data-id="${userIdToDelete}"]`)?.remove();
+
+        showToast("Usuario eliminado correctamente ✅", "success");
+
+        // ✅ reset
+        userIdToDelete = null;
+
+    } catch {
+        showToast("Error al eliminar usuario ❌", "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = oldBtnText || "Eliminar";
         }
-    });
+    }
+});
 
-    // ============================
-    // TOGGLE ACTIVO
-    // ============================
-    document.querySelectorAll(".toggle-active-btn").forEach(btn => {
-        btn.addEventListener("click", async function (e) {
-            e.stopPropagation();
 
-            const id = this.dataset.id;
-            const oldText = this.innerText;
+// ============================
+// TOGGLE ACTIVO (usa pill-active/pill-inactive)
+// ============================
+document.querySelectorAll(".toggle-active-btn").forEach(btn => {
+  btn.addEventListener("click", async function (e) {
+    e.stopPropagation();
 
-            this.disabled = true;
-            this.innerText = "Guardando...";
+    const id = this.dataset.id;
+    const oldText = this.innerText;
 
-            try {
-                const response = await fetch(`/Users/ToggleActive?id=${id}`, { method: "POST" });
-                if (!response.ok) throw new Error();
+    this.disabled = true;
+    this.innerText = "Guardando...";
 
-                const data = await response.json();
-                const isActive = !!data.isActive;
+    try {
+      const response = await fetch(`/Users/ToggleActive?id=${id}`, { method: "POST" });
+      if (!response.ok) throw new Error();
 
-                this.innerText = isActive ? "Activo" : "Inactivo";
-                this.classList.remove("btn-success", "btn-secondary");
-                this.classList.add(isActive ? "btn-success" : "btn-secondary");
+      const data = await response.json();
+      const isActive = !!data.isActive;
 
-                showToast(isActive ? "Usuario activado ✅" : "Usuario desactivado ✅", "info");
-            } catch {
-                this.innerText = oldText;
-                showToast("Error al cambiar el estado ❌", "error");
-            } finally {
-                this.disabled = false;
-            }
-        });
-    });
+      // Texto
+      this.innerText = isActive ? "Activo" : "Inactivo";
+
+      // ✅ Clases correctas (verde/rojo)
+      this.classList.remove("pill-active", "pill-inactive");
+      this.classList.add(isActive ? "pill-active" : "pill-inactive");
+
+      showToast(isActive ? "Usuario activado ✅" : "Usuario desactivado ✅", "info");
+    } catch {
+      this.innerText = oldText;
+      showToast("Error al cambiar el estado ❌", "error");
+    } finally {
+      this.disabled = false;
+    }
+  });
+});
 
     // ============================
     // EXPORT EXCEL
@@ -912,39 +1479,87 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast("Generando archivo Excel...", "info");
     });
 
-    // ============================
-    // DETAILS
-    // ============================
-    async function loadDetails(id) {
-        try {
-            const res = await fetch(`/Users/Details/${id}`);
-            if (!res.ok) throw new Error();
-            const u = await res.json();
+   // ============================
+// DETAILS (PRO)
+// ============================
+async function loadDetails(id) {
+    try {
+        const res = await fetch(`/Users/Details/${id}`);
+        if (!res.ok) throw new Error();
+        const u = await res.json();
 
-            lastDetailsUser = u;
+        lastDetailsUser = u;
 
-            document.getElementById("det-name").innerText = `${u.name ?? ''} ${u.lastName ?? ''}`;
-            document.getElementById("det-domain").innerText = u.domainUser ?? '';
-            document.getElementById("det-team").innerText = u.teamName ?? '—';
-            document.getElementById("det-role").innerText = u.roleName ?? '—';
-            document.getElementById("det-status").innerText = u.isActive ? "Activo" : "Inactivo";
+        // Nombre + dominio
+        const fullName = `${u.name ?? ''} ${u.lastName ?? ''}`.trim();
+        document.getElementById("det-name").innerText = fullName || "—";
+        document.getElementById("det-domain").innerText = u.domainUser ?? "—";
 
-            new bootstrap.Modal(document.getElementById("detailsModal")).show();
-        } catch {
-            showToast("No se pudieron cargar los detalles ❌", "error");
+        // Equipo (badge-team)
+        const teamEl = document.getElementById("det-team");
+        if (teamEl) {
+            teamEl.innerHTML = u.teamName
+                ? `<span class="badge-team">${escapeHtml(u.teamName)}</span>`
+                : `<span class="text-muted">Sin equipo</span>`;
         }
+
+        // Rol (badge-role)
+        const roleEl = document.getElementById("det-role");
+        if (roleEl) {
+            roleEl.innerHTML = `<span class="badge-role">${escapeHtml(u.roleName ?? "Sin rol")}</span>`;
+        }
+
+        // Estado (badge)
+        const statusEl = document.getElementById("det-status");
+        if (statusEl) {
+            statusEl.innerHTML = u.isActive
+                ? `<span class="badge bg-success px-3 py-2">✅ Activo</span>`
+                : `<span class="badge bg-secondary px-3 py-2">⛔ Inactivo</span>`;
+        }
+
+        // Abrir modal
+        new bootstrap.Modal(document.getElementById("detailsModal")).show();
+
+    } catch {
+        showToast("No se pudieron cargar los detalles ❌", "error");
     }
+}
+
+// Helper para evitar problemas si algún texto trae caracteres raros
+function escapeHtml(str) {
+    return (str ?? "").toString()
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 
     function fillEditModal(u) {
-        document.getElementById("edit-id").value = u.id ?? '';
-        document.getElementById("edit-name").value = u.name ?? '';
-        document.getElementById("edit-lastname").value = u.lastName ?? '';
-        document.getElementById("edit-domain").value = u.domainUser ?? '';
-        document.getElementById("edit-team").value = u.teamId ?? '';
-        document.getElementById("edit-role").value = u.roleId ?? '';
-        document.getElementById("edit-isactive").value = u.isActive ? "true" : "false";
-    }
+  document.getElementById("edit-id").value = u.id ?? '';
+  document.getElementById("edit-name").value = u.name ?? '';
+  document.getElementById("edit-lastname").value = u.lastName ?? '';
+  document.getElementById("edit-domain").value = u.domainUser ?? '';
+  document.getElementById("edit-team").value = u.teamId ?? '';
+  document.getElementById("edit-role").value = u.roleId ?? '';
+  document.getElementById("edit-isactive").value = u.isActive ? "true" : "false";
+
+  const full = `${u.name ?? ""} ${u.lastName ?? ""}`.trim();
+  document.getElementById("edit-preview-name").textContent = full || "—";
+  document.getElementById("edit-preview-domain").textContent = u.domainUser ?? "—";
+}
+
 
 });
+document.querySelectorAll(".details-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        if (!id) return;
+        await loadDetails(id);
+    });
+});
+
 </script>
 }

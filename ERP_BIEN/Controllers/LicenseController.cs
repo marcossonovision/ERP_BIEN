@@ -197,8 +197,6 @@ namespace ERP_BIEN.Controllers
 
             await _svc.UpdateAsync(lic);
             TempData["HighlightId"] = lic.Id;
-
-
             TempData["ToastMsg"] = "Guardado correctamente";
             TempData["ToastType"] = "success";
 

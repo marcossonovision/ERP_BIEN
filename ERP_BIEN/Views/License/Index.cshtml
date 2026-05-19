@@ -13,6 +13,9 @@
         <input type="hidden" name="SearchProducto" value="@Model.SearchProducto" />
         <input type="hidden" name="SearchAsignada" value="@Model.SearchAsignada" />
     }
+   
+    var highlightId = TempData["HighlightId"]?.ToString();
+
 }
 
 <h2 class="mb-3">Licenses</h2>
@@ -142,7 +145,7 @@
                 <div>
 
                     <button type="submit"
-                            class="btn btn-primary px-4">
+                            class="btn btn-ortec btn-ortec-primary px-4">
                         Filtrar
                     </button>
 
@@ -229,7 +232,7 @@
 
     @if (hasFilters)
     {
-        <a class="btn btn-sm btn-outline-danger ms-2"
+        <a class="btn btn-sm btn-ortec btn-ortec-danger ms-2"
            href="@Url.Action("Index")">
             ✖ Limpiar todo
         </a>
@@ -241,7 +244,7 @@
 <!-- BOTÓN CREAR -->
 <div class="d-flex justify-content-end mb-2">
     <button type="button"
-            class="btn btn-success"
+            class="btn btn-ortec btn-ortec-success"
             data-bs-toggle="modal"
             data-bs-target="#createEditModal">
         + Crear licencia
@@ -273,23 +276,55 @@
     background-color: #d2d2d2 !important;
 }
 
-/* ===== BOTONES ===== */
+/* =========================
+   BOTONES UNIFICADOS ORTEC
+   ========================= */
 
-button.btn-edit {
+.btn-ortec {
+    border: none !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+/* azul principal */
+.btn-ortec-primary {
     background-color: #0d2f6f !important;
     color: white !important;
-    border: none !important;
 }
 
-button.btn-delete {
+/* verde */
+.btn-ortec-success {
+    background-color: #198754 !important;
+    color: white !important;
+}
+
+/* gris */
+.btn-ortec-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+/* rojo */
+.btn-ortec-danger {
     background-color: #d60000 !important;
     color: white !important;
-    border: none !important;
 }
 
-/* 🔥 MUY IMPORTANTE: quitar estilo raro de tus CSS antiguos */
-.btn-delete,
-.btn-edit {
+/* amarillo */
+.btn-ortec-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.btn-ortec,
+.btn-ortec-primary,
+.btn-ortec-success,
+.btn-ortec-secondary,
+.btn-ortec-danger,
+.btn-ortec-warning {
     text-decoration: none !important;
 }
 .table-ortec thead {
@@ -339,6 +374,10 @@ thead.thead-ortec th {
 .timeline-item {
     margin-bottom: 12px;
 }
+.highlight-row {
+    background-color: #fff3cd !important;
+}
+
 
 
 
@@ -374,7 +413,7 @@ thead.thead-ortec th {
             {
                 foreach (var item in Model.Licenses)
                 {
-                    <tr class="clickable-row" data-id="@item.Id" style="cursor:pointer">
+                    <tr class="clickable-row @((highlightId == item.Id.ToString()) ? "highlight-row" : "")"data-id="@item.Id"style="cursor:pointer">
                         <td>@item.Code</td>
                         <td>@item.Producto</td>
                         <td>@item.Proveedor</td>
@@ -412,7 +451,7 @@ thead.thead-ortec th {
 
                             <!-- HISTÓRICO -->
                             <button type="button"
-                                    class="btn btn-sm btn-edit btn-history"
+                                    class="btn btn-sm btn-ortec btn-ortec-primary btn-history"
                                     data-id="@item.Id"
                                     data-code="@item.Code">
                                 Histórico
@@ -422,7 +461,7 @@ thead.thead-ortec th {
                             @if (item.UserId == null)
                             {
                                 <button type="button"
-                                        class="btn btn-sm btn-success me-1 btn-open-assign"
+                                        class="btn btn-sm btn-ortec btn-ortec-success me-1 btn-open-assign"
                                         data-id="@item.Id">
                                     Asignar
                                 </button>
@@ -443,7 +482,7 @@ thead.thead-ortec th {
 
                             <!-- ELIMINAR -->
                             <button type="button"
-                                        class="btn btn-sm btn-delete"
+                                        class="btn btn-sm btn-ortec btn-ortec-danger"
                                     data-id="@item.Id"
                                     data-bs-toggle="modal"
                                     data-bs-target="#deleteModal">
