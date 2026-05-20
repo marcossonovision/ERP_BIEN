@@ -5,6 +5,8 @@ using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace ERP_BIEN.Controllers
 {
@@ -278,6 +280,74 @@ namespace ERP_BIEN.Controllers
         {
             var newState = _service.ToggleUserActive(id);
             return Json(new { isActive = newState });
+        }
+        [Authorize(Policy = "USR_VIEW")]
+        public IActionResult ExportExcel(
+    string searchName = null,
+    string searchDomain = null,
+    int? searchTeamId = null,
+    int? searchRoleId = null,
+    bool? searchIsActive = null)
+        {
+            // Obtener usuarios filtrados
+            var result = _service.GetPagedUsers(
+                searchName,
+                searchDomain,
+                searchTeamId,
+                1,
+                searchRoleId,
+                searchIsActive
+            );
+
+            var users = result.Users;
+
+            using var workbook = new XLWorkbook();
+
+            var ws = workbook.Worksheets.Add("Usuarios");
+
+            // Headers
+            ws.Cell(1, 1).Value = "ID";
+            ws.Cell(1, 2).Value = "Nombre";
+            ws.Cell(1, 3).Value = "Apellido";
+            ws.Cell(1, 4).Value = "Usuario";
+            ws.Cell(1, 5).Value = "Equipo";
+            ws.Cell(1, 6).Value = "Rol";
+            ws.Cell(1, 7).Value = "Estado";
+
+            int row = 2;
+
+            foreach (var u in users)
+            {
+                ws.Cell(row, 1).Value = u.Id;
+                ws.Cell(row, 2).Value = u.Name;
+                ws.Cell(row, 3).Value = u.LastName;
+                ws.Cell(row, 4).Value = u.DomainUser;
+                ws.Cell(row, 5).Value = u.Team?.Name ?? "";
+
+                ws.Cell(row, 6).Value =
+                    (u.UserRoles != null && u.UserRoles.Any())
+                        ? (u.UserRoles.FirstOrDefault()?.Role?.Code ?? "Sin Rol")
+                        : "Sin Rol";
+
+                ws.Cell(row, 7).Value = u.IsActive ? "Activo" : "Inactivo";
+
+                row++;
+            }
+
+            // Estilo
+            ws.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+
+            workbook.SaveAs(stream);
+
+            var content = stream.ToArray();
+
+            return File(
+                content,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Usuarios_{DateTime.Now:yyyyMMddHHmmss}.xlsx"
+            );
         }
 
         // ============================

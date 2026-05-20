@@ -1,0 +1,114 @@
+﻿
+:root {
+    --w: #ffffff;
+    --c-navy: #032966;
+    --c-navy2: #004080;
+    --c-danger: #DC3545;
+    --border: #E6EAF2;
+    --row-alt: #D9F1FF;
+    --row-hover: #C7EBFF;
+}
+
+/* HEADER */
+.page-title {
+    font-weight: 900;
+    color: var(--c-navy);
+}
+
+.page-subtitle {
+    color: rgba(0,0,0,.55);
+    font-size: .9rem;
+}
+
+/* CARDS */
+.table-shell {
+    background: var(--w);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden;
+}
+
+/* HEADER PANEL */
+.panel-head {
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+}
+
+.panel-title {
+    font-weight: 900;
+}
+
+.panel-sub {
+    font-size: .8rem;
+    opacity: .8;
+}
+
+/* TABLE */
+.table-style {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .table-style thead th {
+        background: var(--c-navy);
+        color: #fff;
+        font-weight: 800;
+        padding: 12px;
+        font-size: .85rem;
+    }
+
+    .table-style tbody td {
+        padding: 12px;
+        border-top: 1px solid #f1f1f1;
+    }
+
+    .table-style tbody tr:nth-child(even) {
+        background: var(--row-alt);
+    }
+
+    .table-style tbody tr:hover {
+        background: var(--row-hover);
+    }
+
+/* FILTERS */
+.filters-shell {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+/* BUTTONS */
+.btn-save-pro {
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+}
+
+.btn-delete {
+    background: var(--c-danger);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+/* TEXT */
+.cell-muted {
+    font-size: .8rem;
+    color: rgba(0,0,0,.55);
+}
+
+.page-title {
+    font-weight: 900;
+    color: var(--c-navy);
+}
+

@@ -1,0 +1,357 @@
+﻿
+/* =========================================================
+   0) PALETA (MISMA QUE USERS)
+   ========================================================= */
+:root {
+    --w: #ffffff;
+    --b: #000000;
+    --c-cyan: #0090E0;
+    --c-navy: #032966;
+    --c-navy2: #004080;
+    --c-success: #28A745;
+    --c-warning: #FFC107;
+    --c-danger: #DC3545;
+    --c-info: #17A2B8;
+    --border: #E6EAF2;
+    --row-alt: #D9F1FF;
+    --row-hover: #C7EBFF;
+}
+
+/* =========================================================
+   1) HEADER PRO + BOTONES
+   ========================================================= */
+.header-pro {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.btn-pill {
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 800 !important;
+    border: 0 !important;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
+    color: #fff !important;
+}
+
+    .btn-create:hover {
+        filter: brightness(.95);
+    }
+
+/* =========================================================
+   2) CARD PRO (como Users)
+   ========================================================= */
+.card-pro {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+/* =========================================================
+   3) FILTROS PRO
+   ========================================================= */
+.filters-pro {
+    padding: 20px;
+}
+
+    .filters-pro .form-label {
+        font-weight: 800;
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: rgba(0,0,0,.60);
+        margin-bottom: 6px;
+    }
+
+    .filters-pro .form-control,
+    .filters-pro .form-select {
+        border-radius: 12px;
+        border: 1px solid #dbe6f4;
+        padding: 10px 12px;
+        min-height: 42px;
+    }
+
+        .filters-pro .form-control:focus,
+        .filters-pro .form-select:focus {
+            border-color: var(--c-cyan);
+            box-shadow: 0 0 0 3px rgba(0,144,224,.15);
+        }
+
+.btn-filter {
+    background: var(--c-cyan) !important;
+    color: #fff !important;
+}
+
+.btn-clear {
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,.18) !important;
+    color: rgba(0,0,0,.75) !important;
+}
+
+    .btn-filter:hover, .btn-clear:hover {
+        filter: brightness(.97);
+    }
+
+/* =========================================================
+   4) CHIPS (como Users)
+   ========================================================= */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 800;
+    border: 1px solid rgba(0,0,0,.10);
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+    .chip .x {
+        border: 0;
+        background: transparent;
+        padding: 0 4px;
+        cursor: pointer;
+        font-weight: 900;
+        opacity: .8;
+    }
+
+        .chip .x:hover {
+            opacity: 1;
+        }
+
+.chip-danger {
+    background: var(--c-danger);
+    color: #fff;
+    border: 0;
+    text-decoration: none;
+}
+
+    .chip-danger:hover {
+        filter: brightness(.95);
+    }
+
+/* =========================================================
+   5) TABLA (MISMO LOOK QUE USERS: table-shell + table-style)
+   ========================================================= */
+.table-shell {
+    background: var(--w);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.table-style {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table-style thead th {
+        background: var(--c-navy);
+        color: var(--w);
+        font-weight: 900;
+        padding: 14px 12px;
+        border-bottom: 0;
+        white-space: nowrap;
+        font-size: .9rem;
+    }
+
+    .table-style tbody td {
+        padding: 12px 12px;
+        border-top: 0;
+        vertical-align: middle;
+    }
+
+    .table-style tbody tr:nth-child(even) {
+        background: var(--row-alt);
+    }
+
+    .table-style tbody tr:hover {
+        background: var(--row-hover);
+    }
+
+.cell-muted {
+    color: rgba(0,0,0,.55);
+    font-size: .85rem;
+}
+
+/* =========================================================
+   6) BOTONES ACCIÓN EN TABLA (pill)
+   ========================================================= */
+.actions-wrap {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.btn-action {
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 7px 12px !important;
+    font-weight: 900 !important;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    white-space: nowrap;
+}
+
+    .btn-action.btn-edit {
+        background: var(--c-warning) !important;
+        color: #111 !important;
+    }
+
+    .btn-action.btn-delete {
+        background: var(--c-danger) !important;
+        color: #fff !important;
+    }
+
+    .btn-action:hover {
+        filter: brightness(.95);
+    }
+
+/* fila clicable */
+.role-row {
+    cursor: pointer;
+}
+
+    .role-row button {
+        pointer-events: auto !important;
+        position: relative;
+        z-index: 10;
+    }
+
+/* =========================================================
+   7) PAGINACIÓN PRO
+   ========================================================= */
+.pagination .page-link {
+    border-radius: 10px;
+    margin: 0 2px;
+}
+
+/* =========================================================
+   8) MODALES PRO (IGUAL QUE USERS)
+   ========================================================= */
+.modal-pro .modal-content {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.20);
+}
+
+.modal-pro .modal-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border-bottom: 0;
+}
+
+    .modal-pro .modal-header .btn-close {
+        filter: invert(1);
+        opacity: .95;
+    }
+
+.modal-pro .modal-body {
+    background: #f7fbff;
+}
+
+.modal-pro .modal-footer {
+    background: #fff;
+    border-top: 1px solid var(--border);
+}
+
+.modal-pro .modal-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+    .modal-pro .modal-icon.warning {
+        background: var(--c-warning);
+        color: #111;
+    }
+
+    .modal-pro .modal-icon.danger {
+        background: var(--c-danger);
+        color: #fff;
+    }
+
+    .modal-pro .modal-icon.navy {
+        background: var(--c-navy2);
+        color: #fff;
+    }
+
+.modal-pro .preview-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.modal-pro .preview-title {
+    font-weight: 900;
+    font-size: 1.05rem;
+}
+
+.modal-pro .preview-sub {
+    font-size: .85rem;
+    color: rgba(0,0,0,.55);
+}
+
+.modal-pro .btn-outline-pro {
+    border: 1px solid rgba(0,0,0,.20) !important;
+    background: #fff !important;
+    color: rgba(0,0,0,.75) !important;
+}
+
+.modal-pro .btn-save {
+    background: var(--c-warning) !important;
+    color: #111 !important;
+}
+
+.modal-pro .btn-danger-pro {
+    background: var(--c-danger) !important;
+    color: #fff !important;
+}
+
+.modal-pro .role-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.modal-pro .info-card {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+    .modal-pro .info-card.full {
+        grid-column: span 2;
+    }
+
+.modal-pro .info-label {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.modal-pro .info-value {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+

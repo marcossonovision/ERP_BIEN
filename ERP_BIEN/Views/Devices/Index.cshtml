@@ -2,6 +2,8 @@
 @model ERP_BIEN.Models.ViewModels.DevicesViewModel
 @using ERP_BIEN.Common.Enums
 @using ERP_BIEN.Models
+<link rel="stylesheet" href="~/css/devices.css" asp-append-version="true" />
+
 
 @{
     ViewData["Title"] = "Gestión de Dispositivos";
@@ -44,137 +46,68 @@
 }
 }
 
-<div class="page-header mb-3">
-    <h2>Gestión de Dispositivos</h2>
+<!-- ========================= -->
+<!-- HEADER PRO (igual que Users) -->
+<!-- ========================= -->
+<div class="header-pro d-flex justify-content-between align-items-center mb-3">
+
+    <div>
+        <h2 class="mb-0 fw-bold">Gestión de Dispositivos</h2>
+        <small class="text-muted">
+            Mostrando @(Model?.Devices?.Count ?? 0) dispositivos
+        </small>
+    </div>
+
+    <div class="d-flex gap-2">
+
+    <button type="button"
+            class="btn btn-pill btn-create"
+            data-bs-toggle="modal"
+            data-bs-target="#createModal">
+        + Crear Dispositivo
+    </button>
+
+    <!-- EXPORT EXCEL -->
+    <a asp-controller="Devices"
+       asp-action="ExportExcel"
+       asp-route-pageNumber="@Model.PageNumber"
+       asp-route-deviceTypeFilter="@Model.DeviceTypeFilter"
+       asp-route-statusFilter="@Model.StatusFilter"
+       asp-route-userIdFilter="@Model.UserIdFilter"
+       asp-route-hostnameFilter="@Model.HostnameFilter"
+       asp-route-modelFilter="@Model.ModelFilter"
+       asp-route-snFilter="@Model.SNFilter"
+       asp-route-manufacturingFrom="@(Model.ManufacturingFrom?.ToString("yyyy-MM-dd"))"
+       asp-route-manufacturingTo="@(Model.ManufacturingTo?.ToString("yyyy-MM-dd"))"
+       asp-route-useFrom="@(Model.UseFrom?.ToString("yyyy-MM-dd"))"
+       asp-route-useTo="@(Model.UseTo?.ToString("yyyy-MM-dd"))"
+       class="btn btn-pill btn-excel">
+
+         Excel
+    </a>
+
+</div>
 </div>
 
-<style>
-    .device-actions {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: .5rem;
-        flex-wrap: nowrap;
-    }
-    .device-actions .btn { min-width: 92px; }
-    .device-row { cursor: pointer; }
-    
-/* TABLA ORTEC STYLE */
-.table-ortec {
-    border-radius: 6px;
-    overflow: hidden;
-    font-size: 14px;
-}
 
-/* CABECERA */
-.table-ortec thead {
-    background-color: #0d2f6f;
-    color: white;
-}
-
-/* FILAS */
-.table-ortec tbody tr:nth-child(odd) {
-    background-color: #a9c4d2;
-}
-
-.table-ortec tbody tr:nth-child(even) {
-    background-color: #d2d2d2;
-}
-
-/* BOTONES */
-.btn-edit {
-    background-color: #0d2f6f;
-    color: white;
-    border: none;
-}
-
-.btn-edit:hover {
-    background-color: #092454;
-}
-
-.btn-delete {
-    background-color: #d60000;
-    color: white;
-    border: none;
-}
-
-.btn-delete:hover {
-    background-color: #a80000;
-}
-.chip {
-    display: inline-flex;
-    align-items: center;
-    background: #e7f1ff;
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 12px;
-}
-
-.chip .x {
-    margin-left: 6px;
-    cursor: pointer;
-    text-decoration: none;
-    color: #555;
-
-}
-.timeline {
-    position: relative;
-    margin: 10px 0;
-    padding-left: 20px;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: #0d2f6f;
-}
-
-.timeline-item {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.timeline-dot {
-    position: absolute;
-    left: -2px;
-    top: 5px;
-    width: 12px;
-    height: 12px;
-    background-color: #0d2f6f;
-    border-radius: 50%;
-}
-
-.timeline-content {
-    padding-left: 20px;
-}
-
-
-
-</style>
 
 <!-- FILTROS AVANZADOS (PRO) CON TOGGLE -->
 <form method="get">
 
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="filters-shell mb-4">
 
         <!-- CABECERA CON FLECHA -->
-        <div class="d-flex justify-content-between align-items-center p-3 border-bottom"
-             style="cursor:pointer;"
-             onclick="toggleFilters()">
-
-            <h6 class="fw-bold text-muted mb-0">
-                Filtros de búsqueda
-            </h6>
-
-            <span id="filterArrow">▼</span>
-        </div>
+        <div class="filters-head" onclick="toggleFilters()">
+  <div>
+    <div class="filters-title">Filtros de búsqueda</div>
+    <div class="filters-sub">Refina por tipo, estado, usuario, hostname, modelo, SN y fechas</div>
+  </div>
+  <span id="filterArrow" class="filters-arrow">▼</span>
+</div>
 
         <!-- CONTENIDO -->
-        <div id="filtersBody" class="p-4" style="display:none;">
+        <div id="filtersBody" class="filters-body" style="display:none;">
+
 
             <!-- FILA 1 -->
             <div class="row g-3">
@@ -338,15 +271,13 @@
                 <div>
 
                     <!-- FILTRAR -->
-                    <button type="submit"
-                            class="btn btn-primary px-4">
-                        Filtrar
-                    </button>
+                    
+<div class="filters-actions">
+  <button type="submit" class="btn btn-pill btn-filter-pro">🔍 Filtrar</button>
+
 
                     <!-- LIMPIAR -->
-                    <a asp-controller="Devices"
-                       asp-action="Index"
-                       class="btn btn-light border ms-2">
+                    <a asp-controller="Devices" asp-action="Index" class="btn btn-pill btn-clear-pro">
                         Limpiar
                     </a>
 
@@ -559,131 +490,152 @@
 
 </div>
 
+<div class="table-shell mb-3">
+    <div class="table-responsive">
 
-<div class="d-flex justify-content-end mb-2">
-    <button type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#createModal">
-        + Crear Dispositivo
-    </button>
-</div>
-<table class="table table-ortec table-hover align-middle text-center">
+        <table class="table-style align-middle text-center">
 
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Hostname</th>
-            <th>Modelo</th>
-            <th>SN</th>
-            <th>Estado</th>
-            <th>Usuario</th>
-            <th>Fecha uso</th>
-            <th style="width:260px;">Controles</th>
-        </tr>
-    </thead>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Hostname</th>
+                    <th>Modelo</th>
+                    <th>SN</th>
+                    <th>Estado</th>
+                    <th>Usuario</th>
+                    <th>Fecha uso</th>
+                    <th style="width:420px;">Controles</th>
+                </tr>
+            </thead>
 
-    <tbody>
-        @foreach (var d in Model.Devices)
-        {
-            var tipo = d switch
+            <tbody>
+
+            @foreach (var d in Model.Devices)
             {
-                Computer => "Computer",
-                Phone => "Phone",
-                Screen => "Screen",
-                DockStation => "DockStation",
-                _ => "Device"
-            };
+                var tipo = d switch
+                {
+                    Computer => "Computer",
+                    Phone => "Phone",
+                    Screen => "Screen",
+                    DockStation => "DockStation",
+                    _ => "Device"
+                };
 
-            <tr class="device-row" data-id="@d.Id">
+                <tr class="device-row" data-id="@d.Id">
 
-                <td>
-                    <span class="badge bg-info text-dark px-2 py-1">
-                        @tipo
-                    </span>
-                </td>
+                    <!-- TIPO -->
+                    <td>
+    <span class="device-type-pill
+        @(tipo == "Computer" ? "type-computer" :
+          tipo == "Phone" ? "type-phone" :
+          tipo == "Screen" ? "type-screen" :
+          tipo == "DockStation" ? "type-dock" :
+          "type-other")">
+        @tipo
+    </span>
+</td>
 
-                <td class="fw-semibold">@d.Hostname</td>
 
-                <td>@d.Model</td>
+                    <!-- HOSTNAME -->
+                    <td class="fw-semibold">
+                        @d.Hostname
+                    </td>
 
-                <td class="text-muted">@d.SN</td>
+                    <!-- MODELO -->
+                    <td>
+                        @d.Model
+                    </td>
 
-                <td>
-                    @if (d.Status == StatusDevice.BuenEstado)
-{
-    <span class="badge bg-success">BuenEstado</span>
-}
-else
-{
-    <span class="badge bg-danger">Defectuoso</span>
-}
+                    <!-- SN -->
+                    <td class="text-muted">
+                        @d.SN
+                    </td>
 
-                </td>
+                    <!-- ESTADO -->
+                    <td>
+    @if (d.Status == StatusDevice.BuenEstado)
+    {
+        <span class="device-status-pill status-ok">✅ Buen estado</span>
+    }
+    else
+    {
+        <span class="device-status-pill status-bad">⛔ Defectuoso</span>
+    }
+</td>
 
-                <td>
-                    @(d.User != null
-                        ? d.User.Name + " " + d.User.LastName
-                        : "-")
-                </td>
 
-                <td>
-                    @(d.UseDate?.ToString("dd/MM/yyyy") ?? "-")
-                </td>
+                    <!-- USUARIO -->
+                    <td>
+                        @(d.User != null
+                            ? d.User.Name + " " + d.User.LastName
+                            : "-")
+                    </td>
 
-                <td>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <!-- FECHA -->
+                    <td>
+                        @(d.UseDate?.ToString("dd/MM/yyyy") ?? "-")
+                    </td>
 
-                        @if (d.UserId == null)
-                        {
-                            <button type="button"
-                                    class="btn btn-sm btn-success"
-                                    onclick="event.stopPropagation(); openAssignModal(@d.Id);">
-                                👤 Asignar
-                            </button>
-                        }
-                        else
-                        {
-                            <form class="d-inline"
-                                  method="post"
-                                  asp-action="Unassign"
-                                  asp-controller="Devices"
-                                  onclick="event.stopPropagation();">
+                    <!-- ACCIONES -->
+                    <td>
+                        <div class="actions-wrap device-actions">
 
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="deviceId" value="@d.Id" />
-                                @{ RenderQpHidden(); }
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-secondary">
-                                    ❌ Quitar
+                            @if (d.UserId == null)
+                            {
+                                <button type="button"
+                                        class="btn-action btn-assign"
+                                        onclick="event.stopPropagation(); openAssignModal(@d.Id);">
+                                    👤 Asignar
                                 </button>
-                            </form>
-                        }
+                            }
+                            else
+                            {
+                                <form class="d-inline"
+                                      method="post"
+                                      asp-action="Unassign"
+                                      asp-controller="Devices"
+                                      onclick="event.stopPropagation();">
 
-                        <button type="button"
-                                class="btn btn-sm btn-edit"
-                                onclick="event.stopPropagation(); loadHistory(@d.Id, '@d.Hostname');">
-                            🔍 Histórico
-                        </button>
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="deviceId" value="@d.Id" />
+                                    @{ RenderQpHidden(); }
 
-                        <button type="button"
-                                class="btn btn-sm btn-delete"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteModal"
-                                data-id="@d.Id"
-                                data-name="@d.Hostname"
-                                onclick="event.stopPropagation();">
-                            🗑️ Eliminar
-                        </button>
+                                    <button type="submit"
+                                            class="btn-action btn-unassign">
+                                        ❌ Quitar
+                                    </button>
 
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
+                                </form>
+                            }
 
-</table>
+                            <button type="button"
+                                    class="btn-action btn-history"
+                                    onclick="event.stopPropagation(); loadHistory(@d.Id, '@d.Hostname');">
+                                🔍 Histórico
+                            </button>
+
+                            <button type="button"
+                                    class="btn-action btn-delete"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    data-id="@d.Id"
+                                    data-name="@d.Hostname"
+                                    onclick="event.stopPropagation();">
+                                🗑️ Eliminar
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+            }
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
   @if (Model.TotalPages > 1)
 {
     <nav class="mt-2 d-flex justify-content-center">
@@ -693,28 +645,69 @@ else
             <!-- Anterior -->
             <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = Model.PageNumber - 1 })">
-                    «
-                </a>
+   href="@Url.Action("Index", new {
+        pageNumber = Model.PageNumber - 1,
+        deviceTypeFilter = Model.DeviceTypeFilter,
+        statusFilter = Model.StatusFilter,
+        userIdFilter = Model.UserIdFilter,
+        hostnameFilter = Model.HostnameFilter,
+        modelFilter = Model.ModelFilter,
+        snFilter = Model.SNFilter,
+        manufacturingFrom = Model.ManufacturingFrom,
+        manufacturingTo = Model.ManufacturingTo,
+        useFrom = Model.UseFrom,
+        useTo = Model.UseTo
+   })">
+    «
+</a>
             </li>
 
-            <!-- Números -->
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link"
-                       href="@Url.Action("Index", new { pageNumber = i })">
-                        @i
-                    </a>
-                </li>
-            }
+            <!-- NÚMEROS -->
+@for (int i = 1; i <= Model.TotalPages; i++)
+{
+    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+
+        <a class="page-link"
+           href="@Url.Action("Index", new {
+                pageNumber = i,
+                deviceTypeFilter = Model.DeviceTypeFilter,
+                statusFilter = Model.StatusFilter,
+                userIdFilter = Model.UserIdFilter,
+                hostnameFilter = Model.HostnameFilter,
+                modelFilter = Model.ModelFilter,
+                snFilter = Model.SNFilter,
+                manufacturingFrom = Model.ManufacturingFrom,
+                manufacturingTo = Model.ManufacturingTo,
+                useFrom = Model.UseFrom,
+                useTo = Model.UseTo
+           })">
+
+            @i
+
+        </a>
+
+    </li>
+}
 
             <!-- Siguiente -->
             <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = Model.PageNumber + 1 })">
-                    »
-                </a>
+   href="@Url.Action("Index", new {
+        pageNumber = Model.PageNumber + 1,
+        deviceTypeFilter = Model.DeviceTypeFilter,
+        statusFilter = Model.StatusFilter,
+        userIdFilter = Model.UserIdFilter,
+        hostnameFilter = Model.HostnameFilter,
+        modelFilter = Model.ModelFilter,
+        snFilter = Model.SNFilter,
+        manufacturingFrom = Model.ManufacturingFrom,
+        manufacturingTo = Model.ManufacturingTo,
+        useFrom = Model.UseFrom,
+        useTo = Model.UseTo
+   })">
+    »
+</a>
+
             </li>
 
         </ul>
@@ -725,92 +718,163 @@ else
 {
     <p class="text-muted mt-3">No se encontraron dispositivos.</p>
 }
+<!-- ========================= -->
+<!-- CREATE MODAL (PRO + WIZARD 2 PASOS) -->
+<!-- ========================= -->
+<div class="modal fade modal-pro" id="createModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modal-pro-card">
 
-<!-- CREATE MODAL (WIZARD 2 PASOS) -->
-<div class="modal fade" id="createModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" asp-action="Create" asp-controller="Devices"
-      onsubmit="showToast('Creando dispositivo...', 'info')">
+      <!-- FORM -->
+      <form method="post"
+            asp-action="Create"
+            asp-controller="Devices"
+            onsubmit="showToast('Creando dispositivo...', 'info')">
 
-                @Html.AntiForgeryToken()
-                @{ RenderQpHidden(); }
+        <!-- HEADER -->
+        <div class="modal-header d-flex align-items-center justify-content-between">
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear Dispositivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="modal-pro-icon navy">➕</div>
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Crear Dispositivo</h5>
+              <div class="small opacity-75">Alta de dispositivo en el inventario</div>
+            </div>
+          </div>
 
-                <div class="modal-body">
-                    <div id="step1">
-                        <h6 class="text-muted mb-3">Información básica</h6>
+          <button type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Cerrar"></button>
 
-                        <label class="form-label">Tipo</label>
-                        <select class="form-select" name="deviceType" required>
-                            <option value="">-- Seleccionar --</option>
-                            <option value="Computer">Computer</option>
-                            <option value="Phone">Phone</option>
-                            <option value="Screen">Screen</option>
-                            <option value="DockStation">DockStation</option>
-                        </select>
-
-                        <label class="form-label mt-2">Hostname</label>
-                        <input class="form-control" name="hostname" required />
-
-                        <label class="form-label mt-2">Modelo</label>
-                        <input class="form-control" name="model" />
-
-                        <label class="form-label mt-2">SN</label>
-                        <input class="form-control" name="sn" />
-                    </div>
-
-                    <div id="step2" style="display:none;">
-                        <h6 class="text-muted mb-3">Configuración</h6>
-
-                        <label class="form-label">Número</label>
-                        <input type="number" class="form-control" name="numberOfDevice" value="1" />
-
-                        <label class="form-label mt-2">Fabricación</label>
-                        <input type="date" class="form-control" name="manufacturingDate" />
-
-                        <label class="form-label mt-2">Estado</label>
-                        <select class="form-select" name="status">
-                            @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
-                            {
-                                <option value="@s">@s</option>
-                            }
-                        </select>
-
-                        <label class="form-label mt-2">Comentario</label>
-                        <textarea class="form-control" name="comment"></textarea>
-
-                        <label class="form-label mt-2">Usuario</label>
-                        <select class="form-select" name="userId">
-                            <option value="">-- Sin asignar --</option>
-                            @foreach (var u in Model.Users)
-                            {
-                                <option value="@u.Id">@u.Name @u.LastName</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()" id="btnPrev" style="display:none;">
-                        Atrás
-                    </button>
-
-                    <button type="button" class="btn btn-primary" onclick="nextStep()" id="btnNext">
-                        Siguiente
-                    </button>
-
-                    <button type="submit" class="btn btn-success" id="btnCreate" style="display:none;">
-                        Crear dispositivo
-                    </button>
-                </div>
-            </form>
         </div>
+
+        <!-- BODY -->
+        <div class="modal-body modal-pro-body">
+
+          <!-- PREVIEW -->
+          <div class="preview-box mb-4">
+            <div class="preview-title" id="createWizardTitle">
+              Paso 1/2 · Información básica
+            </div>
+            <div class="preview-sub">
+              Completa los datos principales del dispositivo
+            </div>
+          </div>
+
+          <!-- STEP 1 -->
+          <div id="step1">
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="form-label tiny-label">Tipo</label>
+                <select class="form-select input-pro" name="deviceType" required>
+                  <option value="">-- Seleccionar --</option>
+                  <option value="Computer">Computer</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Screen">Screen</option>
+                  <option value="DockStation">DockStation</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label tiny-label">Hostname</label>
+                <input class="form-control input-pro" name="hostname" required />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label tiny-label">Modelo</label>
+                <input class="form-control input-pro" name="model" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label tiny-label">SN</label>
+                <input class="form-control input-pro" name="sn" />
+              </div>
+
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div id="step2" style="display:none;">
+            <div class="row g-3">
+
+              <div class="col-md-4">
+                <label class="form-label tiny-label">Número</label>
+                <input type="number" class="form-control input-pro" name="numberOfDevice" value="1" min="1" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label tiny-label">Fabricación</label>
+                <input type="date" class="form-control input-pro" name="manufacturingDate" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label tiny-label">Estado</label>
+                <select class="form-select input-pro" name="status">
+                  @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
+                  {
+                    <option value="@s">@s</option>
+                  }
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label tiny-label">Comentario</label>
+                <textarea class="form-control input-pro" name="comment" rows="2"></textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label tiny-label">Usuario</label>
+                <select class="form-select input-pro" name="userId">
+                  <option value="">-- Sin asignar --</option>
+                  @foreach (var u in Model.Users)
+                  {
+                    <option value="@u.Id">@u.Name @u.LastName</option>
+                  }
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer modal-pro-footer d-flex justify-content-between">
+
+          <button type="button"
+                  class="btn-pill btn-cancel-pro"
+                  onclick="prevStep()"
+                  id="btnPrev"
+                  style="display:none;">
+            ← Atrás
+          </button>
+
+          <div class="d-flex gap-2">
+
+            <button type="button"
+                    class="btn-pill btn-next-pro"
+                    onclick="nextStep()"
+                    id="btnNext">
+              Siguiente →
+            </button>
+
+            <button type="submit"
+                    class="btn-pill btn-save-pro"
+                    id="btnCreate"
+                    style="display:none;">
+              💾 Crear dispositivo
+            </button>
+
+          </div>
+
+        </div>
+
+      </form>
+
     </div>
+  </div>
 </div>
 
 <!-- EDIT MODAL (tu modal de editar) -->
@@ -928,24 +992,80 @@ else
 </div>
 
 <!-- HISTORY MODAL -->
-<div class="modal fade" id="historyModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historyTitle">Histórico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+<div class="modal fade modal-pro" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
 
-            <div class="modal-body">
-                <div id="historyBody">
-                    <div class="text-center text-muted">Cargando...</div>
+        <div class="modal-content modal-pro-card">
+
+            <!-- HEADER -->
+            <div class="modal-header modal-pro-header">
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="modal-pro-icon">📜</div>
+
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">
+                            Histórico del dispositivo
+                        </h5>
+                        <div class="small opacity-75" id="history-device-name">
+                            —
+                        </div>
+                    </div>
+
                 </div>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <!-- BODY -->
+            <div class="modal-body p-4">
+
+                <!-- TIMELINE -->
+                <div id="historyTimeline" class="history-timeline">
+
+                    <!-- EJEMPLO ITEM -->
+                    <!-- JS inyecta esto -->
+                    <!--
+                    <div class="history-item">
+                        <div class="dot"></div>
+
+                        <div class="content">
+                            <div class="d-flex justify-content-between">
+                                <div class="fw-bold">Asignado a Juan Pérez</div>
+                                <div class="text-muted small">20/05/2026</div>
+                            </div>
+
+                            <div class="text-muted small">
+                                Usuario asignado al dispositivo
+                            </div>
+                        </div>
+                    </div>
+                    -->
+
+                </div>
+
+                <!-- EMPTY STATE -->
+                <div id="historyEmpty"
+                     class="text-center text-muted py-5"
+                     style="display:none;">
+                    Sin histórico disponible
+                </div>
+
             </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer modal-pro-footer">
+                <button type="button"
+                        class="btn-cancel-pro"
+                        data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+
         </div>
+
     </div>
 </div>
 
@@ -1075,68 +1195,112 @@ document.getElementById('deleteModal')?.addEventListener('show.bs.modal', functi
 });
 
 
-// ========= HISTÓRICO TIMELINE PRO
-function loadHistory(deviceId, hostname) {
+// ========= HISTÓRICO TIMELINE PRO (FIX)
+// - Usa endpoint JSON correcto
+// - Maneja HTML/redirect/errores sin romper
+async function loadHistory(deviceId, hostname) {
 
-    const body = document.getElementById("historyBody");
-    const title = document.getElementById("historyTitle");
+    // UI refs
+    const modalEl  = document.getElementById("historyModal");
+    const modal    = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-    title.innerText = `Histórico - ${hostname}`;
-    body.innerHTML = '<div class="text-center text-muted py-3">Cargando...</div>';
+    const titleEl  = document.getElementById("historyTitle");              // si existe en tu modal antiguo
+    const nameEl   = document.getElementById("history-device-name");       // en tu modal pro
+    const timeline = document.getElementById("historyTimeline");           // en tu modal pro
+    const empty    = document.getElementById("historyEmpty");              // en tu modal pro
 
-    fetch(`/Devices/HistoryJson?deviceId=${deviceId}`)
-        .then(r => r.json())
-        .then(rows => {
+    if (titleEl) titleEl.innerText = `Histórico - ${hostname || ""}`;
+    if (nameEl)  nameEl.innerText  = hostname || "Dispositivo";
 
-            if (!rows || rows.length === 0) {
-                body.innerHTML = '<div class="text-muted">No hay histórico para este dispositivo.</div>';
-                new bootstrap.Modal(document.getElementById('historyModal')).show();
-                return;
-            }
+    if (timeline) timeline.innerHTML = "";
+    if (empty) { empty.style.display = "none"; empty.innerText = "Sin histórico disponible"; }
 
-            let html = `<div class="timeline">`;
+    // ✅ IMPORTANTE: endpoint JSON (el que suele existir en DevicesController)
+    // Cambia SOLO esta ruta si tu controller usa otro nombre.
+    const url = `/Devices/HistoryJson?deviceId=${encodeURIComponent(deviceId)}`;
 
-            rows.forEach(r => {
+    try {
+        const res = await fetch(url, { headers: { "Accept": "application/json" } });
 
-                const user = r.userName ?? r.UserName ?? "-";
-                const start = r.startDate ?? r.StartDate ?? "-";
-                const end = r.endDate ?? r.EndDate;
+        if (!res.ok) {
+            // Si es 302/login o 500, aquí cae
+            throw new Error(`HTTP ${res.status}`);
+        }
 
-                html += `
-                    <div class="timeline-item">
+        // ✅ Verifica que realmente sea JSON
+        const ct = res.headers.get("content-type") || "";
+        if (!ct.includes("application/json")) {
+            const txt = await res.text();
+            console.error("History endpoint NO devolvió JSON. Content-Type:", ct, "Body:", txt);
+            throw new Error("El histórico no devolvió JSON (posible redirect o vista HTML).");
+        }
 
-                        <div class="timeline-dot"></div>
+        const rows = await res.json();
 
-                        <div class="timeline-content">
+        if (!rows || rows.length === 0) {
+            if (empty) empty.style.display = "block";
+            modal.show();
+            return;
+        }
 
-                            <div class="fw-semibold">
-                                ${user}
-                            </div>
+        // ✅ Normaliza distintos formatos de backend
+        // Soporta: {userName, startDate, endDate} o {UserName, StartDate, EndDate}
+        // o tu formato nuevo {title, date, description}
+        rows.forEach(r => {
 
-                            <div class="text-muted small">
-                                ${start} → 
-                                ${end 
-                                    ? end 
-                                    : '<span class="badge bg-success">Actual</span>'}
-                            </div>
+            // Caso A: formato “asignaciones”
+            const user = r.userName ?? r.UserName ?? null;
+            const start = r.startDate ?? r.StartDate ?? null;
+            const end = r.endDate ?? r.EndDate ?? null;
 
+            // Caso B: formato “timeline”
+            const title = r.title ?? r.Title ?? (user ? `Asignado a ${user}` : "Evento");
+            const date  = r.date  ?? r.Date  ?? start ?? "-";
+            const desc  = r.description ?? r.Description
+                       ?? (user ? `Desde ${start ?? "-"}${end ? ` → ${end}` : " → Actual"}` : "");
+
+            if (timeline) {
+                const item = document.createElement("div");
+                item.className = "history-item";
+                item.innerHTML = `
+                    <div class="dot"></div>
+                    <div class="content">
+                        <div class="d-flex justify-content-between">
+                            <div class="fw-bold">${escapeHtml(title)}</div>
+                            <div class="text-muted small">${escapeHtml(date)}</div>
                         </div>
-
+                        <div class="text-muted small">${escapeHtml(desc)}</div>
                     </div>
                 `;
-            });
-
-            html += `</div>`;
-
-            body.innerHTML = html;
-
-            new bootstrap.Modal(document.getElementById('historyModal')).show();
-        })
-        .catch(() => {
-            body.innerHTML = '<div class="text-danger">Error cargando histórico</div>';
-            new bootstrap.Modal(document.getElementById('historyModal')).show();
+                timeline.appendChild(item);
+            }
         });
+
+        modal.show();
+
+    } catch (err) {
+        console.error("Error cargando histórico:", err);
+
+        if (empty) {
+            empty.style.display = "block";
+            empty.innerText = "Error cargando histórico ❌";
+        }
+
+        showToast("Error cargando histórico ❌", "error");
+        modal.show();
+    }
 }
+
+// helper seguro
+function escapeHtml(str) {
+    return (str ?? "").toString()
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 
 // ========= TOAST (ARREGLADO: NO contiene otras funciones dentro)
 function showToast(message, type = "success") {
@@ -1356,46 +1520,52 @@ document.getElementById("createModal")?.addEventListener("show.bs.modal", functi
     step = 1;
 });
 
+// ======================================
+// FILTROS DEVICES: TOGGLE + PERSISTENCIA (COMPLETO)
+// ======================================
+
+// Deja el estado visual consistente (y evita errores si faltan elementos)
+function setFiltersOpen(isOpen) {
+    const body = document.getElementById("filtersBody");
+    const arrow = document.getElementById("filterArrow");
+
+    // Si no existe el DOM todavía, no hagas nada (evita errores)
+    if (!body || !arrow) return;
+
+    body.style.display = isOpen ? "block" : "none";
+    arrow.innerText = isOpen ? "▲" : "▼";
+    localStorage.setItem("devicesFiltersOpen", isOpen ? "true" : "false");
+}
+
+// Mantiene el mismo nombre porque tu HTML llama onclick="toggleFilters()"
 function toggleFilters() {
     const body = document.getElementById("filtersBody");
     const arrow = document.getElementById("filterArrow");
 
-    if (body.style.display === "none") {
-        body.style.display = "block";
-        arrow.innerText = "▲";
-        localStorage.setItem("devicesFiltersOpen", "true");
-    } else {
-        body.style.display = "none";
-        arrow.innerText = "▼";
-        localStorage.setItem("devicesFiltersOpen", "false");
-    }
-}
-// ✅ RESTAURAR ESTADO AL CARGAR
-document.addEventListener("DOMContentLoaded", function () {
+    // Si faltan IDs, no rompas nada
+    if (!body || !arrow) return;
 
+    // Si está visible => cerrar, si no => abrir
+    const isCurrentlyOpen = body.style.display === "block";
+    setFiltersOpen(!isCurrentlyOpen);
+}
+
+// Restaurar estado al cargar (SOLO UNA VEZ)
+document.addEventListener("DOMContentLoaded", function () {
     const savedState = localStorage.getItem("devicesFiltersOpen");
 
-    const body = document.getElementById("filtersBody");
-    const arrow = document.getElementById("filterArrow");
+    // Si es la primera vez, elige comportamiento por defecto:
+    // - true  => abierto por defecto (recomendado para que "se vea" que hay filtros)
+    // - false => cerrado por defecto
+    const defaultOpen = true;
 
-    // Primera vez → cerrado
     if (savedState === null) {
-        body.style.display = "none";
-        arrow.innerText = "▼";
+        setFiltersOpen(defaultOpen);
         return;
     }
 
-    // Restaurar estado
-    if (savedState === "true") {
-        body.style.display = "block";
-        arrow.innerText = "▲";
-    } else {
-        body.style.display = "none";
-        arrow.innerText = "▼";
-    }
-
+    setFiltersOpen(savedState === "true");
 });
-
 
     </script>
   

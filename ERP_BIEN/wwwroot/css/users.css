@@ -1,232 +1,560 @@
-﻿/* ============================
-   GLOBAL
-   ============================ */
-body {
-    background: #f3f4f6;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    margin: 0;
-    padding: 0;
+﻿
+/* =========================================================
+   0) PALETA (TU GUÍA)
+   ========================================================= */
+:root {
+    --w: #ffffff;
+    --b: #000000;
+    --c-cyan: #0090E0;
+    --c-navy: #032966; /* Azul marino profundo (principal) */
+    --c-navy2: #004080; /* Azul oscuro profundo (secundario) */
+
+    --c-success: #28A745;
+    --c-warning: #FFC107;
+    --c-danger: #DC3545;
+    --c-info: #17A2B8;
+    --border: #E6EAF2;
+    /* Zebra azul claro estilo tu ejemplo */
+    --row-alt: #D9F1FF;
+    --row-hover: #C7EBFF;
 }
 
-.page-container {
-    padding: 25px;
-}
-
-.page-title, .users-title {
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #1f2937;
-}
-
-/* ============================
-   FILTROS
-   ============================ */
-.filters-form {
-    display: flex;
-    gap: 10px;
+/* =========================================================
+   1) CHIPS (filtros activos)
+   ========================================================= */
+.chip {
+    display: inline-flex;
     align-items: center;
-    margin-bottom: 20px;
-}
-
-.search-input, .filter-select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    font-size: 14px;
-}
-
-.filter-btn {
-    padding: 10px 16px;
-    background: #2563eb;
-    color: #ffffff;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.create-btn {
-    padding: 10px 16px;
-    background: #16a34a;
-    color: #ffffff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* ============================
-   TABLA
-   ============================ */
-.users-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-}
-
-    .users-table thead {
-        background: #f3f4f6;
-    }
-
-    .users-table th {
-        padding: 12px 16px;
-        text-align: left;
-        font-weight: 600;
-        color: #4b5563;
-        font-size: 14px;
-    }
-
-    .users-table td {
-        padding: 12px 16px;
-        border-top: 1px solid #e5e7eb;
-        font-size: 14px;
-        color: #111827;
-    }
-
-.estado.activo {
-    color: #16a34a;
-    font-weight: 600;
-}
-
-.estado.inactivo {
-    color: #dc2626;
-    font-weight: 600;
-}
-
-.btn-ver {
-    background: #2563eb;
-    color: #ffffff;
+    gap: .35rem;
     padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
-}
-.btn-edit {
-    background: #2563eb;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 500;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
 }
 
-.btn-eliminar {
-    background: #dc2626;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
-    margin-left: 6px;
-}
-
-/* ============================
-   MODALES
-   ============================ */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.55);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(3px);
-}
-
-.modal-content {
-    background: white;
-    width: 420px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-    animation: fadeIn 0.25s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-    .modal-header h2 {
-        font-size: 20px;
+    .chip .x {
+        border: 0;
+        background: transparent;
+        padding: 0 4px;
+        cursor: pointer;
         font-weight: 700;
-        color: #1f2937;
+        opacity: .7;
     }
 
-.modal-close {
-    background: transparent;
-    border: none;
-    font-size: 20px;
+        .chip .x:hover {
+            opacity: 1;
+        }
+
+/* =========================================================
+   2) LAYOUT GENERAL
+   ========================================================= */
+.card-pro {
+    background: #fff;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+}
+
+.pagination .page-link {
+    border-radius: 10px;
+    margin: 0 2px;
+}
+
+/* =========================================================
+   3) TABLA "CARD ROWS" (lo que ya tenías)
+   - La dejamos por compatibilidad (por si la usas en otras páginas)
+   ========================================================= */
+.table-card {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+    .table-card thead th {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: #6c757d;
+    }
+
+    .table-card tbody tr {
+        background: #fff;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
+    }
+
+        .table-card tbody tr td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .table-card tbody tr td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+    .table-card tbody td {
+        border-top: none !important;
+        padding: 12px 14px;
+        vertical-align: middle;
+    }
+
+/* Hover fila (si lo usas) */
+.user-row {
     cursor: pointer;
-    color: #6b7280;
 }
 
-.modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.modal-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 15px;
-}
-
-    .modal-row label {
-        font-weight: 600;
-        color: #374151;
+    .user-row:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: 0 4px 16px rgba(0,0,0,.08);
     }
 
-    .modal-row span {
-        color: #111827;
+/* Acciones en hover (si lo usas) */
+.actions-col {
+    width: 190px;
+    white-space: nowrap;
+}
+
+.actions-wrap {
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+
+.user-row:hover .actions-wrap {
+    opacity: 1;
+}
+
+/* Evitar que click de fila pise botones */
+.user-row button {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+}
+
+/* =========================================================
+   4) BADGES (los tuyos originales, por compatibilidad)
+   ========================================================= */
+.badge-team {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    color: #3730a3;
+    padding: 6px 12px;
+    font-size: .75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    display: inline-block;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.badge-role {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e3a8a;
+    padding: 6px 12px;
+    font-size: .75rem;
+    border-radius: 999px;
+    font-weight: 500;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   5) TABLA ESTILO (LA DE TU IMAGEN / GUÍA)
+   - Compatibilidad: sirve si usas .table-shell/.table-style
+   ========================================================= */
+.table-shell {
+    background: var(--w);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.table-style {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table-style thead th {
+        background: var(--c-navy);
+        color: var(--w);
+        font-weight: 800;
+        padding: 14px 12px;
+        border-bottom: 0;
+        white-space: nowrap;
+        font-size: .9rem;
     }
 
-.modal-footer {
+    .table-style tbody td {
+        padding: 12px 12px;
+        border-top: 0;
+        vertical-align: middle;
+    }
+
+    .table-style tbody tr:nth-child(even) {
+        background: var(--row-alt);
+    }
+
+    .table-style tbody tr:hover {
+        background: var(--row-hover);
+    }
+
+/* Texto auxiliar */
+.cell-muted {
+    color: rgba(0,0,0,.55);
+    font-size: .85rem;
+}
+
+/* =========================================================
+   6) TABLA "Licenses look" (USERS)
+   - Compatibilidad: sirve si usas .users-table-wrap/.table-users
+   - La mapeamos a la MISMA estética de tu guía
+   ========================================================= */
+.users-table-wrap {
+    background: var(--w);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.table-users {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table-users thead th {
+        background: var(--c-navy) !important;
+        color: var(--w) !important;
+        font-weight: 800;
+        padding: 14px 12px;
+        border-bottom: 0 !important;
+        white-space: nowrap;
+        font-size: .9rem;
+    }
+
+    .table-users tbody td {
+        padding: 12px 12px;
+        vertical-align: middle;
+        border-top: 0 !important;
+    }
+
+    .table-users tbody tr:nth-child(even) {
+        background: var(--row-alt);
+    }
+
+    .table-users tbody tr:hover {
+        background: var(--row-hover);
+    }
+
+/* =========================================================
+   7) PILLS (para equipo/rol/estado como tu tabla ejemplo)
+   ========================================================= */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .78rem;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.pill-team {
+    background: rgba(0,0,0,.55);
+    color: #fff;
+}
+
+.pill-role {
+    background: var(--c-navy2);
+    color: #fff;
+}
+
+.pill-active {
+    background: var(--c-success);
+    color: #fff;
+}
+
+.pill-inactive {
+    background: var(--c-danger);
+    color: #fff;
+}
+
+/* =========================================================
+   8) BOTONES ACCIÓN (Editar/Borrar estilo tu ejemplo)
+   - Importante: No usamos el mismo .btn-edit para 2 cosas distintas.
+   ========================================================= */
+.actions-wrap {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    flex-wrap: nowrap;
 }
 
-.btn-delete {
-    background: #dc2626;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+/* Botón acción redondeado */
+.btn-action {
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 7px 12px !important;
+    font-weight: 800 !important;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    white-space: nowrap;
 }
 
-.btn-cancel {
-    background: #e5e7eb;
-    color: #111827;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+    /* Variantes (paleta tu guía) */
+    .btn-action.btn-edit {
+        background: var(--c-navy2) !important;
+    }
+
+    .btn-action.btn-delete {
+        background: var(--c-danger) !important;
+    }
+
+    .btn-action:hover {
+        filter: brightness(.95);
+    }
+
+/* =========================================================
+   9) TOGGLE ACTIVO (píldora con colores)
+   - Solo define estética; el JS debe poner/quitar pill-active/pill-inactive
+   ========================================================= */
+.toggle-active-btn {
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 7px 12px !important;
+    font-weight: 800 !important;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    white-space: nowrap;
+    box-shadow: none !important;
 }
+
+/* =========================================================
+   10) (Opcional) Botonera en tablas tipo Licenses
+   - Si lo usas (users-actions), queda consistente
+   ========================================================= */
+.users-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+/* ===== Modal PRO (coherente con tu paleta guía) ===== */
+.modal-pro .modal-pro-card {
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.20);
+}
+
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
+    color: #fff;
+    border-bottom: 0;
+}
+
+.modal-pro .modal-pro-footer {
+    background: #fff;
+    border-top: 1px solid var(--border, #E6EAF2);
+    padding: 14px 16px;
+}
+
+.modal-pro .modal-pro-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+    .modal-pro .modal-pro-icon.danger {
+        background: var(--c-danger, #DC3545);
+        color: #fff;
+    }
+
+/* Caja warning bonita */
+.modal-pro-warning {
+    background: rgba(255, 193, 7, .20);
+    border: 1px solid rgba(255, 193, 7, .35);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: #111;
+}
+
+/* Caja de usuario seleccionado */
+.modal-pro-target {
+    background: #fff;
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+/* Botones pill */
+.btn-pill {
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+}
+
+/* ✅ Eliminar rojo PRO */
+.btn-danger-pro {
+    background: var(--c-danger, #DC3545) !important;
+    border: 0 !important;
+    color: #fff !important;
+}
+
+    .btn-danger-pro:hover {
+        filter: brightness(.95);
+    }
+/* =========================================
+   BOTÓN SAVE PRO
+   ========================================= */
+.btn-save-pro {
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 20px;
+    font-weight: 800;
+    font-size: .9rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .18s ease;
+    box-shadow: 0 6px 18px rgba(3,41,102,.25);
+}
+
+    .btn-save-pro:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+        box-shadow: 0 10px 24px rgba(3,41,102,.35);
+    }
+
+    .btn-save-pro:active {
+        transform: scale(.98);
+    }
+
+    .btn-save-pro:disabled {
+        opacity: .7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+.btn-excel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .85rem;
+    color: #fff;
+    background: linear-gradient(135deg, #28A745, #1f8a38);
+    border: 0;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(40,167,69,.25);
+    transition: all .18s ease;
+}
+
+    .btn-excel:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        box-shadow: 0 10px 24px rgba(40,167,69,.35);
+    }
+
+    .btn-excel:active {
+        transform: scale(.98);
+    }
+/* ================================
+   FILTROS PRO (CONSISTENCIA UI)
+   ================================ */
+.filters-shell {
+    background: var(--w);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    padding: 18px;
+}
+
+    /* labels */
+    .filters-shell .form-label {
+        font-size: .75rem;
+        font-weight: 700;
+        color: #6c757d;
+        margin-bottom: 6px;
+    }
+
+    /* inputs coherentes con tu sistema */
+    .filters-shell .form-control,
+    .filters-shell .form-select {
+        border-radius: 10px;
+        border: 1px solid #e3e6ee;
+        font-size: .9rem;
+        padding: 10px 12px;
+        transition: all .15s ease;
+    }
+
+        .filters-shell .form-control:focus,
+        .filters-shell .form-select:focus {
+            border-color: var(--c-navy2);
+            box-shadow: 0 0 0 3px rgba(0,64,128,.15);
+        }
+
+/* botón filtrar alineado con sistema */
+.btn-filter-pro {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 800;
+    font-size: .85rem;
+    transition: all .18s ease;
+}
+
+    .btn-filter-pro:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+    }
+
+.btn-cancel-pro {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #6c757d;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 800;
+    font-size: .85rem;
+    transition: all .15s ease;
+}
+
+    .btn-cancel-pro:hover {
+        background: #f8f9fa;
+        color: #000;
+        border-color: #d0d5dd;
+    }
+
+    .btn-cancel-pro:active {
+        transform: scale(.98);
+    }
+

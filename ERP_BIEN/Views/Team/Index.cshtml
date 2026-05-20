@@ -1,14 +1,18 @@
 ﻿@model ERP_BIEN.Models.ViewModels.TeamModuleIndexViewModel
 
 @{
-    ViewData["Title"] = "Equipo a tu cargo";
+    ViewData["Title"] = "Equipo";
 }
+<link rel="stylesheet" href="~/css/team.css" asp-append-version="true" />
 
-<div class="dashboard-header">
-    <h1>Equipo a tu cargo</h1>
-    <p class="dashboard-subtitle">Gestiona quién forma parte de tu equipo.</p>
+
+<!-- HEADER -->
+<div class="mb-3">
+    <h2 class="page-title">Equipo a tu cargo</h2>
+    <div class="page-subtitle">Gestión de miembros del equipo</div>
 </div>
 
+<!-- ALERTAS -->
 @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
 {
     <div class="alert alert-danger">@Model.ErrorMessage</div>
@@ -21,111 +25,149 @@
 
 @if (Model.ManagedTeams == null || Model.ManagedTeams.Count == 0)
 {
-    <p>No hay equipos asignados.</p>
+    <div class="table-shell p-3 text-muted">
+        No hay equipos asignados.
+    </div>
 }
 else
 {
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <form method="get" asp-controller="Team" asp-action="Index">
-                <label class="form-label">Selecciona equipo</label>
+    <!-- SELECTOR -->
+    <form method="get" asp-controller="Team" asp-action="Index" class="filters-shell mb-3">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Equipo</label>
                 <select class="form-select" name="teamId" onchange="this.form.submit()">
                     @foreach (var t in Model.ManagedTeams)
                     {
-                        if (t.Id == Model.SelectedTeamId)
-                        {
-                            <option value="@t.Id" selected>@t.Name</option>
-                        }
-                        else
-                        {
-                            <option value="@t.Id">@t.Name</option>
-                        }
+                        <option value="@t.Id" selected="@(t.Id == Model.SelectedTeamId)">
+                            @t.Name
+                        </option>
                     }
                 </select>
-            </form>
-        </div>
-    </div>
+            </div>
 
-    <div class="row">
+            <div class="col-md-6 text-end">
+                <span class="cell-muted">
+                    @Model.Members.Count miembros
+                </span>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3">
+
         <!-- MIEMBROS -->
-        <div class="col-md-7">
-            <h4>Miembros del equipo</h4>
+        <div class="col-md-8">
+            <div class="table-shell">
 
-            @if (Model.Members.Count == 0)
-            {
-                <p>No hay miembros asignados.</p>
-            }
-            else
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Usuario</th>
-                            <th style="width:140px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var m in Model.Members)
-                        {
-                            <tr>
-                                <td>@m.FullName</td>
-                                <td>@m.DomainUser</td>
-                                <td>
-                                    @* Quitar solo si puede escribir *@
-                                    @if (User.HasClaim("module", "TEAM"))
-                                    {
-                                        <form method="post" asp-controller="Team" asp-action="RemoveMember">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
-                                            <input type="hidden" name="userId" value="@m.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                Quitar
-                                            </button>
-                                        </form>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </div>
+                <div class="panel-head">
+                    <div class="panel-title">Miembros del equipo</div>
+                    <div class="panel-sub">Usuarios asignados</div>
+                </div>
 
-        <!-- AÑADIR -->
-        <div class="col-md-5">
-            @* SOLO mostrar si el usuario puede escribir *@
-            @if (User.HasClaim("module", "TEAM"))
-            {
-                <h4>Añadir miembro</h4>
-
-                @if (Model.Candidates.Count == 0)
+                @if (Model.Members.Count == 0)
                 {
-                    <p>No hay candidatos disponibles.</p>
+                    <div class="p-3 text-muted">No hay miembros.</div>
                 }
                 else
                 {
-                    <form method="post" asp-controller="Team" asp-action="AddMember">
-                        @Html.AntiForgeryToken()
+                    <table class="table-style">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                        </thead>
 
-                        <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
-
-                        <label class="form-label">Usuario</label>
-                        <select class="form-select mb-2" name="userId" required>
-                            @foreach (var c in Model.Candidates)
+                        <tbody>
+                            @foreach (var m in Model.Members)
                             {
-                                <option value="@c.Id">
-                                    @c.FullName (@c.DomainUser)
-                                </option>
-                            }
-                        </select>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">@m.FullName</div>
+                                        <div class="cell-muted">Miembro</div>
+                                    </td>
 
-                        <button type="submit" class="btn btn-primary">
-                            Añadir al equipo
-                        </button>
-                    </form>
+                                    <td>
+                                        <div class="fw-bold">@m.DomainUser</div>
+                                        <div class="cell-muted">Dominio</div>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @if (User.HasClaim("module", "TEAM"))
+                                        {
+                                            <form method="post"
+                                                  asp-controller="Team"
+                                                  asp-action="RemoveMember"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+                                                <input type="hidden" name="userId" value="@m.Id" />
+
+                                                <button type="submit" class="btn-delete">
+                                                    Quitar
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="cell-muted">—</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
+            </div>
+        </div>
+
+        <!-- AÑADIR -->
+        <div class="col-md-4">
+            @if (User.HasClaim("module", "TEAM"))
+            {
+                <div class="table-shell">
+
+                    <div class="panel-head">
+                        <div class="panel-title">Añadir miembro</div>
+                        <div class="panel-sub">Usuarios disponibles</div>
+                    </div>
+
+                    <div class="p-3">
+                        @if (Model.Candidates.Count == 0)
+                        {
+                            <div class="text-muted">No hay candidatos.</div>
+                        }
+                        else
+                        {
+                            <form method="post" asp-controller="Team" asp-action="AddMember">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="selectedTeamId" value="@Model.SelectedTeamId" />
+
+                                <label class="form-label fw-bold">Usuario</label>
+
+                                <select class="form-select mb-3" name="userId" required>
+                                    @foreach (var c in Model.Candidates)
+                                    {
+                                        <option value="@c.Id">
+                                            @c.FullName (@c.DomainUser)
+                                        </option>
+                                    }
+                                </select>
+
+                                <button type="submit" class="btn-save-pro w-100">
+                                    ➕ Añadir al equipo
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
             }
         </div>
+
     </div>
 }

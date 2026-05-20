@@ -1,178 +1,648 @@
-﻿.page-container {
-    width: 95%;
-    margin: 0 auto;
-    padding-top: 20px;
-    font-family: 'Segoe UI', sans-serif;
+﻿
+/* =========================
+   LOOK USERS (Devices)
+   ========================= */
+/* HEADER */
+.header-pro {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #E6EAF2;
 }
 
-.page-title {
-    font-size: 26px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
+/* BOTONES PILLS */
+.btn-pill {
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+    border: 0 !important;
+    transition: all .2s ease-in-out;
 }
 
-.filters-container {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
+/* BOTONES PRINCIPALES */
+.btn-create {
+    background: linear-gradient(135deg, #032966, #004080) !important;
+    color: #fff !important;
 }
 
-.filters-form {
+.btn-excel {
+    background: #28A745 !important;
+    color: #fff !important;
+}
+
+    /* hover botones principales */
+    .btn-create:hover,
+    .btn-excel:hover {
+        filter: brightness(.92);
+    }
+
+/* =========================
+   TABLE WRAPPER
+   ========================= */
+.table-shell {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden;
+    border: 1px solid #E6EAF2;
+}
+
+/* TABLE */
+.table-style {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    /* HEADER TABLE */
+    .table-style thead th {
+        background: #032966;
+        color: #fff;
+        font-weight: 900;
+        padding: 14px 12px;
+        border-bottom: 0;
+        white-space: nowrap;
+        font-size: .9rem;
+        text-align: center;
+    }
+
+    /* BODY TABLE */
+    .table-style tbody td {
+        padding: 12px 10px;
+        border-top: 0;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    /* ROWS */
+    .table-style tbody tr:nth-child(even) {
+        background: #D9F1FF;
+    }
+
+    .table-style tbody tr:hover {
+        background: #C7EBFF;
+    }
+
+/* MUTED TEXT */
+.cell-muted {
+    color: rgba(0,0,0,.55);
+    font-size: .85rem;
+}
+
+/* =========================
+   ACTION BUTTONS
+   ========================= */
+.actions-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.btn-action {
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 7px 12px !important;
+    font-weight: 900 !important;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    white-space: nowrap;
+    transition: all .2s ease-in-out;
+}
+
+    /* ACTION COLORS */
+    .btn-action.btn-assign {
+        background: #28A745 !important;
+        color: #fff !important;
+    }
+
+    .btn-action.btn-unassign {
+        background: #6c757d !important;
+        color: #fff !important;
+    }
+
+    .btn-action.btn-history {
+        background: #004080 !important;
+        color: #fff !important;
+    }
+
+    .btn-action.btn-delete {
+        background: #DC3545 !important;
+        color: #fff !important;
+    }
+
+    /* hover actions */
+    .btn-action:hover {
+        filter: brightness(.92);
+    }
+/* =========================
+   DEVICE TYPE
+   ========================= */
+.device-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #E8F1FF;
+    color: #004080;
+    font-weight: 800;
+    font-size: .78rem;
+    border: 1px solid #B9D4FF;
+}
+
+/* =========================
+   STATUS
+   ========================= */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .78rem;
+    min-width: 110px;
+}
+
+.status-ok {
+    background: #EAFBF1;
+    color: #1E7E4A;
+    border: 1px solid #BFE8CF;
+}
+
+.status-bad {
+    background: #FFF1F1;
+    color: #C62828;
+    border: 1px solid #F3B3B3;
+}
+
+.history-timeline {
+    position: relative;
+    padding-left: 18px;
+}
+
+    /* línea vertical */
+    .history-timeline::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(var(--c-navy), var(--c-navy2));
+        opacity: .25;
+    }
+
+/* item */
+.history-item {
+    position: relative;
     display: flex;
     gap: 12px;
+    margin-bottom: 16px;
+}
+
+    /* punto */
+    .history-item .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--c-navy);
+        margin-top: 6px;
+        box-shadow: 0 0 0 4px rgba(3,41,102,.12);
+        flex-shrink: 0;
+    }
+
+    /* contenido */
+    .history-item .content {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        transition: .15s ease;
+    }
+
+        .history-item .content:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.08);
+        }
+/* =========================
+   TYPE (píldora bonita por tipo)
+   ========================= */
+.device-type-pill {
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .78rem;
+    line-height: 1;
+    border: 1px solid transparent;
+    min-width: 110px;
 }
 
-.input-text,
-.input-select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    min-width: 200px;
+.type-computer {
+    background: #E8F1FF;
+    color: #004080;
+    border-color: #B9D4FF;
 }
 
-.btn-filter {
-    background: #0078d4;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
+.type-phone {
+    background: #E9FBF1;
+    color: #1E7E4A;
+    border-color: #BFE8CF;
 }
 
-.btn-add {
-    background: #28a745;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 14px;
+.type-screen {
+    background: #FFF6E6;
+    color: #8A5A00;
+    border-color: #FFE1A6;
 }
 
-.devices-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.type-dock {
+    background: #F3E8FF;
+    color: #5A2E91;
+    border-color: #D9BFFF;
 }
 
-    .devices-table th {
-        background: #f0f0f0;
-        padding: 12px;
-        text-align: left;
-        border-bottom: 2px solid #ddd;
-    }
-
-    .devices-table td {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-    }
-
-.btn-view {
-    background: #0078d4;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-    margin-right: 6px;
+.type-other {
+    background: #EEF2F7;
+    color: #374151;
+    border-color: #D7DEE8;
 }
 
-.btn-delete {
-    background: #dc3545;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-}
-
-.pagination {
-    margin-top: 20px;
-    display: flex;
+/* =========================
+   STATUS (píldora bonita)
+   ========================= */
+.device-status-pill {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .78rem;
+    line-height: 1;
+    min-width: 120px;
+    border: 1px solid transparent;
 }
 
-.pag-btn {
-    background: #e0e0e0;
-    padding: 6px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-    color: #333;
-}
-
-.pag-info {
-    font-size: 14px;
-    color: #555;
-}
-.form-container {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    width: 60%;
-}
-
-.form-row {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-    .form-row label {
-        font-weight: 600;
-        margin-bottom: 5px;
+    /* Reutilizamos tus colores de status-ok/status-bad */
+    .device-status-pill.status-ok {
+        background: #EAFBF1;
+        color: #1E7E4A;
+        border: 1px solid #BFE8CF;
     }
 
-.btn-cancel {
-    background: #6c757d;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    margin-left: 10px;
-}
-.delete-box {
+    .device-status-pill.status-bad {
+        background: #FFF1F1;
+        color: #C62828;
+        border: 1px solid #F3B3B3;
+    }
+/* =========================
+   FILTERS PRO (Devices) - mismo look que Users
+   ========================= */
+
+/* Contenedor de filtros como card-pro */
+.filters-shell {
     background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    width: 60%;
+    border: 1px solid #E6EAF2;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    overflow: hidden;
+    margin-bottom: 1rem;
 }
 
-.delete-warning {
-    font-size: 18px;
-    font-weight: 600;
-    color: #b30000;
-    margin-bottom: 20px;
-}
-
-.delete-table {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-    .delete-table th {
-        text-align: left;
-        width: 150px;
-        padding: 6px 0;
-        color: #555;
-    }
-
-    .delete-table td {
-        padding: 6px 0;
-    }
-
-.btn-delete-confirm {
-    background: #dc3545;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
+/* Cabecera estilo navy como el resto */
+.filters-head {
+    background: linear-gradient(135deg, #032966, #004080);
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
-    margin-right: 10px;
 }
+
+    .filters-head h6 {
+        margin: 0;
+        font-weight: 900;
+        letter-spacing: .2px;
+    }
+
+.filters-arrow {
+    font-size: 18px;
+    opacity: .95;
+    transition: transform .15s ease;
+}
+
+/* Cuerpo filtros */
+.filters-body {
+    padding: 16px;
+    background: #fff;
+}
+
+/* Labels pro */
+.filters-shell .form-label {
+    font-weight: 800;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: rgba(0,0,0,.60);
+    margin-bottom: 6px;
+}
+
+/* Inputs y selects */
+.filters-shell .form-control,
+.filters-shell .form-select {
+    border-radius: 12px;
+    border: 1px solid #dbe6f4;
+    padding: 10px 12px;
+    min-height: 42px;
+}
+
+    .filters-shell .form-control:focus,
+    .filters-shell .form-select:focus {
+        border-color: #0090E0;
+        box-shadow: 0 0 0 3px rgba(0,144,224,.15);
+    }
+
+/* Botonera filtros */
+.filters-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+/* Reutiliza tus pills */
+.btn-filter-pro {
+    background: #0090E0 !important;
+    color: #fff !important;
+}
+
+.btn-clear-pro {
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,.18) !important;
+    color: rgba(0,0,0,.75) !important;
+}
+
+    .btn-filter-pro:hover,
+    .btn-clear-pro:hover {
+        filter: brightness(.97);
+    }
+/* ===== Modal PRO base (si no lo tienes ya) ===== */
+.modal-pro .modal-pro-card {
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.20);
+}
+
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
+    color: #fff;
+    border-bottom: 0;
+}
+
+.modal-pro .modal-pro-body {
+    background: #f7fbff;
+}
+
+.modal-pro .modal-pro-footer {
+    background: #fff;
+    border-top: 1px solid var(--border, #E6EAF2);
+    padding: 14px 16px;
+}
+
+/* Icono del header */
+.modal-pro-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+    .modal-pro-icon.navy {
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        color: #fff;
+    }
+
+/* Card del asistente */
+.wizard-card {
+    background: #fff;
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.wizard-title {
+    font-weight: 900;
+    font-size: 1.05rem;
+}
+
+/* Labels y inputs más pro */
+.tiny-label {
+    font-weight: 800;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: rgba(0,0,0,.60);
+    margin-bottom: 6px;
+}
+
+.input-pro {
+    border-radius: 12px !important;
+    border: 1px solid #dbe6f4 !important;
+    padding: 10px 12px !important;
+    min-height: 42px;
+}
+
+    .input-pro:focus {
+        border-color: var(--c-cyan, #0090E0) !important;
+        box-shadow: 0 0 0 3px rgba(0,144,224,.15) !important;
+    }
+
+/* Botones */
+.btn-pill {
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+    border: 0 !important;
+}
+
+.btn-next-pro {
+    background: var(--c-cyan, #0090E0) !important;
+    color: #fff !important;
+}
+
+    .btn-next-pro:hover {
+        filter: brightness(.95);
+    }
+/* ===== Modal PRO base ===== */
+.modal-pro .modal-pro-card {
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.20);
+}
+
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
+    color: #fff;
+    border-bottom: 0;
+}
+
+.modal-pro .modal-pro-body {
+    background: #f7fbff;
+}
+
+.modal-pro .modal-pro-footer {
+    background: #fff;
+    border-top: 1px solid var(--border, #E6EAF2);
+    padding: 14px 16px;
+}
+
+/* Icono header */
+.modal-pro-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+    .modal-pro-icon.navy {
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        color: #fff;
+    }
+
+/* Preview box (igual que Users) */
+.preview-box {
+    background: #fff;
+    border: 1px solid var(--border, #E6EAF2);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.preview-title {
+    font-weight: 900;
+    font-size: 1.05rem;
+}
+
+.preview-sub {
+    font-size: .85rem;
+    color: rgba(0,0,0,.55);
+}
+
+/* Labels + inputs */
+.tiny-label {
+    font-weight: 800;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: rgba(0,0,0,.60);
+    margin-bottom: 6px;
+}
+
+.input-pro {
+    border-radius: 12px !important;
+    border: 1px solid #dbe6f4 !important;
+    padding: 10px 12px !important;
+    min-height: 42px;
+}
+
+    .input-pro:focus {
+        border-color: var(--c-cyan, #0090E0) !important;
+        box-shadow: 0 0 0 3px rgba(0,144,224,.15) !important;
+    }
+
+/* Botones */
+.btn-pill {
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+    border: 0 !important;
+}
+
+.btn-next-pro {
+    background: var(--c-cyan, #0090E0) !important;
+    color: #fff !important;
+}
+
+    .btn-next-pro:hover {
+        filter: brightness(.95);
+    }
+/* ===== FORCE MODAL PRO (Devices) ===== */
+.modal-pro .modal-pro-card {
+    border: 1px solid var(--border, #E6EAF2) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,.20) !important;
+}
+
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080)) !important;
+    color: #fff !important;
+    border-bottom: 0 !important;
+}
+
+    .modal-pro .modal-pro-header .btn-close {
+        filter: invert(1) !important;
+        opacity: .95 !important;
+    }
+
+.modal-pro .modal-pro-body {
+    background: #f7fbff !important;
+}
+
+.modal-pro .modal-pro-footer {
+    background: #fff !important;
+    border-top: 1px solid var(--border, #E6EAF2) !important;
+    padding: 14px 16px !important;
+}
+
+/* Botones del wizard */
+.btn-next-pro {
+    background: var(--c-cyan, #0090E0) !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+}
+
+.btn-save-pro {
+    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080)) !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+}
+
+.btn-cancel-pro {
+    background: #fff !important;
+    color: rgba(0,0,0,.70) !important;
+    border: 1px solid rgba(0,0,0,.18) !important;
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+}
+
+
+
+
 

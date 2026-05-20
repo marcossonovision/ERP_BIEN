@@ -252,134 +252,218 @@
 </div>
 <style>
 
-/* ===== TABLA EXACTA DEVICES ===== */
+/* =====================================================
+   🎨 PALETA ORTEC CONSISTENTE (BASE UI)
+   ===================================================== */
+:root {
+    --ortec-primary: #0d2f6f;
+    --ortec-primary-2: #1a4a9b;
+    --ortec-bg: #f4f6f9;
+    --ortec-border: #e3e6ee;
+    --ortec-text: #1f2a37;
+    --ortec-muted: #6b7280;
 
-.table.table-ortec {
-    border-radius: 6px;
-    overflow: hidden;
+    --row-odd: #e8f0f7;
+    --row-even: #f5f7fb;
+    --row-hover: #dbe9f6;
+
+    --success: #198754;
+    --danger: #d60000;
+    --warning: #ffc107;
 }
 
-.table.table-ortec thead {
-    background-color: #0d2f6f !important;
+/* =====================================================
+   📦 LAYOUT BASE
+   ===================================================== */
+body {
+    background: var(--ortec-bg);
 }
 
-.table.table-ortec thead th {
-    color: white !important;
-    text-align: center !important;
+h2 {
+    color: var(--ortec-text);
+    font-weight: 800;
 }
 
-.table.table-ortec tbody tr:nth-child(odd) {
-    background-color: #a9c4d2 !important;
+/* =====================================================
+   📊 STATS CARDS
+   ===================================================== */
+.card {
+    border: 1px solid var(--ortec-border);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.table.table-ortec tbody tr:nth-child(even) {
-    background-color: #d2d2d2 !important;
+/* =====================================================
+   🔎 FILTROS (PRO UI)
+   ===================================================== */
+.card.shadow-sm {
+    border-radius: 12px;
+    border: 1px solid var(--ortec-border);
+    background: #fff;
 }
 
-/* =========================
-   BOTONES UNIFICADOS ORTEC
-   ========================= */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid var(--ortec-border);
+}
 
-.btn-ortec {
-    border: none !important;
-    border-radius: 6px;
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ortec-primary);
+    box-shadow: 0 0 0 3px rgba(13,47,111,0.15);
+}
+
+/* =====================================================
+   🧩 CHIPS
+   ===================================================== */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--ortec-border);
+    font-size: 12px;
+    font-weight: 600;
 }
 
-/* azul principal */
-.btn-ortec-primary {
-    background-color: #0d2f6f !important;
-    color: white !important;
+.chip .x {
+    border: none;
+    background: transparent;
+    font-weight: 800;
+    cursor: pointer;
 }
 
-/* verde */
-.btn-ortec-success {
-    background-color: #198754 !important;
-    color: white !important;
+/* =====================================================
+   🧾 TABLA ORTEC PRO
+   ===================================================== */
+.table-ortec {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--ortec-border);
 }
 
-/* gris */
-.btn-ortec-secondary {
-    background-color: #6c757d !important;
-    color: white !important;
-}
-
-/* rojo */
-.btn-ortec-danger {
-    background-color: #d60000 !important;
-    color: white !important;
-}
-
-/* amarillo */
-.btn-ortec-warning {
-    background-color: #ffc107 !important;
-    color: #000 !important;
-}
-
-.btn-ortec,
-.btn-ortec-primary,
-.btn-ortec-success,
-.btn-ortec-secondary,
-.btn-ortec-danger,
-.btn-ortec-warning {
-    text-decoration: none !important;
-}
 .table-ortec thead {
-    display: table-header-group !important;
-    visibility: visible !important;
-}
-thead.thead-ortec {
-    display: table-header-group !important;
-    position: relative !important;
-    z-index: 2;
-    background-color: #0d2f6f !important;
+    background: var(--ortec-primary);
 }
 
-thead.thead-ortec th {
+.table-ortec thead th {
     color: white !important;
     text-align: center;
-    background-color: #0d2f6f !important;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px;
 }
+
+.table-ortec tbody tr:nth-child(odd) {
+    background: var(--row-odd);
+}
+
+.table-ortec tbody tr:nth-child(even) {
+    background: var(--row-even);
+}
+
+.table-ortec tbody tr:hover {
+    background: var(--row-hover);
+}
+
+/* =====================================================
+   🟢 BADGES CONSISTENTES
+   ===================================================== */
+.badge {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   🔘 BOTONES ORTEC UNIFICADOS
+   ===================================================== */
+.btn-ortec {
+    border: none !important;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.btn-ortec-primary {
+    background: var(--ortec-primary) !important;
+    color: #fff !important;
+}
+
+.btn-ortec-success {
+    background: var(--success) !important;
+    color: #fff !important;
+}
+
+.btn-ortec-danger {
+    background: var(--danger) !important;
+    color: #fff !important;
+}
+
+.btn-ortec:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+/* =====================================================
+   📅 TIMELINE (HISTÓRICO)
+   ===================================================== */
 .timeline {
     position: relative;
-    border-left: 2px solid #ddd;
+    border-left: 2px solid #d0d7e2;
     margin-left: 20px;
     padding-left: 20px;
 }
 
 .timeline-item {
-    position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .timeline-dot {
     position: absolute;
     left: -9px;
-    top: 5px;
-    width: 12px;
-    height: 12px;
-    background-color: #0d2f6f; /* azul empresa */
+    width: 10px;
+    height: 10px;
+    background: var(--ortec-primary);
     border-radius: 50%;
 }
 
 .timeline-content {
-    padding: 8px 10px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    font-size: 13px;
+    background: #fff;
+    border: 1px solid var(--ortec-border);
+    border-radius: 8px;
+    padding: 10px;
 }
-.timeline-item {
-    margin-bottom: 12px;
-}
+
+/* =====================================================
+   🔥 ROW HIGHLIGHT
+   ===================================================== */
 .highlight-row {
-    background-color: #fff3cd !important;
+    background: #fff3cd !important;
 }
 
+/* =====================================================
+   📱 MODAL CLEAN
+   ===================================================== */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+}
 
+.modal-header {
+    background: var(--ortec-primary);
+    color: #fff;
+}
 
+.modal-header .btn-close {
+    filter: invert(1);
+}
 
 </style>
 
