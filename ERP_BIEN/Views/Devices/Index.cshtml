@@ -83,7 +83,7 @@
        asp-route-useTo="@(Model.UseTo?.ToString("yyyy-MM-dd"))"
        class="btn btn-pill btn-excel">
 
-         Excel
+         📊 Excel
     </a>
 
 </div>
@@ -276,11 +276,7 @@
   <button type="submit" class="btn btn-pill btn-filter-pro">🔍 Filtrar</button>
 
 
-                    <!-- LIMPIAR -->
-                    <a asp-controller="Devices" asp-action="Index" class="btn btn-pill btn-clear-pro">
-                        Limpiar
-                    </a>
-
+                    
                 </div>
 
             </div>
@@ -974,19 +970,32 @@
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
-                <h5 class="modal-title">Detalles del Dispositivo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title">
+                    Detalles del dispositivo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-body" id="detailsBody">
-                <div class="text-center text-muted py-3">Cargando...</div>
+            <div class="modal-body">
+
+                <div id="detailsBody" class="container-fluid">
+
+                    <div class="text-center text-muted py-3">
+                        Cargando...
+                    </div>
+
+                </div>
+
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" id="btnEditFromDetails">Editar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
             </div>
+
         </div>
     </div>
 </div>
@@ -1293,12 +1302,12 @@ async function loadHistory(deviceId, hostname) {
 
 // helper seguro
 function escapeHtml(str) {
-    return (str ?? "").toString()
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+  return (str ?? "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 

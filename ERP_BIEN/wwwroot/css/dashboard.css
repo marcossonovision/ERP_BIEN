@@ -1,63 +1,244 @@
-﻿/* HEADER DEL DASHBOARD */
-.dashboard-header {
-    margin-bottom: 30px;
+﻿/* =========================================================
+   DASHBOARD.PRO — MISMO SISTEMA VISUAL QUE USERS/DEVICES
+   ========================================================= */
+
+:root {
+    --w: #ffffff;
+    --c-navy: #032966;
+    --c-navy2: #004080;
+    --c-cyan: #0090E0;
+    --c-success: #28A745;
+    --c-warning: #FFC107;
+    --c-danger: #DC3545;
+    --border: #E6EAF2;
+    --row-alt: #D9F1FF;
+    --row-hover: #C7EBFF;
+    --muted: rgba(0,0,0,.55);
+    --shadow: 0 2px 10px rgba(0,0,0,.06);
+    --shadow-strong: 0 12px 40px rgba(0,0,0,.20);
 }
 
-    .dashboard-header h1 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 5px;
+.dashboard-shell {
+    background: transparent;
+}
+
+/* =========================
+   HEADER PRO
+   ========================= */
+.dashboard-header-pro {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow-strong);
+    margin-bottom: 18px;
+    overflow: hidden;
+    position: relative;
+}
+
+    .dashboard-header-pro::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 220px;
+        height: 220px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.12);
     }
+
+.dashboard-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    margin: 0;
+}
 
 .dashboard-subtitle {
-    font-size: 16px;
-    color: #777;
+    margin-top: 6px;
+    margin-bottom: 0;
+    opacity: .9;
+    font-size: .92rem;
 }
 
-/* GRID */
+.dashboard-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.dashboard-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    font-weight: 800;
+    font-size: .82rem;
+}
+
+/* =========================
+   GRID PRO
+   ========================= */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
 }
 
-/* CARDS */
-.dashboard-card {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    text-decoration: none;
-    color: #222;
-    border: 1px solid #e5e5e5;
-    transition: 0.25s ease;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+/* =========================
+   CARD PRO (módulos)
+   ========================= */
+.dashboard-card-pro {
     display: flex;
-    flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+    background: var(--w);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 16px;
+    box-shadow: var(--shadow);
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    min-height: 110px;
+    position: relative;
+    overflow: hidden;
 }
 
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        border-color: #d0d0d0;
+    .dashboard-card-pro:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(0,0,0,.10);
+        border-color: rgba(0,64,128,.25);
     }
 
-/* ICONOS */
-.card-icon {
-    font-size: 40px;
-    margin-bottom: 15px;
+    .dashboard-card-pro:active {
+        transform: scale(.995);
+    }
+
+/* icon pill */
+.card-icon-pro {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 900;
+    flex: 0 0 auto;
+    background: rgba(0,64,128,.10);
+    border: 1px solid rgba(0,64,128,.18);
 }
 
-/* TITULO */
-.dashboard-card h3 {
-    margin: 0 0 8px 0;
-    font-size: 20px;
-    font-weight: 600;
+/* main */
+.card-main {
+    flex: 1;
+    min-width: 0;
 }
 
-/* DESCRIPCIÓN */
-.dashboard-card p {
+.card-title {
     margin: 0;
-    color: #555;
-    font-size: 15px;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.card-desc {
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: .86rem;
+    color: rgba(0,0,0,.60);
+    line-height: 1.25rem;
+}
+
+/* tiny footer row */
+.card-footer {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .75rem;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+    color: rgba(0,0,0,.70);
+}
+
+.card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 900;
+    font-size: .82rem;
+    color: var(--c-navy2);
+}
+
+/* Variantes por “módulo” (solo color del icono) */
+.icon-users {
+    background: rgba(0,144,224,.12);
+    border-color: rgba(0,144,224,.20);
+}
+
+.icon-roles {
+    background: rgba(255,193,7,.18);
+    border-color: rgba(255,193,7,.25);
+}
+
+.icon-devices {
+    background: rgba(40,167,69,.14);
+    border-color: rgba(40,167,69,.22);
+}
+
+.icon-licenses {
+    background: rgba(3,41,102,.12);
+    border-color: rgba(3,41,102,.18);
+}
+
+.icon-employees {
+    background: rgba(23,162,184,.14);
+    border-color: rgba(23,162,184,.22);
+}
+
+.icon-audit {
+    background: rgba(220,53,69,.10);
+    border-color: rgba(220,53,69,.18);
+}
+
+/* =========================
+   Responsive refinado
+   ========================= */
+@media (max-width: 576px) {
+    .dashboard-header-pro {
+        padding: 16px;
+    }
+
+    .dashboard-title {
+        font-size: 1.15rem;
+    }
+
+    .dashboard-grid {
+        gap: 12px;
+    }
+
+    .dashboard-card-pro {
+        padding: 14px;
+    }
+
+    .card-icon-pro {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
 }

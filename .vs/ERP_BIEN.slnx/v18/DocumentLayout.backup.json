@@ -3,8 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\devices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\devices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\wwwroot\\css\\layout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\wwwroot\\css\\layout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|c:\\users\\marcos.gutierrez\\desktop\\erp_bien\\erp_bien\\wwwroot\\css\\dashboard.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{20F0C954-E26C-D9D9-1A99-654709FB3C5A}|ERP_BIEN\\ERP_BIEN.csproj|solutionrelative:erp_bien\\wwwroot\\css\\dashboard.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +26,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "layout.css",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\wwwroot\\css\\layout.css",
+              "RelativeDocumentMoniker": "ERP_BIEN\\wwwroot\\css\\layout.css",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\wwwroot\\css\\layout.css",
+              "RelativeToolTip": "ERP_BIEN\\wwwroot\\css\\layout.css",
+              "ViewState": "AgIAACkBAAAAAAAAAAAYwEcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-21T11:51:08.027Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "RelativeDocumentMoniker": "ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "RelativeToolTip": "ERP_BIEN\\Views\\Devices\\Index.cshtml",
-              "ViewState": "AgIAAPkEAAAAAAAAAAApwA0FAAAAAAAAAAAAAA==",
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "ERP_BIEN\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "ERP_BIEN\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAKYAAAAAAAAAAAAgwLoAAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-20T12:15:57.203Z",
+              "WhenOpened": "2026-05-21T11:49:26.026Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "dashboard.css",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\wwwroot\\css\\dashboard.css",
+              "RelativeDocumentMoniker": "ERP_BIEN\\wwwroot\\css\\dashboard.css",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\wwwroot\\css\\dashboard.css",
+              "RelativeToolTip": "ERP_BIEN\\wwwroot\\css\\dashboard.css",
+              "ViewState": "AgIAADIAAAAAAAAAAAAYwPQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-21T11:45:26.372Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "ERP_BIEN\\Views\\Dashboard\\Index.cshtml",
+              "ToolTip": "C:\\Users\\marcos.gutierrez\\Desktop\\ERP_BIEN\\ERP_BIEN\\Views\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "ERP_BIEN\\Views\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T11:41:54.19Z",
               "EditorCaption": ""
             }
           ]

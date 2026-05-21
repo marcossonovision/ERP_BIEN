@@ -146,12 +146,12 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\site.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\Empleado\misLicencias.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\favicon.ico
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\devices.css
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\site.css
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\role.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\licenses.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\LICENSE.txt
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.slim.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\jquery\dist\jquery.slim.min.map
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\layout.css
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\role.css
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\site.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\users.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\team.css

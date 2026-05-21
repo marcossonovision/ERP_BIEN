@@ -282,15 +282,30 @@ namespace ERP_BIEN.Services
                 .OrderByDescending(h => h.StartDate)
                 .ToListAsync();
 
-            return rows.Select(h => new DeviceHistoryRowDto
+            return rows.Select(h =>
             {
-                UserName = h.User != null ? (h.User.Name + " " + h.User.LastName) : "-",
-                StartDate = h.StartDate.ToString("yyyy-MM-dd"),
-                EndDate = h.EndDate.HasValue ? h.EndDate.Value.ToString("yyyy-MM-dd") : null,
-                Duration = h.EndDate.HasValue
-                    ? $"{Math.Max(0, (h.EndDate.Value - h.StartDate).Days)} días"
-                    : "ACTUAL"
+                var end = h.EndDate; // null => ACTUAL
+                return new DeviceHistoryRowDto
+                {
+                    UserName = h.User != null ? (h.User.Name + " " + h.User.LastName) : "-",
+                    StartDate = h.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                    EndDate = end.HasValue ? end.Value.ToString("dd/MM/yyyy HH:mm") : null,
+                    Duration = end.HasValue ? FormatDuration(h.StartDate, end.Value) : "ACTUAL"
+                };
             }).ToList();
+        }
+
+        private static string FormatDuration(DateTime start, DateTime end)
+        {
+            var ts = end - start;
+
+            if (ts.TotalMinutes < 1) return "0 min";
+            if (ts.TotalHours < 1) return $"{(int)ts.TotalMinutes} min";
+
+            if (ts.TotalDays < 1)
+                return $"{(int)ts.TotalHours}h {ts.Minutes}m";
+
+            return $"{(int)ts.TotalDays}d {ts.Hours}h";
         }
 
         private async Task CloseActiveHistoryAsync(int deviceId)

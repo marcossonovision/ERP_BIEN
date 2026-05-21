@@ -1,6 +1,8 @@
 ﻿@using System.Text.Json
 @model ERP_BIEN.ViewModels.LicenseIndexMvcViewModel
 
+<link rel="stylesheet" href="~/css/licenses.css" asp-append-version="true">
+
 @{
     ViewData["Title"] = "Licenses";
 
@@ -18,7 +20,21 @@
 
 }
 
-<h2 class="mb-3">Licenses</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0 fw-semibold">Gestión de Licencias</h2>
+    <small class="text-muted">
+      Mostrando @(Model?.Licenses?.Count ?? 0) licencias
+    </small>
+  </div>
+
+  <button type="button"
+          class="btn-save-pro"
+          data-bs-toggle="modal"
+          data-bs-target="#createEditModal">
+    ➕ Crear licencia
+  </button>
+</div>
 <div class="row mb-3">
 
     <div class="col-md-3">
@@ -54,7 +70,7 @@
 <!-- FILTROS -->
 <form method="get" asp-action="Index" asp-controller="License">
 
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="filters-shell mb-4">
 
         <!-- HEADER TOGGLE -->
         <div class="d-flex justify-content-between align-items-center p-3 border-bottom"
@@ -146,7 +162,7 @@
 
                     <button type="submit"
                             class="btn btn-ortec btn-ortec-primary px-4">
-                        Filtrar
+                        🔎 Filtrar
                     </button>
 
                 
@@ -240,346 +256,120 @@
 
 </div>
 
-
-<!-- BOTÓN CREAR -->
-<div class="d-flex justify-content-end mb-2">
-    <button type="button"
-            class="btn btn-ortec btn-ortec-success"
-            data-bs-toggle="modal"
-            data-bs-target="#createEditModal">
-        + Crear licencia
-    </button>
-</div>
-<style>
-
-/* =====================================================
-   🎨 PALETA ORTEC CONSISTENTE (BASE UI)
-   ===================================================== */
-:root {
-    --ortec-primary: #0d2f6f;
-    --ortec-primary-2: #1a4a9b;
-    --ortec-bg: #f4f6f9;
-    --ortec-border: #e3e6ee;
-    --ortec-text: #1f2a37;
-    --ortec-muted: #6b7280;
-
-    --row-odd: #e8f0f7;
-    --row-even: #f5f7fb;
-    --row-hover: #dbe9f6;
-
-    --success: #198754;
-    --danger: #d60000;
-    --warning: #ffc107;
-}
-
-/* =====================================================
-   📦 LAYOUT BASE
-   ===================================================== */
-body {
-    background: var(--ortec-bg);
-}
-
-h2 {
-    color: var(--ortec-text);
-    font-weight: 800;
-}
-
-/* =====================================================
-   📊 STATS CARDS
-   ===================================================== */
-.card {
-    border: 1px solid var(--ortec-border);
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-/* =====================================================
-   🔎 FILTROS (PRO UI)
-   ===================================================== */
-.card.shadow-sm {
-    border-radius: 12px;
-    border: 1px solid var(--ortec-border);
-    background: #fff;
-}
-
-.form-control,
-.form-select {
-    border-radius: 8px;
-    border: 1px solid var(--ortec-border);
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--ortec-primary);
-    box-shadow: 0 0 0 3px rgba(13,47,111,0.15);
-}
-
-/* =====================================================
-   🧩 CHIPS
-   ===================================================== */
-.chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid var(--ortec-border);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.chip .x {
-    border: none;
-    background: transparent;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-/* =====================================================
-   🧾 TABLA ORTEC PRO
-   ===================================================== */
-.table-ortec {
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--ortec-border);
-}
-
-.table-ortec thead {
-    background: var(--ortec-primary);
-}
-
-.table-ortec thead th {
-    color: white !important;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 12px;
-}
-
-.table-ortec tbody tr:nth-child(odd) {
-    background: var(--row-odd);
-}
-
-.table-ortec tbody tr:nth-child(even) {
-    background: var(--row-even);
-}
-
-.table-ortec tbody tr:hover {
-    background: var(--row-hover);
-}
-
-/* =====================================================
-   🟢 BADGES CONSISTENTES
-   ===================================================== */
-.badge {
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-weight: 700;
-}
-
-/* =====================================================
-   🔘 BOTONES ORTEC UNIFICADOS
-   ===================================================== */
-.btn-ortec {
-    border: none !important;
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: 0.2s ease;
-}
-
-.btn-ortec-primary {
-    background: var(--ortec-primary) !important;
-    color: #fff !important;
-}
-
-.btn-ortec-success {
-    background: var(--success) !important;
-    color: #fff !important;
-}
-
-.btn-ortec-danger {
-    background: var(--danger) !important;
-    color: #fff !important;
-}
-
-.btn-ortec:hover {
-    transform: translateY(-1px);
-    opacity: 0.92;
-}
-
-/* =====================================================
-   📅 TIMELINE (HISTÓRICO)
-   ===================================================== */
-.timeline {
-    position: relative;
-    border-left: 2px solid #d0d7e2;
-    margin-left: 20px;
-    padding-left: 20px;
-}
-
-.timeline-item {
-    margin-bottom: 12px;
-}
-
-.timeline-dot {
-    position: absolute;
-    left: -9px;
-    width: 10px;
-    height: 10px;
-    background: var(--ortec-primary);
-    border-radius: 50%;
-}
-
-.timeline-content {
-    background: #fff;
-    border: 1px solid var(--ortec-border);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-/* =====================================================
-   🔥 ROW HIGHLIGHT
-   ===================================================== */
-.highlight-row {
-    background: #fff3cd !important;
-}
-
-/* =====================================================
-   📱 MODAL CLEAN
-   ===================================================== */
-.modal-content {
-    border-radius: 12px;
-    border: none;
-}
-
-.modal-header {
-    background: var(--ortec-primary);
-    color: #fff;
-}
-
-.modal-header .btn-close {
-    filter: invert(1);
-}
-
-</style>
-
 <!-- TABLA -->
-<div class="table-responsive" style="overflow: visible;">
-    <table class="table table-ortec table-hover align-middle text-center">
-        
-<thead class="thead-ortec">
-    <tr>
-        <th>Código</th>
-        <th>Producto</th>
-        <th>Proveedor</th>
-        <th>Precio</th>
-        <th>Caducidad</th>
-        <th>Asignada</th>
-        <th>Disponible</th>
-        <th>Usuario</th>
-        <th>Acciones</th>
-    </tr>
-</thead>
+<!-- TABLA -->
+<div class="table-shell mb-3">
+  <div class="table-responsive" style="overflow: visible;">
+    <table class="table-style align-middle text-center">
 
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Proveedor</th>
+          <th>Precio</th>
+          <th>Caducidad</th>
+          <th>Asignada</th>
+          <th>Disponible</th>
+          <th>Usuario</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
 
-        <tbody>
-            @if (Model.Licenses == null || !Model.Licenses.Any())
-            {
-                <tr>
-                    <td colspan="9" class="text-center text-muted">No hay registros</td>
-                </tr>
-            }
-            else
-            {
-                foreach (var item in Model.Licenses)
-                {
-                    <tr class="clickable-row @((highlightId == item.Id.ToString()) ? "highlight-row" : "")"data-id="@item.Id"style="cursor:pointer">
-                        <td>@item.Code</td>
-                        <td>@item.Producto</td>
-                        <td>@item.Proveedor</td>
-                        <td>@item.Price</td>
-                        <td>@(item.Caducidad?.ToString("yyyy-MM-dd") ?? "-")</td>
+      <tbody>
+        @if (Model.Licenses == null || !Model.Licenses.Any())
+        {
+          <tr>
+            <td colspan="9" class="text-center text-muted">No hay registros</td>
+          </tr>
+        }
+        else
+        {
+          foreach (var item in Model.Licenses)
+          {
+            <tr class="clickable-row @(highlightId == item.Id.ToString() ? "highlight-row" : "")"
+                data-id="@item.Id"
+                style="cursor:pointer">
 
-                        <td>
-                            @if (item.UserId != null)
-                            {
-                                <span class="badge bg-success">Asignada</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Libre</span>
-                            }
-                        </td>
+              <td>@item.Code</td>
+              <td>@item.Producto</td>
+              <td>@item.Proveedor</td>
+              <td>@item.Price</td>
+              <td>@(item.Caducidad?.ToString("yyyy-MM-dd") ?? "-")</td>
 
-                        <td>
-                            @if (item.UserId == null)
-                            {
-                                <span class="badge bg-success">Disponible</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Ocupada</span>
-                            }
-                        </td>
+              <td>
+                <span class="pill @(item.UserId != null ? "pill-active" : "pill-inactive")">
+                  @(item.UserId != null ? "Asignada" : "Libre")
+                </span>
+              </td>
 
-                        <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
+              <td>
+                <span class="pill @(item.UserId == null ? "pill-active" : "pill-inactive")">
+                  @(item.UserId == null ? "Disponible" : "Ocupada")
+                </span>
+              </td>
 
-                        <td>
-                            <div class="device-actions">
+              <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
 
-                           
+              <td>
+                <div class="actions-wrap">
 
-                            <!-- HISTÓRICO -->
-                            <button type="button"
-                                    class="btn btn-sm btn-ortec btn-ortec-primary btn-history"
-                                    data-id="@item.Id"
-                                    data-code="@item.Code">
-                                Histórico
-                            </button>
+                  <button type="button"
+                          class="btn-action btn-edit btn-history"
+                          data-id="@item.Id"
+                          data-code="@item.Code"
+                          onclick="event.stopPropagation();">
+                    🔍 Histórico
+                  </button>
 
-                            <!-- ASIGNAR / QUITAR -->
-                            @if (item.UserId == null)
-                            {
-                                <button type="button"
-                                        class="btn btn-sm btn-ortec btn-ortec-success me-1 btn-open-assign"
-                                        data-id="@item.Id">
-                                    Asignar
-                                </button>
-                            }
-                            else
-                            {
-                                <form class="d-inline" method="post" asp-action="Unassign" asp-controller="License" onsubmit="showToast('Quitando asignación...', 'info')">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    @{
-                                        RenderQpHidden();
-                                    }
-                                    <button type="submit" class="btn btn-sm btn-secondary me-1">
-                                        Quitar
-                                    </button>
-                                </form>
-                            }
+                  @if (item.UserId == null)
+                  {
+                    <button type="button"
+                            class="btn-action btn-open-assign"
+                            style="background: var(--c-success);"
+                            data-id="@item.Id"
+                            onclick="event.stopPropagation();">
+                      👤 Asignar
+                    </button>
+                  }
+                  else
+                  {
+                    <form class="d-inline"
+      method="post"
+      asp-action="Unassign"
+      asp-controller="License"
+      onclick="event.stopPropagation();"
+      onsubmit="showToast('Quitando asignación...', 'info')">
 
-                            <!-- ELIMINAR -->
-                            <button type="button"
-                                        class="btn btn-sm btn-ortec btn-ortec-danger"
-                                    data-id="@item.Id"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal">
-                                Eliminar
-                            </button>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
+    <button type="submit"
+            class="btn-action"
+            style="background:#6c757d;">
+        ❌ Quitar
+    </button>
+
+</form>
+                  }
+
+                  <button type="button"
+                          class="btn-action btn-delete"
+                          data-id="@item.Id"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                          onclick="event.stopPropagation();">
+                    🗑️ Eliminar
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+          }
+        }
+      </tbody>
+
     </table>
-</div>
+  </div>
+</div>  
 
 <!-- PAGINACIÓN -->
 <nav aria-label="Page navigation" class="mt-3">
@@ -647,122 +437,204 @@ h2 {
     </ul>
 </nav>
 
-<!-- MODAL: DETALLES -->
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalles de la licencia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+<!-- MODAL: DETALLES (PRO) -->
+<div class="modal fade modal-pro" id="detailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modal-pro-card">
 
-            <div class="modal-body" id="detailsBody">
-                <div class="text-center text-muted">Cargando...</div>
-            </div>
-
-            <<div class="modal-footer">
-
-                <button type="button"
-                        class="btn btn-warning"
-                        onclick="openEditLicenseFromDetails()">
-                    Editar
-                </button>
-
-                <button type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-                    Cerrar
-                </button>
-
-            </div>
-
+      <!-- HEADER PRO -->
+      <div class="modal-header modal-pro-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-pro-icon">🔎</div>
+          <div>
+            <h5 class="modal-title fw-bold mb-0">Detalles de la licencia</h5>
+            <div class="small opacity-75" id="detailsSubtitle">Información completa</div>
+          </div>
         </div>
+
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body" id="detailsBody">
+        <div class="text-center text-muted py-3">Cargando...</div>
+      </div>
+
+      <!-- FOOTER PRO -->
+      <div class="modal-footer modal-pro-footer">
+        <button type="button"
+                class="btn-save-pro"
+                onclick="openEditLicenseFromDetails()">
+          ✏️ Editar
+        </button>
+
+        <button type="button"
+                class="btn-cancel-pro"
+                data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
     </div>
+  </div>
 </div>
 
-<!-- MODAL: HISTÓRICO -->
-<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="historyTitle">Histórico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+<!-- HISTORY MODAL (PRO - IGUAL QUE DEVICES) -->
+<div class="modal fade modal-pro" id="historyModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-pro-card">
 
-            <div class="modal-body">
-                <div id="historyBody">
-                    <div class="text-center text-muted">Cargando...</div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-
+      <div class="modal-header modal-pro-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-pro-icon">📜</div>
+          <div>
+            <h5 class="modal-title fw-bold mb-0">Histórico</h5>
+            <div class="small opacity-75" id="history-license-name">—</div>
+          </div>
         </div>
+
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4">
+        <div id="historyTimeline" class="history-timeline"></div>
+
+        <div id="historyEmpty"
+             class="text-center text-muted py-5"
+             style="display:none;">
+          Sin histórico disponible
+        </div>
+      </div>
+
+      <div class="modal-footer modal-pro-footer">
+        <button type="button" class="btn-cancel-pro" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
     </div>
+  </div>
 </div>
 
-<!-- MODAL: CREATE / EDIT -->
-<div class="modal fade" id="createEditModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
 
-            <form id="createEditForm" method="post" asp-action="Create" asp-controller="License" onsubmit="showToast('Guardando licencia...', 'info')">
-                @Html.AntiForgeryToken()
-                @{
-                    RenderQpHidden();
-                }
+<!-- MODAL: CREATE / EDIT (PRO) -->
+<div class="modal fade modal-pro" id="createEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-pro-card">
 
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createEditTitle">Crear licencia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+      <form id="createEditForm"
+            method="post"
+            asp-action="Create"
+            asp-controller="License"
+            onsubmit="showToast('Guardando licencia...', 'info')">
 
-                <div class="modal-body">
-                    <input type="hidden" id="LicenseId" name="Id" value="0" />
+        <!-- HEADER -->
+        <div class="modal-header d-flex align-items-center justify-content-between">
 
-                    <div class="mb-2">
-                        <label class="form-label">Código</label>
-                        <input class="form-control" id="Code" name="Code" />
-                    </div>
+          <div class="d-flex align-items-center gap-3">
 
-                    <div class="mb-2">
-                        <label class="form-label">Producto</label>
-                        <input class="form-control" id="Producto" name="Producto" />
-                    </div>
+            <div class="modal-pro-icon">🧾</div>
 
-                    <div class="mb-2">
-                        <label class="form-label">Proveedor</label>
-                        <input class="form-control" id="Proveedor" name="Proveedor" />
-                    </div>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="createEditTitle">
+                Crear licencia
+              </h5>
+              <div class="small opacity-75" id="createEditSubtitle">
+                Alta de licencia en el inventario
+              </div>
+            </div>
 
-                    <div class="mb-2">
-                        <label class="form-label">Precio</label>
-                        <input type="number" step="0.01" class="form-control" id="Price" name="Price" />
-                    </div>
+          </div>
 
-                    <div class="mb-2">
-                        <label class="form-label">Caducidad</label>
-                        <input type="date" class="form-control" id="Caducidad" name="Caducidad" />
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label">Usuario asignado (Id) (opcional)</label>
-                        <input class="form-control" id="UserId" name="UserId" type="number" min="1" />
-                        <small class="text-muted">Si pones UserId, se asigna y se marca no disponible automáticamente.</small>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="createEditSubmit">Guardar</button>
-                </div>
-            </form>
+          <button type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Cerrar">
+          </button>
 
         </div>
+
+        <!-- BODY PRO -->
+        <div class="modal-body">
+
+          <!-- PREVIEW PRO -->
+          <div class="edit-preview">
+            <div class="edit-preview-name" id="lic-preview-title">—</div>
+            <div class="edit-preview-domain" id="lic-preview-sub">
+              Completa los campos para guardar
+            </div>
+          </div>
+
+          <input type="hidden" id="LicenseId" name="Id" value="0" />
+
+          <div class="row g-3 form-pro">
+
+            <div class="col-md-6">
+              <label class="form-label">Código</label>
+              <input class="form-control" id="Code" name="Code" placeholder="Ej: LIC-0001" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Proveedor</label>
+              <input class="form-control" id="Proveedor" name="Proveedor" placeholder="Ej: Microsoft" />
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label">Producto</label>
+              <input class="form-control" id="Producto" name="Producto" placeholder="Ej: Microsoft 365 E3" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Precio</label>
+              <input type="text" class="form-control" id="Price" name="Price" placeholder="Ej: 150.00" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Caducidad</label>
+              <input type="date" class="form-control" id="Caducidad" name="Caducidad" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Usuario asignado (opcional)</label>
+
+              <input class="form-control"
+                     id="UserId"
+                     name="UserId"
+                     type="number"
+                     min="1"
+                     placeholder="Id usuario (opcional)" />
+
+              <div class="text-muted small mt-1">
+                Si indicas UserId, se asigna y se marca no disponible.
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- FOOTER PRO -->
+        <div class="modal-footer modal-pro-footer">
+
+          <button type="button"
+                  class="btn-cancel-pro"
+                  data-bs-dismiss="modal">
+            Cancelar
+          </button>
+
+          <button type="submit"
+                  class="btn-save-pro"
+                  id="createEditSubmit">
+            💾 Guardar
+          </button>
+
+        </div>
+
+      </form>
+
     </div>
+  </div>
 </div>
 
 <!-- MODAL: ELIMINAR -->
@@ -890,69 +762,99 @@ h2 {
                 });
             });
 
-            // Histórico (TIMELINE PRO)
-const historyModal = new bootstrap.Modal(document.getElementById("historyModal"));
+// =========================
+// HISTÓRICO PRO (IGUAL QUE DEVICES)
+// =========================
+const historyModalEl = document.getElementById("historyModal");
+const historyModal = historyModalEl ? bootstrap.Modal.getOrCreateInstance(historyModalEl) : null;
 
 document.querySelectorAll(".btn-history").forEach(btn => {
-    btn.addEventListener("click", function (e) {
-        e.stopPropagation();
+  btn.addEventListener("click", async function (e) {
+    e.stopPropagation();
 
-        const licId = this.dataset.id;
-        const code = this.dataset.code;
+    const licenseId = this.dataset.id;
+    const code = this.dataset.code || "Licencia";
 
-        document.getElementById("historyTitle").innerText = `Histórico - ${code}`;
-
-        const body = document.getElementById("historyBody");
-        body.innerHTML = '<div class="text-center text-muted">Cargando...</div>';
-
-        fetch(`/License/HistoryJson?licenseId=${licId}`)
-            .then(r => r.json())
-            .then(rows => {
-
-                let html = '<div class="timeline">';
-
-                if (!rows.length) {
-                    html += `<div class="text-muted">Sin histórico</div>`;
-                } else {
-
-                    rows.forEach(r => {
-                        html += `
-                            <div class="timeline-item">
-
-                                <div class="timeline-dot"></div>
-
-                                <div class="timeline-content">
-
-                                    <div class="fw-bold">${r.userName}</div>
-
-
-                                    <div class="small text-muted">
-                                        Inicio: ${r.startDate}
-                                    </div>
-
-                                    <div class="small text-muted">
-                                        Fin: ${r.endDate ?? "ACTUAL"}
-                                    </div>
-
-                                    <div class="badge bg-secondary mt-1" style="font-size:11px;">
-                                        ${Math.round(parseFloat(r.duration))} min
-                                    </div>
-
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                }
-
-                html += '</div>';
-
-                body.innerHTML = html;
-                historyModal.show();
-            });
-    });
+    await loadHistoryLicense(licenseId, code);
+  });
 });
 
+async function loadHistoryLicense(licenseId, code) {
+
+  const nameEl   = document.getElementById("history-license-name");
+  const timeline = document.getElementById("historyTimeline");
+  const empty    = document.getElementById("historyEmpty");
+
+  if (nameEl) nameEl.innerText = code;
+
+  if (timeline) timeline.innerHTML = "";
+  if (empty) { empty.style.display = "none"; empty.innerText = "Sin histórico disponible"; }
+
+  const url = `/License/HistoryJson?licenseId=${encodeURIComponent(licenseId)}`;
+
+  try {
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    // ✅ Si devuelve HTML (redirect/login), no rompas
+    const ct = res.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      const txt = await res.text();
+      console.error("History License NO JSON:", ct, txt);
+      throw new Error("El histórico no devolvió JSON (posible redirect/vista HTML).");
+    }
+
+    const rows = await res.json();
+
+    if (!rows || rows.length === 0) {
+      if (empty) empty.style.display = "block";
+      historyModal?.show();
+      return;
+    }
+
+    rows.forEach(r => {
+      // soporta camelCase y PascalCase
+      const user = r.userName ?? r.UserName ?? "-";
+      const start = r.startDate ?? r.StartDate ?? "-";
+      const end = r.endDate ?? r.EndDate ?? null;
+      const duration = r.duration ?? r.Duration ?? (end ? "" : "ACTUAL");
+
+      const title = `Asignado a ${user}`;
+      const date  = start;
+      const desc  = end
+        ? `Desde ${start} → ${end} · ${duration}`
+        : `Desde ${start} → ACTUAL · ${duration}`;
+
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML = `
+        <div class="dot"></div>
+        <div class="content">
+          <div class="d-flex justify-content-between">
+            <div class="fw-bold">${escapeHtml(title)}</div>
+            <div class="text-muted small">${escapeHtml(date)}</div>
+          </div>
+          <div class="text-muted small">${escapeHtml(desc)}</div>
+        </div>
+      `;
+
+      timeline.appendChild(item);
+    });
+
+    historyModal?.show();
+
+  } catch (err) {
+    console.error("Error cargando histórico licencia:", err);
+
+    if (empty) {
+      empty.style.display = "block";
+      empty.innerText = "Error cargando histórico ❌";
+    }
+
+    historyModal?.show();
+  }
+}
 
             // ASIGNAR
             const assignModal = new bootstrap.Modal(document.getElementById("assignModal"));
@@ -1039,55 +941,54 @@ function loadDetails(id) {
         .then(d => {
 
             body.innerHTML = `
-                <div class="container-fluid">
+  <div class="detail-hero">
+    <div class="d-flex justify-content-between align-items-start gap-3">
+      <div>
+        <div class="detail-name">${escapeHtml(d.producto ?? "Licencia")}</div>
+        <div class="detail-domain">${escapeHtml(d.code ?? "-")}</div>
+      </div>
 
-                    <div class="row g-3">
+      <div class="text-end">
+        <div class="pill ${d.userId ? "pill-active" : "pill-inactive"}">
+          ${d.userId ? "Asignada" : "Libre"}
+        </div>
+        <div class="mt-2 pill ${d.userId ? "pill-inactive" : "pill-active"}">
+          ${d.userId ? "Ocupada" : "Disponible"}
+        </div>
+      </div>
+    </div>
+  </div>
 
-                        <!-- COLUMNA IZQUIERDA -->
-                        <div class="col-md-6">
+  <div class="info-grid">
 
-                            <div class="card p-3 shadow-sm">
-                                <h6 class="text-muted mb-2">Información general</h6>
+    <div class="info-card">
+      <div class="info-label">Proveedor</div>
+      <div class="info-value">${escapeHtml(d.proveedor ?? "-")}</div>
+    </div>
 
-                                <p><strong>Código:</strong><br>${d.code ?? "-"}</p>
-                                <p><strong>Producto:</strong><br>${d.producto ?? "-"}</p>
-                                <p><strong>Proveedor:</strong><br>${d.proveedor ?? "-"}</p>
-                            </div>
+    <div class="info-card">
+      <div class="info-label">Producto</div>
+      <div class="info-value">${escapeHtml(d.producto ?? "-")}</div>
+    </div>
 
-                        </div>
+    <div class="info-card">
+      <div class="info-label">Precio</div>
+      <div class="info-value">${escapeHtml(d.price ?? "-")}</div>
+    </div>
 
-                        <!-- COLUMNA DERECHA -->
-                        <div class="col-md-6">
+    <div class="info-card">
+      <div class="info-label">Caducidad</div>
+      <div class="info-value">${escapeHtml(d.caducidad ?? "-")}</div>
+    </div>
 
-                            <div class="card p-3 shadow-sm">
-                                <h6 class="text-muted mb-2">Estado y datos</h6>
+    <div class="info-card" style="grid-column: 1 / -1;">
+      <div class="info-label">Usuario asignado</div>
+      <div class="info-value">${escapeHtml(d.userName ?? "-")}</div>
+    </div>
 
-                                <p><strong>Precio:</strong><br>${d.price ?? "-"}</p>
-                                <p><strong>Caducidad:</strong><br>${d.caducidad ?? "-"}</p>
+  </div>
+`;
 
-                                <p>
-                                    <strong>Asignada:</strong><br>
-                                    ${d.userId
-                                        ? '<span class="badge bg-success">Asignada</span>'
-                                        : '<span class="badge bg-secondary">Libre</span>'}
-                                </p>
-
-                                <p>
-                                    <strong>Disponible:</strong><br>
-                                    ${d.userId
-                                        ? '<span class="badge bg-danger">Ocupada</span>'
-                                        : '<span class="badge bg-success">Disponible</span>'}
-                                </p>
-
-                                <p><strong>Usuario:</strong><br>${d.userName ?? "-"}</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
 
             new bootstrap.Modal(document.getElementById("detailsModal")).show();
         });
@@ -1098,33 +999,59 @@ function loadDetails(id) {
         // ✅ 👉 ESTA ES LA FUNCIÓN QUE TE FALTABA
         function openEditLicenseFromDetails() {
 
-            const id = window.currentLicenseId;
+    const id = window.currentLicenseId;
+    if (!id) return;
 
-            if (!id) return;
+    fetch('/License/DetailsJson?id=' + id)
+        .then(r => r.json())
+        .then(d => {
 
-            fetch('/License/DetailsJson?id=' + id)
-                .then(r => r.json())
-                .then(d => {
+            // =========================
+            // 1) RELLENAR INPUTS (lo que ya tienes)
+            // =========================
+            document.getElementById("LicenseId").value = d.id;
+            document.getElementById("Code").value = d.code ?? "";
+            document.getElementById("Producto").value = d.producto ?? "";
+            document.getElementById("Proveedor").value = d.proveedor ?? "";
+            document.getElementById("Price").value = d.price ?? "";
+            document.getElementById("Caducidad").value = d.caducidad ?? "";
+            document.getElementById("UserId").value = d.userId ?? "";
 
-                    document.getElementById("LicenseId").value = d.id;
-                    document.getElementById("Code").value = d.code ?? "";
-                    document.getElementById("Producto").value = d.producto ?? "";
-                    document.getElementById("Proveedor").value = d.proveedor ?? "";
-                    document.getElementById("Price").value = d.price ?? "";
-                    document.getElementById("Caducidad").value = d.caducidad ?? "";
-                    document.getElementById("UserId").value = d.userId ?? "";
+            // =========================
+            // 2) ✅ AQUÍ PEGAS EL BLOQUE PRO (DESPUÉS DE RELLENAR)
+            // =========================
 
-                    // modo editar
-                    document.getElementById("createEditForm").action = "/License/Edit";
-                    document.getElementById("createEditTitle").innerText = "Editar licencia";
+            // modo editar
+            document.getElementById("createEditForm").action = "/License/Edit";
+            document.getElementById("createEditTitle").innerText = "Editar licencia";
+            document.getElementById("createEditSubtitle").innerText = "Actualiza la información de la licencia";
 
-                    // cerrar details
-                    bootstrap.Modal.getInstance(document.getElementById("detailsModal")).hide();
+            // preview pro
+            const title = (d.producto ?? "Licencia").toString();
+            const sub = `Código: ${(d.code ?? "-")} · Proveedor: ${(d.proveedor ?? "-")}`;
+            document.getElementById("lic-preview-title").textContent = title;
+            document.getElementById("lic-preview-sub").textContent = sub;
 
-                    // abrir modal editar
-                    new bootstrap.Modal(document.getElementById("createEditModal")).show();
-                });
-        }
+            // botón texto pro
+            document.getElementById("createEditSubmit").textContent = "💾 Guardar cambios";
+
+            // =========================
+            // 3) CERRAR DETAILS Y ABRIR MODAL EDIT (lo que ya tenías)
+            // =========================
+            bootstrap.Modal.getInstance(document.getElementById("detailsModal"))?.hide();
+            new bootstrap.Modal(document.getElementById("createEditModal")).show();
+        });
+}
+
+        function escapeHtml(str) {
+  return (str ?? "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 
         // limpiar filtros
         window.erpClearFiltersAndSubmit = function (form) {

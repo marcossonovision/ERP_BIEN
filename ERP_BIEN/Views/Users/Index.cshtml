@@ -98,8 +98,9 @@ PERMISSIONS:
             <label class="form-label text-muted small">Estado</label>
             <select name="searchIsActive" class="form-select">
                 <option value="">Todos</option>
-                <option value="true" selected="@(ViewBag.SearchIsActive?.ToString() == "true")">Activo</option>
-                <option value="false" selected="@(ViewBag.SearchIsActive?.ToString() == "false")">Inactivo</option>
+                <option value="true" selected="@(((bool?)ViewBag.SearchIsActive) == true)">Activo</option>
+                <option value="false" selected="@(((bool?)ViewBag.SearchIsActive) == false)">Inactivo</option>
+
             </select>
         </div>
 
@@ -185,7 +186,7 @@ PERMISSIONS:
         @if (sa != null)
         {
             <span class="chip">
-                <span class="text-secondary">Estado:</span> @(sa.ToString() == "true" ? "Activo" : "Inactivo")
+                <span class="text-secondary">Estado:</span> @(((bool?)sa) == true ? "Activo" : "Inactivo")
                 <a class="x text-decoration-none"
                    href="@Url.Action("Index", new { pageNumber = 1, searchName = sn, searchDomain = sd, searchTeamId = stId, searchRoleId = srId, searchIsActive = (bool?)null })">
                     ×
@@ -305,7 +306,14 @@ PERMISSIONS:
             @if (((int)ViewBag.PageNumber) > 1)
             {
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber - 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   href="@Url.Action("Index", new {
+    pageNumber = (int)ViewBag.PageNumber - 1,
+    searchName = ViewBag.SearchName,
+    searchDomain = ViewBag.SearchDomain,
+    searchTeamId = ViewBag.SearchTeamId,
+    searchRoleId = ViewBag.SearchRoleId,
+    searchIsActive = ViewBag.SearchIsActive
+})">
                     Anterior
                 </a>
             }
@@ -337,7 +345,14 @@ PERMISSIONS:
             @if (((int)ViewBag.TotalPages) > 0 && ((int)ViewBag.PageNumber) < (int)ViewBag.TotalPages)
             {
                 <a class="page-link"
-                   href="@Url.Action("Index", new { pageNumber = (int)ViewBag.PageNumber + 1, searchName = ViewBag.SearchName, searchDomain = ViewBag.SearchDomain, searchTeamId = ViewBag.SearchTeamId })">
+                   href="@Url.Action("Index", new {
+    pageNumber = (int)ViewBag.PageNumber + 1,
+    searchName = ViewBag.SearchName,
+    searchDomain = ViewBag.SearchDomain,
+    searchTeamId = ViewBag.SearchTeamId,
+    searchRoleId = ViewBag.SearchRoleId,
+    searchIsActive = ViewBag.SearchIsActive
+})">
                     Siguiente
                 </a>
             }
@@ -460,47 +475,71 @@ PERMISSIONS:
 <!-- ========================= -->
 <!-- MODAL: DETALLES (USER PRO) -->
 <!-- ========================= -->
-<div class="modal fade" id="detailsModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade modal-pro" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-pro-card">
 
-            <div class="modal-header">
-                <h5 class="modal-title fw-semibold">👤 Detalles del Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+            <!-- HEADER -->
+            <div class="modal-header modal-pro-header">
+                <div class="d-flex align-items-center gap-3">
 
-            <div class="modal-body">
+                    <div class="modal-pro-icon">👤</div>
 
-                <!-- CABECERA -->
-                <div class="p-3 rounded-3 border mb-3 bg-light">
-                    <div class="fw-semibold fs-5 mb-1" id="det-name"></div>
-                    <div class="text-muted small" id="det-domain"></div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="det-name">—</h5>
+                        <div class="small opacity-75" id="det-domain">—</div>
+                    </div>
+
                 </div>
 
-                <!-- GRID -->
-                <div class="row g-3">
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <!-- HERO USER -->
+                <div class="detail-hero">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+                            <div class="detail-name" id="det-name">—</div>
+                            <div class="detail-domain" id="det-domain">—</div>
+                        </div>
+
+                        <div id="det-status" class="detail-status inactive">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- INFO GRID -->
+                <div class="info-grid">
 
                     <!-- EQUIPO -->
-                    <div class="col-md-6">
-                        <div class="border rounded-3 p-3">
-                            <div class="text-muted small">Equipo</div>
-                            <div class="fw-semibold" id="det-team"></div>
+                    <div class="info-card">
+                        <div class="info-label">
+                            Equipo
+                        </div>
+
+                        <div class="info-value" id="det-team">
+                            —
                         </div>
                     </div>
 
                     <!-- ROL -->
-                    <div class="col-md-6">
-                        <div class="border rounded-3 p-3">
-                            <div class="text-muted small">Rol</div>
-                            <div id="det-role"></div>
+                    <div class="info-card">
+                        <div class="info-label">
+                            Rol
                         </div>
-                    </div>
 
-                    <!-- ESTADO -->
-                    <div class="col-12">
-                        <div class="border rounded-3 p-3">
-                            <div class="text-muted small">Estado</div>
-                            <div id="det-status"></div>
+                        <div class="info-value" id="det-role">
+                            —
                         </div>
                     </div>
 
@@ -508,16 +547,20 @@ PERMISSIONS:
 
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <!-- FOOTER -->
+            <div class="modal-footer modal-pro-footer">
+
+                <button type="button"
+                        class="btn-cancel-pro"
+                        data-bs-dismiss="modal">
                     Cerrar
                 </button>
+
             </div>
 
         </div>
     </div>
 </div>
-
 <!-- ========================= -->
 <!-- MODAL: ELIMINAR (PRO+) -->
 <!-- ========================= -->
@@ -591,11 +634,11 @@ PERMISSIONS:
     </div>
 </div>
 <!-- ========================= -->
-<!-- MODAL: EDITAR USUARIO -->
+<!-- MODAL: EDITAR USUARIO PRO -->
 <!-- ========================= -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade modal-pro" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-pro-card">
 
             <form method="post" asp-action="Edit" asp-controller="Users">
 
@@ -611,118 +654,182 @@ PERMISSIONS:
                 <input type="hidden" name="searchRoleId" value="@ViewBag.SearchRoleId" />
                 <input type="hidden" name="searchIsActive" value="@ViewBag.SearchIsActive" />
 
-                <div class="modal-header">
-                    <h5 class="modal-title fw-semibold">
-                        ✏️ Editar Usuario
-                    </h5>
+                <!-- HEADER -->
+                <div class="modal-header modal-pro-header">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="modal-pro-icon">
+                            ✏️
+                        </div>
+
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">
+                                Editar usuario
+                            </h5>
+
+                            <div class="small opacity-75">
+                                Modifica la información del usuario
+                            </div>
+                        </div>
+
+                    </div>
 
                     <button type="button"
-                            class="btn-close"
+                            class="btn-close btn-close-white"
                             data-bs-dismiss="modal">
                     </button>
-                </div>
-
-                <div class="modal-body">
-
-                    <!-- preview -->
-                    <div class="border rounded-3 p-3 bg-light mb-3">
-                        <div class="fw-bold" id="edit-preview-name">—</div>
-                        <div class="text-muted small" id="edit-preview-domain">—</div>
-                    </div>
-
-                    <!-- nombre -->
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input id="edit-name"
-                               name="Name"
-                               class="form-control"
-                               required />
-                    </div>
-
-                    <!-- apellido -->
-                    <div class="mb-3">
-                        <label class="form-label">Apellido</label>
-                        <input id="edit-lastname"
-                               name="LastName"
-                               class="form-control"
-                               required />
-                    </div>
-
-                    <!-- domain -->
-                    <div class="mb-3">
-                        <label class="form-label">Usuario dominio</label>
-                        <input id="edit-domain"
-                               name="DomainUser"
-                               class="form-control"
-                               required />
-                    </div>
-
-                    <!-- team -->
-                    <div class="mb-3">
-                        <label class="form-label">Equipo</label>
-
-                        <select id="edit-team"
-                                name="TeamId"
-                                class="form-select">
-
-                            <option value="">-- Sin equipo --</option>
-
-                            @foreach (var t in ViewBag.TeamList)
-                            {
-                                <option value="@t.Value">
-                                    @t.Text
-                                </option>
-                            }
-
-                        </select>
-                    </div>
-
-                    <!-- role -->
-                    <div class="mb-3">
-                        <label class="form-label">Rol</label>
-
-                        <select id="edit-role"
-                                name="RoleId"
-                                class="form-select">
-
-                            @foreach (var r in ViewBag.RoleList)
-                            {
-                                <option value="@r.Value">
-                                    @r.Text
-                                </option>
-                            }
-
-                        </select>
-                    </div>
-
-                    <!-- active -->
-                    <div class="mb-3">
-                        <label class="form-label">Estado</label>
-
-                        <select id="edit-isactive"
-                                name="IsActive"
-                                class="form-select">
-
-                            <option value="true">Activo</option>
-                            <option value="false">Inactivo</option>
-
-                        </select>
-                    </div>
 
                 </div>
 
-                <div class="modal-footer">
+                <!-- BODY -->
+                <div class="modal-body p-4">
+
+                    <!-- PREVIEW USER -->
+                    <div class="edit-preview-card mb-4">
+
+                        <div class="edit-preview-avatar">
+                            👤
+                        </div>
+
+                        <div>
+                            <div class="edit-preview-name" id="edit-preview-name">
+                                —
+                            </div>
+
+                            <div class="edit-preview-domain" id="edit-preview-domain">
+                                —
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- FORM -->
+                    <div class="row g-3">
+
+                        <!-- NOMBRE -->
+                        <div class="col-md-6">
+                            <label class="form-label edit-label">
+                                Nombre
+                            </label>
+
+                            <input id="edit-name"
+                                   name="Name"
+                                   class="form-control edit-input"
+                                   required />
+                        </div>
+
+                        <!-- APELLIDOS -->
+                        <div class="col-md-6">
+                            <label class="form-label edit-label">
+                                Apellidos
+                            </label>
+
+                            <input id="edit-lastname"
+                                   name="LastName"
+                                   class="form-control edit-input"
+                                   required />
+                        </div>
+
+                        <!-- DOMAIN -->
+                        <div class="col-12">
+                            <label class="form-label edit-label">
+                                Usuario dominio
+                            </label>
+
+                            <input id="edit-domain"
+                                   name="DomainUser"
+                                   class="form-control edit-input"
+                                   required />
+                        </div>
+
+                        <!-- TEAM -->
+                        <div class="col-md-6">
+                            <label class="form-label edit-label">
+                                Equipo
+                            </label>
+
+                            <select id="edit-team"
+                                    name="TeamId"
+                                    class="form-select edit-input">
+
+                                <option value="">
+                                    -- Sin equipo --
+                                </option>
+
+                                @foreach (var t in ViewBag.TeamList)
+                                {
+                                    <option value="@t.Value">
+                                        @t.Text
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <!-- ROLE -->
+                        <div class="col-md-6">
+                            <label class="form-label edit-label">
+                                Rol
+                            </label>
+
+                            <select id="edit-role"
+                                    name="RoleId"
+                                    class="form-select edit-input">
+
+                                @foreach (var r in ViewBag.RoleList)
+                                {
+                                    <option value="@r.Value">
+                                        @r.Text
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <!-- STATUS -->
+                        <div class="col-12">
+                            <label class="form-label edit-label">
+                                Estado
+                            </label>
+
+                            <select id="edit-isactive"
+                                    name="IsActive"
+                                    class="form-select edit-input">
+
+                                <option value="true">
+                                    ✅ Activo
+                                </option>
+
+                                <option value="false">
+                                    ⛔ Inactivo
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer modal-pro-footer">
 
                     <button type="button"
-        class="btn-cancel-pro"
-        data-bs-dismiss="modal">
-    Cancelar
-</button>
+                            class="btn-cancel-pro"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
 
-                    <button type="submit" class="btn-save-pro">
-    <span>💾</span>
-    Guardar cambios
-</button>
+                    <button type="submit"
+                            class="btn-save-pro">
+
+                        <span>💾</span>
+
+                        Guardar cambios
+
+                    </button>
+
                 </div>
 
             </form>
@@ -1045,14 +1152,7 @@ function escapeHtml(str) {
 
 
 });
-document.querySelectorAll(".details-btn").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        const id = btn.dataset.id;
-        if (!id) return;
-        await loadDetails(id);
-    });
-});
+
 
 </script>
 }

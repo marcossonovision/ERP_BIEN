@@ -1,10 +1,13 @@
-﻿using ERP_BIEN.Common.Enums;
+﻿using ClosedXML;
+using ClosedXML.Excel;
+using ERP_BIEN.Common.Enums;
 using ERP_BIEN.Models;
 using ERP_BIEN.Models.ViewModels;
 using ERP_BIEN.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -321,6 +324,90 @@ namespace ERP_BIEN.Controllers
         {
             await _service.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        //====================================
+        //exportar excel
+        //====================================
+        [Authorize(Policy = "DEVICES")]
+        [HttpGet]
+        public async Task<IActionResult> ExportExcel(
+    string deviceTypeFilter = null,
+    StatusDevice? statusFilter = null,
+    int? userIdFilter = null,
+    string hostnameFilter = null,
+    string modelFilter = null,
+    string snFilter = null,
+    DateTime? manufacturingFrom = null,
+    DateTime? manufacturingTo = null,
+    DateTime? useFrom = null,
+    DateTime? useTo = null)
+        {
+            // OJO: sacas TODO sin paginación
+            var (devices, _) = await _service.GetDevicesAsync(
+                1,
+                int.MaxValue,
+                deviceTypeFilter,
+                statusFilter,
+                userIdFilter,
+                hostnameFilter,
+                modelFilter,
+                snFilter,
+                manufacturingFrom,
+                manufacturingTo,
+                useFrom,
+                useTo
+            );
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("Devices");
+
+            // Headers
+            ws.Cell(1, 1).Value = "Id";
+            ws.Cell(1, 2).Value = "Tipo";
+            ws.Cell(1, 3).Value = "Hostname";
+            ws.Cell(1, 4).Value = "Modelo";
+            ws.Cell(1, 5).Value = "SN";
+            ws.Cell(1, 6).Value = "Estado";
+            ws.Cell(1, 7).Value = "Usuario";
+            ws.Cell(1, 8).Value = "Fecha fabricación";
+
+            int row = 2;
+
+            foreach (var d in devices)
+            {
+                string tipo = d switch
+                {
+                    Computer => "Computer",
+                    Phone => "Phone",
+                    Screen => "Screen",
+                    DockStation => "DockStation",
+                    _ => "Device"
+                };
+
+                ws.Cell(row, 1).Value = d.Id;
+                ws.Cell(row, 2).Value = tipo;
+                ws.Cell(row, 3).Value = d.Hostname;
+                ws.Cell(row, 4).Value = d.Model;
+                ws.Cell(row, 5).Value = d.SN;
+                ws.Cell(row, 6).Value = d.Status.ToString();
+                ws.Cell(row, 7).Value = d.User != null ? $"{d.User.Name} {d.User.LastName}" : "";
+                ws.Cell(row, 8).Value = d.ManufacturingDate?.ToString("yyyy-MM-dd");
+
+                row++;
+            }
+
+            ws.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            return File(
+                stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"devices_{DateTime.Now:yyyyMMdd_HHmm}.xlsx"
+            );
         }
     }
 }

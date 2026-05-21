@@ -1,386 +1,625 @@
-﻿/* ============================
-   BOTONES CORPORATIVOS
-   ============================ */
+﻿/* =========================================================
+   LICENCES.CSS — MISMO SISTEMA VISUAL QUE USERS / DEVICES
+   (Paleta navy, tabla pro, zebra azul, pills, botones pill,
+    filtros pro, chips, modales pro, timeline)
+   ========================================================= */
 
-.btn-filter {
-    background: #007bff;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+
+/* =========================================================
+   0) PALETA (GUÍA GLOBAL)
+   ========================================================= */
+:root {
+    --w: #ffffff;
+    --b: #000000;
+    --c-cyan: #0090E0;
+    --c-navy: #032966; /* Azul marino profundo (principal) */
+    --c-navy2: #004080; /* Azul oscuro profundo (secundario) */
+
+    --c-success: #28A745;
+    --c-warning: #FFC107;
+    --c-danger: #DC3545;
+    --c-info: #17A2B8;
+    --border: #E6EAF2;
+    /* Zebra azul claro estilo guía */
+    --row-alt: #D9F1FF;
+    --row-hover: #C7EBFF;
+    /* Neutros */
+    --muted: rgba(0,0,0,.55);
+    --shadow: 0 2px 10px rgba(0,0,0,.06);
+    --shadow-strong: 0 12px 40px rgba(0,0,0,.20);
 }
 
-    .btn-filter:hover {
-        background: #0069d9;
-    }
 
-.btn-export, .btn-import {
-    background: #6c757d;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+/* =========================================================
+   1) LAYOUT BASE
+   ========================================================= */
+body {
+    background: #f4f6f9;
 }
 
-    .btn-export:hover, .btn-import:hover {
-        background: #5a6268;
-    }
-
-.btn-add {
-    background: #28a745;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
+h2, h3, .page-title {
+    color: #1f2a37;
 }
 
-    .btn-add:hover {
-        background: #218838;
-    }
-
-.btn-view {
-    color: #007bff;
-    font-weight: 600;
-    text-decoration: none;
-    margin-right: 10px;
+.small, .text-muted {
+    color: rgba(0,0,0,.55) !important;
 }
 
-    .btn-view:hover {
-        text-decoration: underline;
-    }
 
-.btn-delete {
-    color: #dc3545;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-    .btn-delete:hover {
-        text-decoration: underline;
-    }
-/* ============================
-   TABLA CORPORATIVA
-   ============================ */
-
-.licenses-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-    .licenses-table thead {
-        background: #f8f9fa;
-    }
-
-    .licenses-table th {
-        padding: 12px;
-        text-align: left;
-        font-weight: 600;
-        color: #333;
-        border-bottom: 2px solid #e5e5e5;
-    }
-
-    .licenses-table td {
-        padding: 12px;
-        border-bottom: 1px solid #e5e5e5;
-        color: #444;
-    }
-
-    .licenses-table tr:hover {
-        background: #f1f1f1;
-        transition: 0.2s;
-    }
-/* ============================
-   FILTROS
-   ============================ */
-
-.filters-form {
+/* =========================================================
+   2) HEADER PRO (igual que Users/Devices)
+   ========================================================= */
+.header-pro {
     display: flex;
-    gap: 12px;
+    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    margin-bottom: 16px;
 }
 
-.input-text, .input-select {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    min-width: 180px;
-}
-/* ============================
-   PAGINACIÓN
-   ============================ */
+    .header-pro h2 {
+        margin: 0;
+        font-weight: 800;
+    }
 
-.pagination {
-    margin-top: 20px;
+
+/* =========================================================
+   3) STATS CARDS (resumen Total/Asignadas/Libres/Uso)
+   ========================================================= */
+.stats-row .card,
+.card.stats-card,
+.stats-card {
+    background: var(--w);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+    .stats-card h6 {
+        font-weight: 800;
+        color: rgba(0,0,0,.65);
+    }
+
+    .stats-card h4 {
+        font-weight: 900;
+        margin: 0;
+    }
+
+
+/* =========================================================
+   4) FILTROS PRO (misma estética)
+   ========================================================= */
+.filters-shell {
+    background: var(--w);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+}
+
+    .filters-shell .form-label {
+        font-size: .75rem;
+        font-weight: 800;
+        color: rgba(0,0,0,.55);
+        margin-bottom: 6px;
+    }
+
+    .filters-shell .form-control,
+    .filters-shell .form-select {
+        border-radius: 10px;
+        border: 1px solid #e3e6ee;
+        font-size: .9rem;
+        padding: 10px 12px;
+        transition: all .15s ease;
+    }
+
+        .filters-shell .form-control:focus,
+        .filters-shell .form-select:focus {
+            border-color: var(--c-navy2);
+            box-shadow: 0 0 0 3px rgba(0,64,128,.15);
+        }
+
+
+/* Header toggle filtros (si lo usas) */
+.filters-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+}
+
+.filters-title {
+    font-weight: 900;
+    color: rgba(0,0,0,.70);
+}
+
+.filters-sub {
+    font-size: .85rem;
+    color: rgba(0,0,0,.55);
+}
+
+.filters-arrow {
+    font-weight: 900;
+    color: rgba(0,0,0,.65);
+}
+
+.filters-body {
+    padding-top: 12px;
+}
+
+.filters-actions {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
     align-items: center;
+    margin-top: 14px;
 }
 
-.pag-btn {
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: white;
-    text-decoration: none;
-    color: #333;
-    transition: 0.2s;
-}
 
-    .pag-btn:hover {
-        background: #e9ecef;
-    }
-
-.pag-info {
-    font-weight: 600;
-}
-/* ============================
-   BOTONES DE ACCIÓN (VER / ELIMINAR)
-   ============================ */
-
-.btn-view {
-    display: inline-block;
-    padding: 6px 12px;
-    background: #007bff;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: 0.2s;
-}
-
-    .btn-view:hover {
-        background: #0069d9;
-    }
-
-.btn-delete {
-    display: inline-block;
-    padding: 6px 12px;
-    background: #dc3545;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: 0.2s;
-}
-
-    .btn-delete:hover {
-        background: #c82333;
-    }
-.details-box, .delete-box, .create-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    width: 60%;
-}
-
-.details-table th, .delete-table th {
-    text-align: left;
-    width: 150px;
-    padding: 6px 0;
-    color: #555;
-}
-
-.details-table td, .delete-table td {
-    padding: 6px 0;
-}
-
-.btn-back, .btn-cancel {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #6c757d;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    margin-top: 20px;
-}
-
-.btn-delete-confirm {
-    background: #dc3545;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-}
-.btn-view {
-    display: inline-block;
-    padding: 6px 14px;
-    background: #007bff;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .btn-view:hover {
-        background: #0069d9;
-    }
-
-.btn-delete {
-    display: inline-block;
-    padding: 6px 14px;
-    background: #dc3545;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .btn-delete:hover {
-        background: #c82333;
-    }
-
-.btn-edit {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #ffc107;
-    color: #333;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .btn-edit:hover {
-        background: #e0a800;
-    }
-
-.btn-back, .btn-cancel {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #6c757d;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    margin-top: 20px;
-}
-
-.btn-delete-confirm {
-    background: #dc3545;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-}
-/* ============================ */
-/* FORZAR ESTILO DEVICES */
-/* ============================ */
-
-.table-ortec {
-    border-radius: 6px !important;
-    overflow: hidden !important;
-    font-size: 14px !important;
-    background: white !important;
-}
-
-    .table-ortec thead {
-        background-color: #0d2f6f !important;
-        color: white !important;
-    }
-
-    .table-ortec th {
-        text-align: center !important;
-        color: white !important;
-    }
-
-    .table-ortec tbody tr:nth-child(odd) {
-        background-color: #a9c4d2 !important;
-    }
-
-    .table-ortec tbody tr:nth-child(even) {
-        background-color: #d2d2d2 !important;
-    }
-
-/* BOTONES */
-.btn-edit {
-    background-color: #0d2f6f !important;
-    color: white !important;
-    border: none !important;
-}
-
-    .btn-edit:hover {
-        background-color: #092454 !important;
-    }
-
-.btn-delete {
-    background-color: #d60000 !important;
-    color: white !important;
-    border: none !important;
-}
-
-    .btn-delete:hover {
-        background-color: #a80000 !important;
-    }
-/* ========================= */
-/* FIX ESTILO DEVICES */
-/* ========================= */
-
-/* CABECERA */
-.table-ortec thead {
-    background-color: #0d2f6f !important;
-    color: white !important;
-}
-
-    /* FORZAR TEXTO BLANCO */
-    .table-ortec thead th {
-        color: white !important;
-        text-align: center !important;
-    }
-
-/* FILAS */
-.table-ortec tbody tr:nth-child(odd) {
-    background-color: #a9c4d2 !important;
-}
-
-.table-ortec tbody tr:nth-child(even) {
-    background-color: #d2d2d2 !important;
-}
-
-/* BOTÓN HISTÓRICO */
-.btn-edit {
-    background-color: #0d2f6f !important;
-    color: white !important;
-    border: none !important;
-    padding: 6px 10px !important;
-}
-
-/* BOTÓN ELIMINAR */
-.btn-delete {
-    background-color: #d60000 !important;
-    color: white !important;
-    border: none !important;
-    padding: 6px 10px !important;
-}
+/* =========================================================
+   5) CHIPS (filtros activos)
+   ========================================================= */
 .chip {
     display: inline-flex;
     align-items: center;
-    background: #e7f1ff;
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 12px;
+    gap: .35rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 700;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
 }
 
     .chip .x {
-        margin-left: 6px;
+        border: 0;
+        background: transparent;
+        padding: 0 4px;
         cursor: pointer;
+        font-weight: 900;
+        opacity: .7;
         text-decoration: none;
-        color: #555;
+        color: inherit;
     }
+
+        .chip .x:hover {
+            opacity: 1;
+        }
+
+.chip-danger {
+    border-color: rgba(220,53,69,.25);
+    background: rgba(220,53,69,.06);
+    color: var(--c-danger);
+}
+
+
+/* =========================================================
+   6) TABLA PRO (table-shell + table-style)
+   ========================================================= */
+.table-shell {
+    background: var(--w);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.table-style {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table-style thead th {
+        background: var(--c-navy);
+        color: var(--w);
+        font-weight: 900;
+        padding: 14px 12px;
+        border-bottom: 0;
+        white-space: nowrap;
+        font-size: .9rem;
+        text-align: center;
+    }
+
+    .table-style tbody td {
+        padding: 12px 12px;
+        border-top: 0;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table-style tbody tr:nth-child(even) {
+        background: var(--row-alt);
+    }
+
+    .table-style tbody tr:hover {
+        background: var(--row-hover);
+    }
+
+.cell-muted {
+    color: rgba(0,0,0,.55);
+    font-size: .85rem;
+}
+
+
+/* =========================================================
+   7) PILLS (Asignada/Libre, Disponible/Ocupada, etc.)
+   ========================================================= */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .78rem;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.pill-active {
+    background: var(--c-success);
+    color: #fff;
+}
+
+.pill-inactive {
+    background: var(--c-danger);
+    color: #fff;
+}
+
+.pill-navy {
+    background: var(--c-navy2);
+    color: #fff;
+}
+
+.pill-gray {
+    background: rgba(0,0,0,.55);
+    color: #fff;
+}
+
+
+/* =========================================================
+   8) BOTONES PRO (header / filtros)
+   ========================================================= */
+.btn-save-pro {
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 20px;
+    font-weight: 900;
+    font-size: .9rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .18s ease;
+    box-shadow: 0 6px 18px rgba(3,41,102,.25);
+}
+
+    .btn-save-pro:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+        box-shadow: 0 10px 24px rgba(3,41,102,.35);
+    }
+
+    .btn-save-pro:active {
+        transform: scale(.98);
+    }
+
+    .btn-save-pro:disabled {
+        opacity: .7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+.btn-filter-pro {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 900;
+    font-size: .85rem;
+    transition: all .18s ease;
+}
+
+    .btn-filter-pro:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+    }
+
+.btn-cancel-pro {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #6c757d;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 900;
+    font-size: .85rem;
+    transition: all .15s ease;
+}
+
+    .btn-cancel-pro:hover {
+        background: #f8f9fa;
+        color: #000;
+        border-color: #d0d5dd;
+    }
+
+    .btn-cancel-pro:active {
+        transform: scale(.98);
+    }
+
+/* Excel pill (si lo usas) */
+.btn-excel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .85rem;
+    color: #fff;
+    background: linear-gradient(135deg, #28A745, #1f8a38);
+    border: 0;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(40,167,69,.25);
+    transition: all .18s ease;
+}
+
+    .btn-excel:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        box-shadow: 0 10px 24px rgba(40,167,69,.35);
+    }
+
+    .btn-excel:active {
+        transform: scale(.98);
+    }
+
+
+/* =========================================================
+   9) BOTONES ACCIÓN (Histórico / Asignar / Quitar / Eliminar)
+   ========================================================= */
+.actions-wrap {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.btn-action {
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 7px 12px !important;
+    font-weight: 900 !important;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    white-space: nowrap;
+    transition: filter .12s ease;
+}
+
+    .btn-action.btn-edit {
+        background: var(--c-navy2) !important;
+    }
+
+    .btn-action.btn-delete {
+        background: var(--c-danger) !important;
+    }
+
+    .btn-action.btn-success {
+        background: var(--c-success) !important;
+    }
+
+    .btn-action.btn-gray {
+        background: #6c757d !important;
+    }
+
+    .btn-action:hover {
+        filter: brightness(.95);
+    }
+
+
+/* =========================================================
+   10) PAGINACIÓN
+   ========================================================= */
+.pagination .page-link {
+    border-radius: 10px;
+    margin: 0 2px;
+}
+
+
+/* =========================================================
+   11) HIGHLIGHT ROW (cuando vienes de create/edit)
+   ========================================================= */
+.highlight-row {
+    background: #fff3cd !important;
+}
+
+
+/* =========================================================
+   12) MODAL PRO (si lo aplicas a licencias)
+   ========================================================= */
+.modal-pro .modal-pro-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-strong);
+    background: #fff;
+}
+
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border-bottom: 0;
+}
+
+.modal-pro .modal-pro-footer {
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 14px 16px;
+}
+
+.modal-pro .btn-close {
+    filter: invert(1);
+    opacity: .85;
+}
+
+.modal-pro-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    background: rgba(255,255,255,.15);
+}
+
+    .modal-pro-icon.danger {
+        background: var(--c-danger);
+        color: #fff;
+    }
+
+.modal-pro-warning {
+    background: rgba(255, 193, 7, .20);
+    border: 1px solid rgba(255, 193, 7, .35);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: #111;
+}
+
+.modal-pro-target {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.btn-danger-pro {
+    background: var(--c-danger) !important;
+    border: 0 !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+    padding: 10px 16px !important;
+    font-weight: 900 !important;
+}
+
+    .btn-danger-pro:hover {
+        filter: brightness(.95);
+    }
+
+
+/* =========================================================
+   13) TIMELINE PRO (Histórico)
+   ========================================================= */
+.timeline {
+    position: relative;
+    border-left: 2px solid rgba(0,0,0,.15);
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -9px;
+    top: 14px;
+    width: 10px;
+    height: 10px;
+    background: var(--c-navy2);
+    border-radius: 50%;
+}
+
+.timeline-content {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.05);
+}
+
+
+/* =========================================================
+   14) TOAST (si quieres coherencia visual)
+   ========================================================= */
+.toast-container {
+    z-index: 9999;
+}
+/*===================
+    DETALLES PRO
+====================*/
+.detail-hero {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.detail-name {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #111;
+}
+
+.detail-domain {
+    font-size: .85rem;
+    color: #6b7280;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.info-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.info-label {
+    font-size: .75rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+    font-weight: 800;
+}
+
+.info-value {
+    font-weight: 800;
+    color: #111;
+}
+
+/* ✅ FIX: forzar cabecera PRO aunque Bootstrap pise estilos */
+.modal-pro .modal-header.modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
+    color: #fff !important;
+    border-bottom: 0 !important;
+}
+
+.modal-pro .modal-footer.modal-pro-footer {
+    background: #fff !important;
+    border-top: 1px solid var(--border) !important;
+}
+
+.modal-pro .btn-close.btn-close-white {
+    filter: invert(1) !important;
+    opacity: .9 !important;
+}
+.modal-pro .modal-header.modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
+    color: #fff !important;
+}
+
