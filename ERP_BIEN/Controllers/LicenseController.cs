@@ -210,28 +210,39 @@ namespace ERP_BIEN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, int userId, LicenseQueryParameters qp)
         {
-            await _svc.AssignToUserAsync(id, userId);
+            if (id <= 0 || userId <= 0)
+            {
+                TempData["ToastMsg"] = "Datos inválidos";
+                TempData["ToastType"] = "error";
+                return RedirectToAction(nameof(Index), qp);
+            }
 
-            TempData["ToastMsg"] = "Asignado correctamente ";
-            TempData["ToastType"] = "success";
+            try
+            {
+                await _svc.AssignToUserAsync(id, userId);
+
+                TempData["ToastMsg"] = "Asignado correctamente";
+                TempData["ToastType"] = "success";
+            }
+            catch (Exception ex)
+            {
+                TempData["ToastMsg"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
 
             return RedirectToAction(nameof(Index), qp);
         }
-
         // ============================
         // UNASSIGN
         // ============================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Unassign(int id, LicenseQueryParameters qp)
+        public async Task<IActionResult> Unassign(int id)
         {
             await _svc.UnassignAsync(id);
-
-            TempData["ToastMsg"] = "Quitado correctamente";
-            TempData["ToastType"] = "success";
-
-            return RedirectToAction(nameof(Index), qp);
+            return Json(new { success = true });
         }
+
 
         // ============================
         // DELETE

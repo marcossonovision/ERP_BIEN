@@ -21,7 +21,7 @@ wwwroot\img\SONO_Iconography_Certificate - WHITE.png
 wwwroot\img\SONO_Iconography_Electronics - WHITE.png
 wwwroot\img\SONO_Iconography_Person - WHITE.png
 wwwroot\img\SONO_Iconography_Personal data - WHITE.png
-wwwroot\js\Empleado\misLicencias.js
+wwwroot\js\dashboard.js
 wwwroot\js\site.js
 wwwroot\js\users.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -143,7 +143,7 @@ C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\bootstrap\dist\c
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\site.js
-C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\Empleado\misLicencias.js
+C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\js\dashboard.js
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\favicon.ico
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\devices.css
 C:\Users\marcos.gutierrez\Desktop\ERP_BIEN\ERP_BIEN\wwwroot\css\role.css

@@ -3,188 +3,252 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
+
 <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+<script src="~/js/dashboard.js" asp-append-version="true"></script>
 
+<div class="dash-shell">
 
-<div class="dashboard-shell">
+    <!-- HERO PRO -->
+    <div class="dash-hero">
+        <div class="dash-hero__main">
+            <h1 class="dash-title">Bienvenido, @Model.UserName</h1>
+            <p class="dash-subtitle">Accede a los módulos disponibles según tus permisos.</p>
 
-    <!-- HEADER PRO -->
-    <div class="dashboard-header-pro">
-        <div class="dashboard-title">Bienvenido, @Model.UserName</div>
-        <p class="dashboard-subtitle">
-            Accede a los módulos disponibles según tus permisos.
-        </p>
+            <div class="dash-chips">
+                <span class="dash-chip">🧭 Accesos rápidos</span>
+                <span class="dash-chip">🛡️ RBAC por módulos</span>
+            </div>
+        </div>
 
-        <div class="dashboard-meta">
-            <span class="dashboard-chip">🧭 Accesos rápidos</span>
-            <span class="dashboard-chip">🛡️ RBAC por módulos</span>
+        <!-- KPIs (se calculan por JS contando tarjetas renderizadas) -->
+        <div class="dash-hero__kpis">
+            <div class="kpi">
+                <div class="kpi-label">Módulos</div>
+                <div class="kpi-value" id="kpiModules">—</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Gestión</div>
+                <div class="kpi-value" id="kpiManage">—</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Mi área</div>
+                <div class="kpi-value" id="kpiMy">—</div>
+            </div>
         </div>
     </div>
 
-    <!-- GRID PRO -->
-    <div class="dashboard-grid">
+    <!-- =========================
+         SECCIÓN: GESTIÓN
+         ========================= -->
+    <div class="dash-section">
+        <div class="dash-section__head">
+            <div>
+                <div class="dash-section__title">Gestión</div>
+                <div class="dash-section__sub">Administración y catálogo principal</div>
+            </div>
+        </div>
 
-        @if (User.HasClaim("module", "USERS"))
-        {
-            <a href="/Users" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-users">👤</div>
-                <div class="card-main">
-                    <div class="card-title">Gestionar Usuarios</div>
-                    <p class="card-desc">Alta, baja y edición de usuarios.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">USERS</span>
-                        <span class="card-cta">Entrar →</span>
+        <div class="dash-grid" id="gridManage">
+
+            @if (User.HasClaim("module", "USERS"))
+            {
+                <a href="/Users" class="dash-card dash-card--users" data-group="manage">
+                    <div class="dash-icon">👤</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Gestionar Usuarios</div>
+                        <div class="dash-card__desc">Alta, baja y edición de usuarios.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">USERS</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        }
+                </a>
+            }
 
-        @if (User.HasClaim("module", "ROLES"))
-        {
-            <a href="/Roles" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-roles">🛡️</div>
-                <div class="card-main">
-                    <div class="card-title">Gestionar Roles</div>
-                    <p class="card-desc">Control de permisos y perfiles.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">ROLES</span>
-                        <span class="card-cta">Entrar →</span>
+            @if (User.HasClaim("module", "ROLES"))
+            {
+                <a href="/Roles" class="dash-card dash-card--roles" data-group="manage">
+                    <div class="dash-icon">🛡️</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Gestionar Roles</div>
+                        <div class="dash-card__desc">Control de permisos y perfiles.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">ROLES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        }
+                </a>
+            }
 
-        @if (User.HasClaim("module", "DEVICES"))
-        {
-            <a href="/Devices" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-devices">💻</div>
-                <div class="card-main">
-                    <div class="card-title">Dispositivos</div>
-                    <p class="card-desc">Inventario de equipos, asignación e histórico.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">DEVICES</span>
-                        <span class="card-cta">Entrar →</span>
+            @if (User.HasClaim("module", "DEVICES"))
+            {
+                <a href="/Devices" class="dash-card dash-card--devices" data-group="manage">
+                    <div class="dash-icon">💻</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Dispositivos</div>
+                        <div class="dash-card__desc">Inventario, asignación y histórico.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">DEVICES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        }
+                </a>
+            }
 
-        @if (User.HasClaim("module", "LICENSES"))
-        {
-            <a href="/Licenses" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-licenses">🔑</div>
-                <div class="card-main">
-                    <div class="card-title">Licencias</div>
-                    <p class="card-desc">Gestión de licencias, asignación e histórico.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">LICENSES</span>
-                        <span class="card-cta">Entrar →</span>
+            @if (User.HasClaim("module", "LICENSES"))
+            {
+                <a href="/Licenses" class="dash-card dash-card--licenses" data-group="manage">
+                    <div class="dash-icon">🔑</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Licencias</div>
+                        <div class="dash-card__desc">Gestión, asignación e histórico.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">LICENSES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        }
+                </a>
+            }
 
-        @if (User.HasClaim("module", "EMPLOYEES"))
-        {
-            <a href="/Employees" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-employees">👥</div>
-                <div class="card-main">
-                    <div class="card-title">Empleados</div>
-                    <p class="card-desc">Datos y organización del personal.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">EMPLOYEES</span>
-                        <span class="card-cta">Entrar →</span>
+            @if (User.HasClaim("module", "EMPLOYEES"))
+            {
+                <a href="/Employees" class="dash-card dash-card--employees" data-group="manage">
+                    <div class="dash-icon">👥</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Empleados</div>
+                        <div class="dash-card__desc">Datos y organización del personal.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">EMPLOYEES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        }
+                </a>
+            }
 
-        @if (User.HasClaim("module", "ROLES"))
-        {
-            <a href="/Audit" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-audit">📊</div>
-                <div class="card-main">
-                    <div class="card-title">Auditoría</div>
-                    <p class="card-desc">Registro de acciones y cambios.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">AUDIT</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/Import" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-audit">📥</div>
-                <div class="card-main">
-                    <div class="card-title">Importación</div>
-                    <p class="card-desc">Carga masiva de datos.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">IMPORT</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-        }
-
-        @if (User.HasClaim("module", "MY_DEVICES"))
-        {
-            <a href="/MyDevices" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-devices">🖥️</div>
-                <div class="card-main">
-                    <div class="card-title">Mis Dispositivos</div>
-                    <p class="card-desc">Tus equipos asignados.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">MY_DEVICES</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-        }
-
-        @if (User.HasClaim("module", "MY_LICENSES"))
-        {
-            <a href="/MyLicenses" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-licenses">🧾</div>
-                <div class="card-main">
-                    <div class="card-title">Mis Licencias</div>
-                    <p class="card-desc">Software que puedes usar.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">MY_LICENSES</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-        }
-
-        @if (User.HasClaim("module", "TEAM"))
-        {
-            <a href="/Team" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-employees">👨‍💼</div>
-                <div class="card-main">
-                    <div class="card-title">Equipo a tu cargo</div>
-                    <p class="card-desc">Personas que gestionas.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">TEAM</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-        }
-
-        @if (User.HasClaim("module", "MY_DATA"))
-        {
-            <a href="/MyData" class="dashboard-card-pro">
-                <div class="card-icon-pro icon-users">📄</div>
-                <div class="card-main">
-                    <div class="card-title">Mis Datos</div>
-                    <p class="card-desc">Información personal del usuario.</p>
-                    <div class="card-footer">
-                        <span class="card-tag">MY_DATA</span>
-                        <span class="card-cta">Entrar →</span>
-                    </div>
-                </div>
-            </a>
-        }
-
+        </div>
     </div>
+
+
+    <!-- =========================
+         SECCIÓN: ACCIONES
+         ========================= -->
+    @if (User.HasClaim("module", "ROLES"))
+    {
+        <div class="dash-section">
+            <div class="dash-section__head">
+                <div>
+                    <div class="dash-section__title">Acciones</div>
+                    <div class="dash-section__sub">Operaciones y seguimiento</div>
+                </div>
+            </div>
+
+            <div class="dash-grid" id="gridActions">
+
+                <a href="/Audit" class="dash-card dash-card--audit" data-group="actions">
+                    <div class="dash-icon">📊</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Auditoría</div>
+                        <div class="dash-card__desc">Registro de acciones y cambios.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">AUDIT</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/Import" class="dash-card dash-card--import" data-group="actions">
+                    <div class="dash-icon">📥</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Importación</div>
+                        <div class="dash-card__desc">Carga masiva de datos.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">IMPORT</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    }
+
+
+    <!-- =========================
+         SECCIÓN: MI ÁREA
+         ========================= -->
+    <div class="dash-section">
+        <div class="dash-section__head">
+            <div>
+                <div class="dash-section__title">Mi área</div>
+                <div class="dash-section__sub">Tu información y recursos asignados</div>
+            </div>
+        </div>
+
+        <div class="dash-grid" id="gridMy">
+
+            @if (User.HasClaim("module", "MY_DEVICES"))
+            {
+                <a href="/MyDevices" class="dash-card dash-card--mydevices" data-group="my">
+                    <div class="dash-icon">🖥️</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Mis Dispositivos</div>
+                        <div class="dash-card__desc">Tus equipos asignados.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">MY_DEVICES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (User.HasClaim("module", "MY_LICENSES"))
+            {
+                <a href="/MyLicenses" class="dash-card dash-card--mylicenses" data-group="my">
+                    <div class="dash-icon">🧾</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Mis Licencias</div>
+                        <div class="dash-card__desc">Software que puedes usar.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">MY_LICENSES</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (User.HasClaim("module", "TEAM"))
+            {
+                <a href="/Team" class="dash-card dash-card--team" data-group="my">
+                    <div class="dash-icon">👨‍💼</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Equipo a tu cargo</div>
+                        <div class="dash-card__desc">Personas que gestionas.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">TEAM</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (User.HasClaim("module", "MY_DATA"))
+            {
+                <a href="/MyData" class="dash-card dash-card--mydata" data-group="my">
+                    <div class="dash-icon">📄</div>
+                    <div class="dash-card__body">
+                        <div class="dash-card__title">Mis Datos</div>
+                        <div class="dash-card__desc">Información personal del usuario.</div>
+                        <div class="dash-card__foot">
+                            <span class="dash-tag">MY_DATA</span>
+                            <span class="dash-cta">Entrar <span class="arr">→</span></span>
+                        </div>
+                    </div>
+                </a>
+            }
+
+        </div>
+    </div>
+
 </div>
+

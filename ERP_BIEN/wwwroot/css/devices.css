@@ -1,4 +1,13 @@
-﻿
+﻿:root {
+    --c-navy: #032966;
+    --c-navy2: #004080;
+    --c-cyan: #0090E0;
+    --border: #E6EAF2;
+    --success: #28A745;
+    --danger: #DC3545;
+    --warning: #FFC107;
+    --muted: #6c757d;
+}
 /* =========================
    LOOK USERS (Devices)
    ========================= */
@@ -382,8 +391,11 @@
 
 /* Reutiliza tus pills */
 .btn-filter-pro {
-    background: #0090E0 !important;
+    background: linear-gradient(135deg, #032966, #004080) !important;
     color: #fff !important;
+    border-radius: 999px !important;
+    padding: 10px 18px !important;
+    font-weight: 900 !important;
 }
 
 .btn-clear-pro {
@@ -396,13 +408,6 @@
     .btn-clear-pro:hover {
         filter: brightness(.97);
     }
-/* ===== Modal PRO base (si no lo tienes ya) ===== */
-.modal-pro .modal-pro-card {
-    border: 1px solid var(--border, #E6EAF2);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,.20);
-}
 
 .modal-pro .modal-pro-header {
     background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
@@ -472,14 +477,6 @@
         box-shadow: 0 0 0 3px rgba(0,144,224,.15) !important;
     }
 
-/* Botones */
-.btn-pill {
-    border-radius: 999px !important;
-    padding: 10px 16px !important;
-    font-weight: 900 !important;
-    border: 0 !important;
-}
-
 .btn-next-pro {
     background: var(--c-cyan, #0090E0) !important;
     color: #fff !important;
@@ -488,19 +485,6 @@
     .btn-next-pro:hover {
         filter: brightness(.95);
     }
-/* ===== Modal PRO base ===== */
-.modal-pro .modal-pro-card {
-    border: 1px solid var(--border, #E6EAF2);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,.20);
-}
-
-.modal-pro .modal-pro-header {
-    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080));
-    color: #fff;
-    border-bottom: 0;
-}
 
 .modal-pro .modal-pro-body {
     background: #f7fbff;
@@ -593,12 +577,6 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.20) !important;
 }
 
-.modal-pro .modal-pro-header {
-    background: linear-gradient(135deg, var(--c-navy, #032966), var(--c-navy2, #004080)) !important;
-    color: #fff !important;
-    border-bottom: 0 !important;
-}
-
     .modal-pro .modal-pro-header .btn-close {
         filter: invert(1) !important;
         opacity: .95 !important;
@@ -642,7 +620,106 @@
     font-weight: 900 !important;
 }
 
+/*Asignar*/
+.search-pro {
+    position: relative;
+}
 
+.search-pro .search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
 
+.assign-results {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+/* CARD de usuario */
+.assign-user-card {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.assign-user-card:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-1px);
+}
+
+.assign-user-card.active {
+    border: 1px solid #4f7cff;
+    background: rgba(79,124,255,0.15);
+}
+/* ✅ FORZAR TODO EL TEXTO DEL HEADER EN BLANCO */
+.modal-pro .modal-pro-header,
+.modal-pro .modal-pro-header * {
+    color: #fff !important;
+}
+
+    /* ✅ SUBTÍTULO (EL QUE SE VE OSCURO) */
+    .modal-pro .modal-pro-header .small {
+        color: rgba(255,255,255,0.85) !important;
+    }
+/* Fila seleccionada */
+.device-row.active-row {
+    background: #fff3cd !important;
+    transition: background .2s ease;
+}
+
+.modal-pro-card {
+    animation: fadeInUp .25s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+/* ✅ Permitir click en toda la fila */
+.clickable-row {
+    cursor: pointer;
+}
+
+    /* ✅ Hacer que el click suba al TR */
+    .clickable-row td {
+        pointer-events: none;
+    }
+
+    /* ✅ PERO mantener botones clicables */
+    .clickable-row button,
+    .clickable-row a,
+    .clickable-row form {
+        pointer-events: auto;
+    }
+.list-group-item.active {
+    background: #0d6efd !important;
+    color: white;
+    border-color: #0d6efd;
+}
+
+#assignUserResults .list-group-item {
+    transition: all 0.2s ease;
+}
+
+    #assignUserResults .list-group-item:hover {
+        transform: translateX(4px);
+    }
 
 

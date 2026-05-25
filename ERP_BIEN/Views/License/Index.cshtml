@@ -73,19 +73,20 @@
     <div class="filters-shell mb-4">
 
         <!-- HEADER TOGGLE -->
-        <div class="d-flex justify-content-between align-items-center p-3 border-bottom"
-             style="cursor:pointer;"
-             onclick="toggleFilters()">
+        <div class="filters-head" onclick="toggleFilters()">
 
-            <h6 class="fw-bold text-muted mb-0">
-                Filtros de búsqueda
-            </h6>
+    <div>
+        <div class="filters-title">Filtros de búsqueda</div>
+        <div class="filters-sub">Refina los resultados</div>
+    </div>
 
-            <span id="filterArrow">▼</span>
-        </div>
+    <div id="filterArrow" class="filters-arrow">▼</div>
+
+</div>
 
         <!-- BODY -->
-        <div id="filtersBody" class="p-4" style="display:none;">
+        <div id="filtersBody" class="filters-body" style="display:none;">
+
 
             <div class="row g-3">
 
@@ -156,12 +157,13 @@
             </div>
 
             <!-- BOTONES -->
-            <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="filters-actions">
+
 
                 <div>
 
                     <button type="submit"
-                            class="btn btn-ortec btn-ortec-primary px-4">
+                            class="btn-filter-pro">
                         🔎 Filtrar
                     </button>
 
@@ -299,13 +301,13 @@
 
               <td>
                 <span class="pill @(item.UserId != null ? "pill-active" : "pill-inactive")">
-                  @(item.UserId != null ? "Asignada" : "Libre")
+                  @(item.UserId.HasValue ? "Asignada" : "Libre")
                 </span>
               </td>
 
               <td>
                 <span class="pill @(item.UserId == null ? "pill-active" : "pill-inactive")">
-                  @(item.UserId == null ? "Disponible" : "Ocupada")
+                  @(item.UserId.HasValue ? "Ocupada" : "Disponible")
                 </span>
               </td>
 
@@ -315,23 +317,21 @@
                 <div class="actions-wrap">
 
                   <button type="button"
-                          class="btn-action btn-edit btn-history"
-                          data-id="@item.Id"
-                          data-code="@item.Code"
-                          onclick="event.stopPropagation();">
-                    🔍 Histórico
-                  </button>
+    class="btn-action btn-edit btn-history"
+    onclick="event.stopPropagation(); loadHistoryLicense(@item.Id, '@item.Code');">
+    🔍 Histórico
+</button>
 
-                  @if (item.UserId == null)
+
+                  @if (!item.UserId.HasValue)
                   {
                     <button type="button"
-                            class="btn-action btn-open-assign"
-                            style="background: var(--c-success);"
-                            data-id="@item.Id"
-                            onclick="event.stopPropagation();">
-                      👤 Asignar
-                    </button>
-                  }
+    class="btn-action"
+    style="background: var(--c-success);"
+    onclick="event.stopPropagation(); openAssignModal(@item.Id);">
+    👤 Asignar
+</button>
+    }
                   else
                   {
                     <form class="d-inline"
@@ -341,11 +341,13 @@
       onclick="event.stopPropagation();"
       onsubmit="showToast('Quitando asignación...', 'info')">
 
-    <button type="submit"
-            class="btn-action"
-            style="background:#6c757d;">
-        ❌ Quitar
-    </button>
+    <button type="button"
+        class="btn-action"
+        style="background:#6c757d;"
+        onclick="event.stopPropagation(); unassignLicenseAjax(@item.Id);">
+    ❌ Quitar
+</button>
+
 
 </form>
                   }
@@ -530,7 +532,7 @@
             onsubmit="showToast('Guardando licencia...', 'info')">
 
         <!-- HEADER -->
-        <div class="modal-header d-flex align-items-center justify-content-between">
+        <div class="modal-header modal-pro-header d-flex align-items-center justify-content-between">
 
           <div class="d-flex align-items-center gap-3">
 
@@ -637,38 +639,78 @@
   </div>
 </div>
 
-<!-- MODAL: ELIMINAR -->
+
+<!-- DELETE MODAL PRO (ESTILO LIMPIO) -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content"
+         style="border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.2); overflow:hidden; border:1px solid #E6EAF2;">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Eliminar licencia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <form id="deleteForm"
+            method="post"
+            asp-action="Delete"
+            asp-controller="License"
+            onsubmit="showToast('Eliminando licencia...', 'info')">
+
+        <!-- HEADER -->
+        <div class="modal-header d-flex align-items-center justify-content-between">
+
+          <div class="d-flex align-items-center gap-3">
+
+            <div style="width:40px;height:40px;border-radius:999px;background:#F2F4F8;display:flex;align-items:center;justify-content:center;">
+              🗑️
             </div>
 
-            <div class="modal-body">
-                ¿Seguro que deseas eliminar esta licencia?
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Eliminar licencia</h5>
+              <div class="text-muted small">
+                Esta acción no se puede deshacer
+              </div>
             </div>
 
-            <div class="modal-footer">
-                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="License" onsubmit="showToast('Eliminando licencia...', 'info')">
+          </div>
 
-                    @Html.AntiForgeryToken()
-                    @{
-                        RenderQpHidden();
-                    }
-
-                    <input type="hidden" name="id" id="deleteId" />
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
-            </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 
         </div>
-    </div>
-</div>
 
+        <!-- BODY -->
+        <div class="modal-body text-center pt-2 pb-2">
+
+          <input type="hidden" name="id" id="deleteId" />
+
+          <div class="mb-3" style="font-size:1.1rem;">
+            ⚠️ ¿Seguro que deseas eliminar esta licencia?
+          </div>
+
+          <div class="text-muted small">
+            El registro se eliminará permanentemente
+          </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer border-0 pt-0">
+
+          <button type="button"
+                  class="btn-cancel-pro"
+                  data-bs-dismiss="modal">
+            Cancelar
+          </button>
+
+          <button type="submit"
+                  class="btn-pill"
+                  style="background:#DC3545; color:#fff;">
+            🗑️ Eliminar
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
 <!-- ✅ MODAL: ASIGNAR (BUSCADOR) -->
 <div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -739,7 +781,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const users = @Html.Raw(JsonSerializer.Serialize(
+            window.usersList = @Html.Raw(JsonSerializer.Serialize(
                                                     (Model.Users ?? new List<ERP_BIEN.Models.User>())
                                                                     .Select(u => new { id = u.Id, name = ((u.Name ?? "") + " " + (u.LastName ?? "")).Trim() })
                                                                     .OrderBy(x => x.name)
@@ -761,6 +803,7 @@
                     document.getElementById("deleteId").value = this.dataset.id;
                 });
             });
+
 
 // =========================
 // HISTÓRICO PRO (IGUAL QUE DEVICES)
@@ -856,78 +899,8 @@ async function loadHistoryLicense(licenseId, code) {
   }
 }
 
-            // ASIGNAR
-            const assignModal = new bootstrap.Modal(document.getElementById("assignModal"));
-            const assignLicenseId = document.getElementById("assignLicenseId");
-            const assignUserId = document.getElementById("assignUserId");
-            const assignSearch = document.getElementById("assignUserSearch");
-            const assignResults = document.getElementById("assignUserResults");
-            const assignSubmit = document.getElementById("assignSubmit");
+         
 
-            document.querySelectorAll(".btn-open-assign").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    assignLicenseId.value = this.dataset.id;
-
-                    assignUserId.value = "";
-                    assignSubmit.disabled = true;
-                    assignSearch.value = "";
-                    assignResults.innerHTML = "";
-
-                    renderUserResults(users.slice(0, 15));
-                    assignModal.show();
-                    assignSearch.focus();
-                });
-            });
-
-                    function renderUserResults(list) {
-            assignResults.innerHTML = "";
-
-            const empty = document.getElementById("assignEmptyState");
-
-            if (!list.length) {
-                empty.classList.remove("d-none");
-                return;
-            }
-
-            empty.classList.add("d-none");
-
-            list.forEach(u => {
-                const b = document.createElement("button");
-                b.type = "button";
-                b.className = "list-group-item list-group-item-action";
-                b.textContent = u.name;
-
-                b.onclick = () => {
-                    assignUserId.value = u.id;
-                    assignSubmit.disabled = false;
-
-                    // ✅ resaltar seleccionado
-                    assignResults.querySelectorAll(".active")
-                        .forEach(x => x.classList.remove("active"));
-                    b.classList.add("active");
-                };
-
-                assignResults.appendChild(b);
-            });
-        }
-                    // ✅ FILTRAR USUARIOS AL ESCRIBIR
-        assignSearch.addEventListener("input", function () {
-            const term = assignSearch.value.trim().toLowerCase();
-
-            // Si el input está vacío, mostramos los primeros usuarios
-            if (!term) {
-                renderUserResults(users.slice(0, 15));
-                return;
-            }
-
-            // Filtramos por nombre/apellido
-            const filtered = users
-                .filter(u => u.name.toLowerCase().includes(term))
-                .slice(0, 15);
-
-            renderUserResults(filtered);
-        });
 
             // ✅ DETAILS NIVEL EMPRESA
 function loadDetails(id) {
@@ -1110,6 +1083,138 @@ window.addEventListener("load", function () {
     }
 
 });
+async function unassignLicenseAjax(id) {
+
+    showToast("Quitando asignación...", "info");
+
+    try {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        const fd = new FormData();
+        fd.append("licenseId", id);
+        if (token) fd.append("__RequestVerificationToken", token);
+
+        const res = await fetch("/License/Unassign", {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin"
+        });
+
+        if (!res.ok) {
+            showToast("Error al desasignar ❌", "error");
+            return;
+        }
+
+        // ✅ ACTUALIZAR UI
+        const row = document.querySelector(`tr[data-id="${id}"]`);
+        if (!row) return;
+
+        // Usuario → "-"
+        row.children[7].textContent = "-";
+
+        // Cambiar pills
+        const assigned = row.children[5].querySelector("span");
+        const available = row.children[6].querySelector("span");
+
+        assigned.textContent = "Libre";
+        assigned.className = "pill pill-inactive";
+
+        available.textContent = "Disponible";
+        available.className = "pill pill-active";
+
+        // Cambiar botón
+        const actions = row.querySelector(".actions-wrap");
+        const code = row.children[0].textContent.trim();
+
+actions.innerHTML = `
+    <button type="button"
+        class="btn-action"
+        style="background: var(--c-success);"
+        onclick="event.stopPropagation(); openAssignModal(${id});">
+        👤 Asignar
+    </button>
+
+    <button type="button"
+        class="btn-action btn-edit btn-history"
+        onclick="event.stopPropagation(); loadHistoryLicense(${id}, ${JSON.stringify(code)});">
+        🔍 Histórico
+    </button>
+
+    <button type="button"
+        class="btn-action btn-delete"
+        data-id="${id}"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteModal"
+        onclick="event.stopPropagation();">
+        🗑️ Eliminar
+    </button>
+`;
+
+     
+
+        showToast("Licencia desasignada ✅", "success");
+
+    } catch (e) {
+        console.error(e);
+        showToast("Error inesperado ❌", "error");
+    }
+}
+const assignModalInstance = new bootstrap.Modal(document.getElementById("assignModal"));
+
+function openAssignModal(id) {
+
+    const assignLicenseId = document.getElementById("assignLicenseId");
+    const assignUserId = document.getElementById("assignUserId");
+    const assignSearch = document.getElementById("assignUserSearch");
+    const assignResults = document.getElementById("assignUserResults");
+    const assignSubmit = document.getElementById("assignSubmit");
+
+    assignLicenseId.value = id;
+
+    assignUserId.value = "";
+    assignSubmit.disabled = true;
+    assignSearch.value = "";
+    assignResults.innerHTML = "";
+
+    renderUserResults(window.usersList.slice(0, 15));
+
+    assignModalInstance.show();
+}
+
+function renderUserResults(list) {
+
+    const assignResults = document.getElementById("assignUserResults");
+    const assignUserId = document.getElementById("assignUserId");
+    const assignSubmit = document.getElementById("assignSubmit");
+    const empty = document.getElementById("assignEmptyState");
+
+    assignResults.innerHTML = "";
+
+    if (!list.length) {
+        empty.classList.remove("d-none");
+        return;
+    }
+
+    empty.classList.add("d-none");
+
+    list.forEach(u => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "list-group-item list-group-item-action";
+        b.textContent = u.name;
+
+        b.onclick = () => {
+            assignUserId.value = u.id;
+            assignSubmit.disabled = false;
+
+            assignResults.querySelectorAll(".active")
+                .forEach(x => x.classList.remove("active"));
+            b.classList.add("active");
+        };
+
+        assignResults.appendChild(b);
+    });
+}
 
 
 

@@ -622,4 +622,31 @@ h2, h3, .page-title {
     background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
     color: #fff !important;
 }
+.modal-pro-card {
+    animation: fadeInUp 0.25s ease;
+}
+/* ✅ TEXTO BLANCO FORZADO EN HEADER */
+.modal-pro .modal-pro-header,
+.modal-pro .modal-pro-header * {
+    color: #fff !important;
+}
+
+    /* ✅ SUBTÍTULO MÁS SUAVE PERO BLANCO */
+    .modal-pro .modal-pro-header .small {
+        color: rgba(255,255,255,0.85) !important;
+    }
+
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 

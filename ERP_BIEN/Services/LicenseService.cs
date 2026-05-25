@@ -157,22 +157,37 @@ namespace ERP_BIEN.Services
                 .ThenBy(u => u.LastName)
                 .ToListAsync();
         }
-        // ============================================================
-        // ASSIGN LICENSE TO USER
-        // ============================================================
+
+
         public async Task<bool> AssignToUserAsync(int licenseId, int userId)
         {
+            // =========================================================
+            // 1. VALIDACIÓN DE ENTRADA (OBLIGATORIO)
+            // =========================================================
+            if (licenseId <= 0)
+                throw new ArgumentException($"licenseId inválido: {licenseId}");
+
+            if (userId <= 0)
+                throw new ArgumentException($"userId inválido: {userId}");
+
+            // =========================================================
+            // 2. OBTENER LICENCIA
+            // =========================================================
             var license = await _db.Licenses
                 .FirstOrDefaultAsync(l => l.Id == licenseId);
 
             if (license == null)
-                throw new InvalidOperationException("La licencia no existe.");
+                throw new InvalidOperationException($"No existe la licencia con ID {licenseId}");
 
-            // ✅ Fuente única de verdad
+            // =========================================================
+            // 3. YA ASIGNADA
+            // =========================================================
             if (license.UserId != null)
                 throw new InvalidOperationException("La licencia ya está asignada.");
 
-            // ✅ RF-036: no sobreasignar (blindaje extra)
+            // =========================================================
+            // 4. CONTROL DE DISPONIBILIDAD (RF-036)
+            // =========================================================
             var total = await _db.Licenses.CountAsync(l =>
                 l.Producto == license.Producto &&
                 l.Proveedor == license.Proveedor);
@@ -185,16 +200,18 @@ namespace ERP_BIEN.Services
             if (assigned >= total)
                 throw new InvalidOperationException("No hay licencias disponibles para este producto.");
 
-            // ✅ Asignación
+            // =========================================================
+            // 5. ASIGNACIÓN
+            // =========================================================
             license.UserId = userId;
-
-            // Flags derivados (para coherencia inmediata si se usan)
             license.Asignada = true;
             license.Disponible = false;
 
             await _db.SaveChangesAsync();
+
             return true;
         }
+
         // ============================================================
         // UNASSIGN LICENSE
         // ============================================================

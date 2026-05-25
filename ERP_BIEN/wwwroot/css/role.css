@@ -82,8 +82,13 @@
         }
 
 .btn-filter {
-    background: var(--c-cyan) !important;
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
     color: #fff !important;
+}
+btn-filter:hover {
+    filter: brightness(.95);
+    transform: translateY(-1px);
+    transition: all .15s ease;
 }
 
 .btn-clear {

@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="~/css/devices.css" asp-append-version="true" />
 
 
+
 @{
     ViewData["Title"] = "Gestión de Dispositivos";
 
@@ -273,7 +274,10 @@
                     <!-- FILTRAR -->
                     
 <div class="filters-actions">
-  <button type="submit" class="btn btn-pill btn-filter-pro">🔍 Filtrar</button>
+  <button type="submit" class="btn-pill btn-filter-pro">
+    🔍 Filtrar
+</button>
+
 
 
                     
@@ -517,7 +521,9 @@
                     _ => "Device"
                 };
 
-                <tr class="device-row" data-id="@d.Id">
+                <tr class="device-row clickable-row"
+                data-id="@d.Id"
+                style="cursor:pointer">
 
                     <!-- TIPO -->
                     <td>
@@ -728,7 +734,7 @@
             onsubmit="showToast('Creando dispositivo...', 'info')">
 
         <!-- HEADER -->
-        <div class="modal-header d-flex align-items-center justify-content-between">
+        <div class="modal-header modal-pro-header d-flex align-items-center justify-content-between">
 
           <div class="d-flex align-items-center gap-3">
             <div class="modal-pro-icon navy">➕</div>
@@ -748,7 +754,12 @@
         <!-- BODY -->
         <div class="modal-body modal-pro-body">
 
-          <!-- PREVIEW -->
+          
+
+          <!-- STEP 1 -->
+          <div id="step1">
+            <div class="row g-3">
+                <!-- PREVIEW -->
           <div class="preview-box mb-4">
             <div class="preview-title" id="createWizardTitle">
               Paso 1/2 · Información básica
@@ -757,10 +768,6 @@
               Completa los datos principales del dispositivo
             </div>
           </div>
-
-          <!-- STEP 1 -->
-          <div id="step1">
-            <div class="row g-3">
 
               <div class="col-md-6">
                 <label class="form-label tiny-label">Tipo</label>
@@ -791,9 +798,19 @@
             </div>
           </div>
 
+
           <!-- STEP 2 -->
           <div id="step2" style="display:none;">
             <div class="row g-3">
+                <!-- PREVIEW -->
+          <div class="preview-box mb-4">
+            <div class="preview-title" id="createWizardTitle">
+              Paso 2/2 · Información básica
+            </div>
+            <div class="preview-sub">
+              Completa los datos principales del dispositivo
+            </div>
+          </div>
 
               <div class="col-md-4">
                 <label class="form-label tiny-label">Número</label>
@@ -939,11 +956,11 @@
 </div>
 
 <!-- DELETE MODAL -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade modal-pro" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content modal-pro-card">
             <form method="post" asp-action="Delete" asp-controller="Devices"
-      onsubmit="showToast('Eliminando dispositivo...', 'info')">
+                    onsubmit="showToast('Eliminando dispositivo...', 'info')">
                 @Html.AntiForgeryToken()
                 @{ RenderQpHidden(); }
 
@@ -967,38 +984,58 @@
 </div>
 
 <!-- DETAILS MODAL -->
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade modal-pro" id="detailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modal-pro-card">
 
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    Detalles del dispositivo
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <!-- HEADER -->
+      <div class="modal-header modal-pro-header">
+        <div class="d-flex align-items-center gap-3">
+
+          <div class="modal-pro-icon">💻</div>
+
+          <div>
+            <h5 class="modal-title fw-bold mb-0">
+              Detalles del dispositivo
+            </h5>
+            <div class="small opacity-75" id="detailsSubtitle">
+              Información completa
             </div>
-
-            <div class="modal-body">
-
-                <div id="detailsBody" class="container-fluid">
-
-                    <div class="text-center text-muted py-3">
-                        Cargando...
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cerrar
-                </button>
-            </div>
+          </div>
 
         </div>
-    </div>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body" id="detailsBody">
+        <div class="text-center text-muted py-3">
+          Cargando...
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer modal-pro-footer d-flex justify-content-between">
+
+    <button class="btn-pill btn-cancel-pro" data-bs-dismiss="modal">
+        Cerrar
+    </button>
+
+    <button type="button"
+            class="btn-pill btn-save-pro"
+            id="btnEditFromDetails">
+        ✏️ Editar
+    </button>
+
 </div>
+
+    </div>
+  </div>
+</div>
+
 
 <!-- HISTORY MODAL -->
 <div class="modal fade modal-pro" id="historyModal" tabindex="-1">
@@ -1079,38 +1116,83 @@
 </div>
 
 <!-- ASSIGN MODAL (buscador) -->
-<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div class="modal fade modal-pro" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-pro-card">
 
             <form id="assignForm" method="post" asp-action="Assign" asp-controller="Devices">
                 @Html.AntiForgeryToken()
                 @{ RenderQpHidden(); }
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Asignar dispositivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- HEADER PRO -->
+                <div class="modal-header modal-pro-header d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="modal-pro-icon navy">👤</div>
+
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">
+                                Asignar dispositivo
+                            </h5>
+                            <div class="small opacity-75">
+                                Selecciona un usuario para asignar el equipo
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="modal-body">
+                <!-- BODY -->
+                <div class="modal-body modal-pro-body">
+
                     <input type="hidden" name="deviceId" id="assignDeviceId" />
                     <input type="hidden" name="userId" id="assignUserId" />
 
-                    <label class="form-label">Buscar usuario</label>
-                    <input type="text" class="form-control" id="assignUserSearch"
-                           placeholder="Escribe nombre o apellido..." autocomplete="off" />
+                    <!-- SEARCH BOX PRO -->
+                    <div class="mb-3">
+                        <label class="form-label tiny-label">Buscar usuario</label>
 
-                    <div class="list-group mt-2" id="assignUserResults" style="max-height:260px; overflow:auto;"></div>
+                        <div class="search-pro">
+                            <input type="text"
+                                   class="form-control input-pro"
+                                   id="assignUserSearch"
+                                   placeholder="Escribe nombre o apellido..." />
+                            <span class="search-icon">🔎</span>
+                        </div>
+                    </div>
+
+                    <!-- RESULTADOS -->
+                    <div class="assign-results" id="assignUserResults">
+                        <!-- JS inject -->
+                    </div>
 
                     <div class="text-muted small mt-2">
-                        Selecciona un usuario de la lista para habilitar “Asignar”.
+                        Selecciona un usuario para habilitar la asignación
                     </div>
+
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="assignSubmit" disabled>Asignar</button>
+                <!-- FOOTER -->
+                <div class="modal-footer modal-pro-footer d-flex justify-content-between">
+
+                    <button type="button"
+                            class="btn-pill btn-cancel-pro"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="btn-pill btn-save-pro"
+                            id="assignSubmit"
+                            disabled>
+                        Asignar dispositivo
+                    </button>
+
                 </div>
+
             </form>
 
         </div>
@@ -1132,6 +1214,7 @@
 
 @section Scripts {
     <script>
+        console.log("DEVICES SCRIPT OK");
         // ========= USERS (para buscador assign)
 const users = @Html.Raw(JsonSerializer.Serialize(
     (Model.Users ?? new List<ERP_BIEN.Models.User>())
@@ -1146,27 +1229,6 @@ const detailsBodyEl = document.getElementById('detailsBody');
 const detailsModal = detailsModalEl ? new bootstrap.Modal(detailsModalEl) : null;
 window.currentDeviceId = null;
 
-document.querySelectorAll('.device-row').forEach(row => {
-    row.addEventListener('click', async (e) => {
-        if (e.target.closest("button") || e.target.closest("form") || e.target.closest("input") || e.target.closest("select")) return;
-
-        const id = row.dataset.id;
-        window.currentDeviceId = id;
-
-        if (!id || !detailsBodyEl || !detailsModal) return;
-
-        detailsBodyEl.innerHTML = '<div class="text-center text-muted py-3">Cargando...</div>';
-        detailsModal.show();
-
-        try {
-            const res = await fetch(`/Devices/Details/${id}`);
-            if (!res.ok) throw new Error();
-            detailsBodyEl.innerHTML = await res.text();
-        } catch {
-            detailsBodyEl.innerHTML = '<div class="text-danger text-center py-3">Error al cargar detalles</div>';
-        }
-    });
-});
 
 // ========= EDITAR desde DETAILS
 document.getElementById('btnEditFromDetails')?.addEventListener('click', async () => {
@@ -1575,7 +1637,173 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setFiltersOpen(savedState === "true");
 });
+// ===============================
+// CLICK EN FILA -> DETAILS MODAL
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
 
+    const rows = document.querySelectorAll(".clickable-row");
+
+    rows.forEach(row => {
+
+        row.addEventListener("click", function (e) {
+
+            // Evitar clicks en botones/formularios
+            if (
+                e.target.closest("button") ||
+                e.target.closest("form") ||
+                e.target.closest("a") ||
+                e.target.closest("input") ||
+                e.target.closest("select")
+            ) {
+                return;
+            }
+
+            // Highlight visual
+            document.querySelectorAll(".device-row").forEach(r => {
+                r.classList.remove("active-row");
+            });
+
+            row.classList.add("active-row");
+
+            // Obtener ID
+            const id = row.dataset.id;
+
+            if (!id) {
+                console.error("Fila sin data-id");
+                return;
+            }
+
+            console.log("LOAD DETAILS:", id);
+
+            // Abrir modal
+            loadDetails(id);
+        });
+
+    });
+
+});
+async function loadDetails(id) {
+
+    const modalEl = document.getElementById("detailsModal");
+    const body = document.getElementById("detailsBody");
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    body.innerHTML = `
+        <div class="text-center text-muted py-4">
+            Cargando detalles...
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(`/Devices/DetailsJson?id=${id}`, {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType.includes("application/json")) {
+
+            const txt = await response.text();
+
+            console.error("NO ES JSON:", txt);
+
+            throw new Error("El endpoint no devolvió JSON");
+        }
+
+        const d = await response.json();
+
+        console.log("DETAILS:", d);
+
+        window.currentDeviceId = id;
+
+        body.innerHTML = `
+            <div class="detail-hero">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+                        <div class="detail-name">
+                            ${d.hostname ?? "-"}
+                        </div>
+
+                        <div class="detail-domain">
+                            ${d.tipo ?? "-"}
+                        </div>
+                    </div>
+
+                    <div>
+                        ${
+                            d.status === "BuenEstado"
+                            ? `<span class="device-status-pill status-ok">
+                                    ✅ Buen estado
+                               </span>`
+                            : `<span class="device-status-pill status-bad">
+                                    ⛔ Defectuoso
+                               </span>`
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-card">
+                    <div class="info-label">Modelo</div>
+                    <div class="info-value">${d.model ?? "-"}</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-label">SN</div>
+                    <div class="info-value">${d.sn ?? "-"}</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-label">Fecha uso</div>
+                    <div class="info-value">${d.useDate ?? "-"}</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-label">Fabricación</div>
+                    <div class="info-value">${d.manufacturingDate ?? "-"}</div>
+                </div>
+
+                <div class="info-card" style="grid-column:1/-1;">
+                    <div class="info-label">Usuario</div>
+                    <div class="info-value">${d.userName ?? "-"}</div>
+                </div>
+
+            </div>
+        `;
+
+        modal.show();
+
+    }
+    catch (err) {
+
+        console.error("ERROR DETAILS:", err);
+
+        body.innerHTML = `
+            <div class="text-center text-danger py-4">
+                Error cargando detalles ❌
+            </div>
+        `;
+
+        modal.show();
+
+        showToast("Error cargando detalles ❌", "error");
+    }
+}
     </script>
   
 }

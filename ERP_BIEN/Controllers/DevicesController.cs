@@ -103,17 +103,7 @@ namespace ERP_BIEN.Controllers
             return View(vm);
         }
 
-        // ============================================================
-        // DETAILS
-        // ============================================================
-        [HttpGet]
-        public async Task<IActionResult> Details(int id)
-        {
-            var device = await _service.GetByIdAsync(id);
-            if (device == null) return NotFound();
-
-            return PartialView("_DeviceDetails", device);
-        }
+        
 
         // ============================================================
         // DETAILS JSON
