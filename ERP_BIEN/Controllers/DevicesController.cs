@@ -164,6 +164,10 @@ namespace ERP_BIEN.Controllers
             DateTime? useFrom = null,
             DateTime? useTo = null)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _service.AssignAsync(deviceId, userId); // ✅ CAMBIO CLAVE
 
             return RedirectToAction(nameof(Index), new
@@ -204,6 +208,10 @@ namespace ERP_BIEN.Controllers
             DateTime? useFrom = null,
             DateTime? useTo = null)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _service.UnassignAsync(deviceId); // ✅ CAMBIO CLAVE
 
             return RedirectToAction(nameof(Index), new
@@ -236,6 +244,7 @@ namespace ERP_BIEN.Controllers
         // CREATE
         // ============================================================
         [Authorize(Policy = "WRITE")]
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -250,22 +259,29 @@ namespace ERP_BIEN.Controllers
             DateTime? useDate,
             int? userId,
             int pageNumber)
-        {
-            await _service.CreateAsync(
-                deviceType,
-                hostname,
-                sn,
-                model,
-                numberOfDevice,
-                manufacturingDate,
-                status,
-                comment,
-                useDate,
-                userId
-            );
+{
 
-            return RedirectToAction(nameof(Index));
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            await _service.CreateAsync(
+        deviceType,
+        hostname,
+        sn,
+        model,
+        numberOfDevice,
+        manufacturingDate,
+        status,
+        comment,
+        useDate,
+        userId
+    );
+
+    return RedirectToAction(nameof(Index));
+}
 
         // ============================================================
         // EDIT
@@ -286,6 +302,10 @@ namespace ERP_BIEN.Controllers
             int? userId,
             int pageNumber)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _service.EditAsync(
                 id,
                 hostname,
@@ -312,6 +332,10 @@ namespace ERP_BIEN.Controllers
             int id,
             int pageNumber)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _service.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }

@@ -1,4 +1,5 @@
-﻿using ERP_BIEN.Data;
+﻿using DocumentFormat.OpenXml.InkML;
+using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using ERP_BIEN.Services;
 using ERP_BIEN.ViewModels;
@@ -70,6 +71,7 @@ namespace ERP_BIEN.Controllers
             };
 
             vm.Users = (await _svc.GetAllUsersAsync()).ToList();
+
             return View(vm);
         }
 
@@ -132,21 +134,7 @@ namespace ERP_BIEN.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errores = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                TempData["ToastMsg"] = "Error: " + string.Join(" | ", errores);
-                TempData["ToastType"] = "error";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (vm.UserId.HasValue &&
-                !await _db.Users.AnyAsync(u => u.Id == vm.UserId.Value))
-            {
-                TempData["ToastMsg"] = "Usuario inválido ";
+                TempData["ToastMsg"] = "Error en los datos";
                 TempData["ToastType"] = "error";
                 return RedirectToAction(nameof(Index));
             }
@@ -164,8 +152,9 @@ namespace ERP_BIEN.Controllers
             ApplyAssignmentState(lic);
 
             await _svc.CreateAsync(lic);
+
             TempData["HighlightId"] = lic.Id;
-            TempData["ToastMsg"] = "Guardado correctamente ";
+            TempData["ToastMsg"] = "Guardado correctamente";
             TempData["ToastType"] = "success";
 
             return RedirectToAction(nameof(Index));
@@ -176,15 +165,10 @@ namespace ERP_BIEN.Controllers
         // ============================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(LicenseViewModel vm, LicenseQueryParameters qp)
+        public async Task<IActionResult> Edit(LicenseViewModel vm)
         {
             var lic = await _svc.GetByIdAsync(vm.Id);
-            if (lic == null)
-            {
-                TempData["ToastMsg"] = "Error al editar";
-                TempData["ToastType"] = "error";
-                return RedirectToAction(nameof(Index), qp);
-            }
+            if (lic == null) return RedirectToAction(nameof(Index));
 
             lic.Code = vm.Code?.Trim();
             lic.Producto = vm.Producto?.Trim();
@@ -196,67 +180,90 @@ namespace ERP_BIEN.Controllers
             ApplyAssignmentState(lic);
 
             await _svc.UpdateAsync(lic);
-            TempData["HighlightId"] = lic.Id;
-            TempData["ToastMsg"] = "Guardado correctamente";
+
+            TempData["ToastMsg"] = "Actualizado correctamente";
             TempData["ToastType"] = "success";
 
-            return RedirectToAction(nameof(Index), qp);
+            return RedirectToAction(nameof(Index));
         }
 
         // ============================
-        // ASSIGN
+        // ✅ ASSIGN
         // ============================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign(int id, int userId, LicenseQueryParameters qp)
+        public async Task<IActionResult> Assign(int id, int userId)
         {
-            if (id <= 0 || userId <= 0)
+            var lic = await _db.Licenses.FindAsync(id);
+            if (lic == null) return NotFound();
+
+            // ❗ cerrar histórico anterior si existe
+            var last = await _db.LicenseHistories
+                .Where(h => h.LicenseId == id && h.EndDate == null)
+                .FirstOrDefaultAsync();
+
+            if (last != null)
             {
-                TempData["ToastMsg"] = "Datos inválidos";
-                TempData["ToastType"] = "error";
-                return RedirectToAction(nameof(Index), qp);
+                last.EndDate = DateTime.Now;
             }
 
-            try
+            // ✅ crear nuevo histórico
+            var history = new LicenseHistory
             {
-                await _svc.AssignToUserAsync(id, userId);
+                LicenseId = id,
+                UserId = userId,
+                StartDate = DateTime.Now
+            };
 
-                TempData["ToastMsg"] = "Asignado correctamente";
-                TempData["ToastType"] = "success";
-            }
-            catch (Exception ex)
-            {
-                TempData["ToastMsg"] = ex.Message;
-                TempData["ToastType"] = "error";
-            }
+            _db.LicenseHistories.Add(history);
 
-            return RedirectToAction(nameof(Index), qp);
+            // asignar licencia
+            lic.UserId = userId;
+            lic.Asignada = true;
+            lic.Disponible = false;
+
+            await _db.SaveChangesAsync();
+
+            return Ok();
         }
         // ============================
-        // UNASSIGN
+        // ✅ UNASSIGN (ARREGLADO)
         // ============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unassign(int id)
         {
-            await _svc.UnassignAsync(id);
-            return Json(new { success = true });
+            var lic = await _db.Licenses.FindAsync(id);
+            if (lic == null) return NotFound();
+
+            // ✅ cerrar histórico actual
+            var last = await _db.LicenseHistories
+                .Where(h => h.LicenseId == id && h.EndDate == null)
+                .FirstOrDefaultAsync();
+
+            if (last != null)
+            {
+                last.EndDate = DateTime.Now;
+            }
+
+            // quitar asignación
+            lic.UserId = null;
+            lic.Asignada = false;
+            lic.Disponible = true;
+
+            await _db.SaveChangesAsync();
+
+            return Ok();
         }
-
-
         // ============================
         // DELETE
         // ============================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, LicenseQueryParameters qp)
+        public async Task<IActionResult> Delete(int id)
         {
             await _svc.DeleteAsync(id);
-
-            TempData["ToastMsg"] = "Eliminado correctamente";
-            TempData["ToastType"] = "error";
-
-            return RedirectToAction(nameof(Index), qp);
+            return RedirectToAction(nameof(Index));
         }
 
         // ============================

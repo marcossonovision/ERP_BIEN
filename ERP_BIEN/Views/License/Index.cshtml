@@ -19,53 +19,57 @@
     var highlightId = TempData["HighlightId"]?.ToString();
 
 }
+<div class="header-pro d-flex justify-content-between align-items-center mb-3">
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h2 class="mb-0 fw-semibold">Gestión de Licencias</h2>
-    <small class="text-muted">
-      Mostrando @(Model?.Licenses?.Count ?? 0) licencias
-    </small>
-  </div>
-
-  <button type="button"
-          class="btn-save-pro"
-          data-bs-toggle="modal"
-          data-bs-target="#createEditModal">
-    ➕ Crear licencia
-  </button>
-</div>
-<div class="row mb-3">
-
-    <div class="col-md-3">
-        <div class="card p-2 text-center">
-            <h6>Total</h6>
-            <h4>@Model.TotalLicenses</h4>
-        </div>
+    <div>
+        <h2 class="mb-0 fw-bold">Gestión de Licencias</h2>
+        <small class="text-muted">
+            Mostrando @(Model?.Licenses?.Count ?? 0) licencias
+        </small>
     </div>
 
-    <div class="col-md-3">
-        <div class="card p-2 text-center">
-            <h6>Asignadas</h6>
-            <h4 class="text-success">@Model.AssignedLicenses</h4>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card p-2 text-center">
-            <h6>Libres</h6>
-            <h4 class="text-secondary">@Model.FreeLicenses</h4>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card p-2 text-center">
-            <h6>Uso</h6>
-            <h4>@Model.UsagePercentage %</h4>
-        </div>
-    </div>
+    <button type="button"
+            class="btn-save-pro"
+            data-bs-toggle="modal"
+            data-bs-target="#createEditModal">
+        ➕ Crear licencia
+    </button>
 
 </div>
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card total">
+            <div class="stat-title">Total</div>
+            <div class="stat-value">@Model.TotalLicenses</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card asignadas">
+            <div class="stat-title">Asignadas</div>
+            <div class="stat-value">@Model.AssignedLicenses</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card libres">
+            <div class="stat-title">Libres</div>
+            <div class="stat-value">@Model.FreeLicenses</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card uso">
+            <div class="stat-title">Uso</div>
+            <div class="stat-value">@Model.UsagePercentage %</div>
+        </div>
+    </div>
+
+</div>
+
+
 
 <!-- FILTROS -->
 <form method="get" asp-action="Index" asp-controller="License">
@@ -77,7 +81,10 @@
 
     <div>
         <div class="filters-title">Filtros de búsqueda</div>
-        <div class="filters-sub">Refina los resultados</div>
+        <div class="filters-sub">
+    Filtra por código, proveedor, producto o estado
+</div>
+
     </div>
 
     <div id="filterArrow" class="filters-arrow">▼</div>
@@ -259,9 +266,8 @@
 </div>
 
 <!-- TABLA -->
-<!-- TABLA -->
 <div class="table-shell mb-3">
-  <div class="table-responsive" style="overflow: visible;">
+  <div class="table-responsive">
     <table class="table-style align-middle text-center">
 
       <thead>
@@ -279,19 +285,11 @@
       </thead>
 
       <tbody>
-        @if (Model.Licenses == null || !Model.Licenses.Any())
+
+        @foreach (var item in Model.Licenses)
         {
-          <tr>
-            <td colspan="9" class="text-center text-muted">No hay registros</td>
-          </tr>
-        }
-        else
-        {
-          foreach (var item in Model.Licenses)
-          {
-            <tr class="clickable-row @(highlightId == item.Id.ToString() ? "highlight-row" : "")"
-                data-id="@item.Id"
-                style="cursor:pointer">
+            <tr class="clickable-row licence-row"
+                data-id="@item.Id">
 
               <td>@item.Code</td>
               <td>@item.Producto</td>
@@ -299,79 +297,75 @@
               <td>@item.Price</td>
               <td>@(item.Caducidad?.ToString("yyyy-MM-dd") ?? "-")</td>
 
+              <!-- ESTADO -->
               <td>
                 <span class="pill @(item.UserId != null ? "pill-active" : "pill-inactive")">
-                  @(item.UserId.HasValue ? "Asignada" : "Libre")
+                  @(item.UserId != null ? "Asignada" : "Libre")
                 </span>
               </td>
 
               <td>
                 <span class="pill @(item.UserId == null ? "pill-active" : "pill-inactive")">
-                  @(item.UserId.HasValue ? "Ocupada" : "Disponible")
+                  @(item.UserId != null ? "Ocupada" : "Disponible")
                 </span>
               </td>
 
-              <td>@(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")</td>
+              <td>
+                @(item.User != null ? $"{item.User.Name} {item.User.LastName}" : "-")
+              </td>
 
               <td>
                 <div class="actions-wrap">
 
+                  <!-- HISTORICO -->
                   <button type="button"
-    class="btn-action btn-edit btn-history"
-    onclick="event.stopPropagation(); loadHistoryLicense(@item.Id, '@item.Code');">
-    🔍 Histórico
-</button>
+                          class="btn-action btn-edit btn-history"
+                          data-id="@item.Id"
+                          data-code="@item.Code"
+                          onclick="event.stopPropagation();">
+                      🔍 Histórico
+                  </button>
 
-
+                  <!-- ASIGNAR / QUITAR -->
                   @if (!item.UserId.HasValue)
                   {
-                    <button type="button"
-    class="btn-action"
-    style="background: var(--c-success);"
-    onclick="event.stopPropagation(); openAssignModal(@item.Id);">
-    👤 Asignar
-</button>
-    }
+                      <button type="button"
+                              class="btn-action btn-success"
+                              onclick="event.stopPropagation(); openAssignModal(@item.Id);">
+                          👤 Asignar
+                      </button>
+                  }
                   else
                   {
-                    <form class="d-inline"
-      method="post"
-      asp-action="Unassign"
-      asp-controller="License"
-      onclick="event.stopPropagation();"
-      onsubmit="showToast('Quitando asignación...', 'info')">
-
-    <button type="button"
-        class="btn-action"
-        style="background:#6c757d;"
-        onclick="event.stopPropagation(); unassignLicenseAjax(@item.Id);">
-    ❌ Quitar
-</button>
-
-
-</form>
+                      <button type="button"
+                              class="btn-action btn-gray"
+                              onclick="event.stopPropagation(); unassignLicenseAjax(@item.Id);">
+                          ❌ Quitar
+                      </button>
                   }
 
+                  <!-- DELETE -->
                   <button type="button"
                           class="btn-action btn-delete"
-                          data-id="@item.Id"
                           data-bs-toggle="modal"
                           data-bs-target="#deleteModal"
+                          data-id="@item.Id"
                           onclick="event.stopPropagation();">
-                    🗑️ Eliminar
+                      🗑️ Eliminar
                   </button>
 
                 </div>
               </td>
 
             </tr>
-          }
         }
+
       </tbody>
 
     </table>
   </div>
-</div>  
+</div>
+
 
 <!-- PAGINACIÓN -->
 <nav aria-label="Page navigation" class="mt-3">
@@ -641,67 +635,234 @@
 
 
 <!-- DELETE MODAL PRO (ESTILO LIMPIO) -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content"
-         style="border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.2); overflow:hidden; border:1px solid #E6EAF2;">
+<div class="modal fade modal-pro" id="deleteModal" tabindex="-1" aria-hidden="true">
 
-      <form id="deleteForm"
-            method="post"
-            asp-action="Delete"
-            asp-controller="License"
-            onsubmit="showToast('Eliminando licencia...', 'info')">
+    <div class="modal-dialog modal-dialog-centered modal-md">
 
-        <!-- HEADER -->
-        <div class="modal-header d-flex align-items-center justify-content-between">
+        <div class="modal-content modal-pro-card border-0 overflow-hidden"
+             style="border-radius:22px;">
 
-          <div class="d-flex align-items-center gap-3">
+            <form method="post"
+                  asp-action="Delete"
+                  asp-controller="License"
+                  onsubmit="showToast('Eliminando licencia...', 'info')">
 
-            <div style="width:40px;height:40px;border-radius:999px;background:#F2F4F8;display:flex;align-items:center;justify-content:center;">
-              🗑️
-            </div>
+                <!-- HEADER -->
+                <div class="modal-header border-0 px-4 py-4"
+                     style="background:#003B82;">
 
-            <div>
-              <h5 class="modal-title fw-bold mb-0">Eliminar licencia</h5>
-              <div class="text-muted small">
-                Esta acción no se puede deshacer
-              </div>
-            </div>
+                    <div class="d-flex align-items-center gap-3">
 
-          </div>
+                        <!-- ICON -->
+                        <div class="modal-pro-icon d-flex align-items-center justify-content-center"
+                             style="
+                                width:52px;
+                                height:52px;
+                                border-radius:50%;
+                                background:#dc3545;
+                                color:white;
+                                font-size:1.3rem;
+                             ">
+                            🗑️
+                        </div>
 
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <!-- TITLE -->
+                        <div class="text-white">
+
+                            <h5 class="modal-title fw-bold mb-0">
+                                Eliminar licencia
+                            </h5>
+
+                            <div class="modal-subtitle">
+                            Esta acción no se puede deshacer
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- CLOSE -->
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar">
+                    </button>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body p-4"
+                     style="background:#F4F5F7;">
+
+                    <!-- HIDDEN ID -->
+                    <input type="hidden"
+                           name="id"
+                           id="deleteId" />
+
+                    <!-- ALERT -->
+                    <div class="mb-4 p-4"
+                         style="
+                            background:#F7EFCF;
+                            border:1px solid #E6D38A;
+                            border-radius:18px;
+                         ">
+
+                        <div class="fw-semibold mb-1"
+                             style="font-size:1.1rem; color:#111827;">
+
+                            ¿Seguro que deseas eliminar esta licencia?
+
+                        </div>
+
+                        <div class="small"
+                             style="color:#4B5563;">
+
+                            Se eliminará el registro permanentemente.
+
+                        </div>
+
+                    </div>
+
+                    <!-- LICENSE INFO -->
+                    <div id="deleteLicenseInfo"
+                         class="p-4"
+                         style="
+                            background:white;
+                            border:1px solid #D7DCE3;
+                            border-radius:18px;
+                         ">
+
+                        <div class="small text-muted mb-2">
+                            Licencia seleccionada
+                        </div>
+
+                        <div id="deleteLicenseName"
+                             class="fw-bold"
+                             style="font-size:1.1rem;">
+                            —
+                        </div>
+
+                        <div id="deleteLicenseSub"
+                             class="small text-muted">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer border-0 px-4 pb-4 bg-white d-flex justify-content-end gap-3">
+
+                    <!-- CANCEL -->
+                    <button type="button"
+                            data-bs-dismiss="modal"
+                            style="
+                                border-radius:999px;
+                                padding:.75rem 1.8rem;
+                                border:1px solid #BFC6CF;
+                                background:white;
+                                color:#6B7280;
+                                font-weight:600;
+                            ">
+                        Cancelar
+                    </button>
+
+                    <!-- DELETE -->
+                    <button type="submit"
+                            style="
+                                border:none;
+                                border-radius:999px;
+                                padding:.75rem 2rem;
+                                background:#dc3545;
+                                color:white;
+                                font-weight:700;
+                                box-shadow:0 4px 10px rgba(220,53,69,.25);
+                            ">
+                        Eliminar
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
-        <!-- BODY -->
-        <div class="modal-body text-center pt-2 pb-2">
+    </div>
 
-          <input type="hidden" name="id" id="deleteId" />
+</div>
+<!-- ✅ MODAL: ASIGNAR (BUSCADOR) -->
+<div class="modal fade modal-pro" id="assignModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-pro-card">
 
-          <div class="mb-3" style="font-size:1.1rem;">
-            ⚠️ ¿Seguro que deseas eliminar esta licencia?
+      <form id="assignForm" onsubmit="event.preventDefault(); assignLicenseAjax();">
+
+        @Html.AntiForgeryToken()
+        @{
+            RenderQpHidden();
+        }
+
+        <!-- HEADER -->
+        <div class="modal-header modal-pro-header d-flex align-items-center justify-content-between">
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="modal-pro-icon navy">👤</div>
+
+            <div>
+              <h5 class="modal-title fw-bold mb-0">
+                Asignar licencia
+              </h5>
+              <div class="small opacity-75">
+                Selecciona un usuario para asignar la licencia
+              </div>
+            </div>
           </div>
 
-          <div class="text-muted small">
-            El registro se eliminará permanentemente
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body modal-pro-body">
+
+          <input type="hidden" id="assignLicenseId" name="id" />
+          <input type="hidden" id="assignUserId" name="userId" />
+
+          <!-- BUSCADOR -->
+          <div class="mb-3">
+            <label class="tiny-label">Buscar usuario🔎</label>
+
+            <div class="search-pro">
+              <input type="text"
+                     class="form-control input-pro"
+                     id="assignUserSearch"
+                     placeholder="Escribe nombre..." />
+              <span class="search-icon"></span>
+            </div>
+          </div>
+
+          <!-- RESULTADOS -->
+          <div id="assignUserResults" class="assign-results"></div>
+
+          <div class="text-muted small mt-2">
+            Selecciona un usuario para habilitar la asignación
           </div>
 
         </div>
 
         <!-- FOOTER -->
-        <div class="modal-footer border-0 pt-0">
+        <div class="modal-footer modal-pro-footer d-flex justify-content-between">
 
           <button type="button"
-                  class="btn-cancel-pro"
+                  class="btn-pill btn-cancel-pro"
                   data-bs-dismiss="modal">
             Cancelar
           </button>
 
           <button type="submit"
-                  class="btn-pill"
-                  style="background:#DC3545; color:#fff;">
-            🗑️ Eliminar
+                  id="assignSubmit"
+                  class="btn-pill btn-save-pro"
+                  disabled>
+            Asignar licencia
           </button>
 
         </div>
@@ -710,50 +871,6 @@
 
     </div>
   </div>
-</div>
-<!-- ✅ MODAL: ASIGNAR (BUSCADOR) -->
-<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <form id="assignForm" method="post" asp-action="Assign" asp-controller="License" onsubmit="showToast('Asignando licencia...', 'info')">
-                @Html.AntiForgeryToken()
-                @{
-                    RenderQpHidden();
-                }
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Asignar licencia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="assignLicenseId" />
-                    <input type="hidden" name="userId" id="assignUserId" />
-
-                    <label class="form-label">Buscar usuario</label>
-                    <input type="text" class="form-control" id="assignUserSearch"
-                           placeholder="Escribe nombre o apellido..." autocomplete="off" />
-
-                    <div class="list-group mt-2" id="assignUserResults" style="max-height:260px; overflow:auto;">
-                    </div>
-                    <div id="assignEmptyState" class="text-muted small mt-2 d-none">
-                        No hay usuarios que coincidan.
-                    </div>
-
-                    <div class="text-muted small mt-2">
-                        Selecciona un usuario de la lista para habilitar “Asignar”.
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="assignSubmit" disabled>Asignar</button>
-                </div>
-            </form>
-
-        </div>
-    </div>
 </div>
 
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
@@ -798,111 +915,46 @@
 
             // Eliminar
             document.querySelectorAll(".btn-delete").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    document.getElementById("deleteId").value = this.dataset.id;
-                });
-            });
+    btn.addEventListener("click", function (e) {
 
+        e.stopPropagation();
 
-// =========================
-// HISTÓRICO PRO (IGUAL QUE DEVICES)
-// =========================
-const historyModalEl = document.getElementById("historyModal");
-const historyModal = historyModalEl ? bootstrap.Modal.getOrCreateInstance(historyModalEl) : null;
+        const id = this.dataset.id;
 
-document.querySelectorAll(".btn-history").forEach(btn => {
-  btn.addEventListener("click", async function (e) {
-    e.stopPropagation();
+        // ✅ coger fila completa
+        const row = this.closest("tr");
+        if (!row) return;
 
-    const licenseId = this.dataset.id;
-    const code = this.dataset.code || "Licencia";
+        // ✅ columnas reales de TU tabla
+        const code = row.children[0].textContent.trim();
+        const producto = row.children[1].textContent.trim();
+        const proveedor = row.children[2].textContent.trim();
 
-    await loadHistoryLicense(licenseId, code);
-  });
-});
+        // ✅ guardar id
+        document.getElementById("deleteId").value = id;
 
-async function loadHistoryLicense(licenseId, code) {
+        // ✅ meter datos en el modal
+        document.getElementById("deleteLicenseName").textContent = producto;
 
-  const nameEl   = document.getElementById("history-license-name");
-  const timeline = document.getElementById("historyTimeline");
-  const empty    = document.getElementById("historyEmpty");
-
-  if (nameEl) nameEl.innerText = code;
-
-  if (timeline) timeline.innerHTML = "";
-  if (empty) { empty.style.display = "none"; empty.innerText = "Sin histórico disponible"; }
-
-  const url = `/License/HistoryJson?licenseId=${encodeURIComponent(licenseId)}`;
-
-  try {
-    const res = await fetch(url, { headers: { "Accept": "application/json" } });
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    // ✅ Si devuelve HTML (redirect/login), no rompas
-    const ct = res.headers.get("content-type") || "";
-    if (!ct.includes("application/json")) {
-      const txt = await res.text();
-      console.error("History License NO JSON:", ct, txt);
-      throw new Error("El histórico no devolvió JSON (posible redirect/vista HTML).");
-    }
-
-    const rows = await res.json();
-
-    if (!rows || rows.length === 0) {
-      if (empty) empty.style.display = "block";
-      historyModal?.show();
-      return;
-    }
-
-    rows.forEach(r => {
-      // soporta camelCase y PascalCase
-      const user = r.userName ?? r.UserName ?? "-";
-      const start = r.startDate ?? r.StartDate ?? "-";
-      const end = r.endDate ?? r.EndDate ?? null;
-      const duration = r.duration ?? r.Duration ?? (end ? "" : "ACTUAL");
-
-      const title = `Asignado a ${user}`;
-      const date  = start;
-      const desc  = end
-        ? `Desde ${start} → ${end} · ${duration}`
-        : `Desde ${start} → ACTUAL · ${duration}`;
-
-      const item = document.createElement("div");
-      item.className = "history-item";
-      item.innerHTML = `
-        <div class="dot"></div>
-        <div class="content">
-          <div class="d-flex justify-content-between">
-            <div class="fw-bold">${escapeHtml(title)}</div>
-            <div class="text-muted small">${escapeHtml(date)}</div>
-          </div>
-          <div class="text-muted small">${escapeHtml(desc)}</div>
-        </div>
-      `;
-
-      timeline.appendChild(item);
+        document.getElementById("deleteLicenseSub").textContent =
+            `Código: ${code} · Proveedor: ${proveedor}`;
     });
+});
+            // ✅ HISTÓRICO CLICK
+document.querySelectorAll(".btn-history").forEach(btn => {
+    btn.addEventListener("click", function (e) {
 
-    historyModal?.show();
+        e.stopPropagation();
 
-  } catch (err) {
-    console.error("Error cargando histórico licencia:", err);
+        const id = this.dataset.id;
+        const code = this.dataset.code;
 
-    if (empty) {
-      empty.style.display = "block";
-      empty.innerText = "Error cargando histórico ❌";
-    }
+        loadHistoryLicense(id, code);
+    });
+});
+    
 
-    historyModal?.show();
-  }
-}
-
-         
-
-
-            // ✅ DETAILS NIVEL EMPRESA
+// ✅ DETAILS NIVEL EMPRESA
 function loadDetails(id) {
     window.currentLicenseId = id;
 
@@ -1091,7 +1143,8 @@ async function unassignLicenseAjax(id) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
         const fd = new FormData();
-        fd.append("licenseId", id);
+        fd.append("id", id);
+
         if (token) fd.append("__RequestVerificationToken", token);
 
         const res = await fetch("/License/Unassign", {
@@ -1136,7 +1189,8 @@ actions.innerHTML = `
 
     <button type="button"
         class="btn-action btn-edit btn-history"
-        onclick="event.stopPropagation(); loadHistoryLicense(${id}, ${JSON.stringify(code)});">
+        data-id="${id}"
+        data-code="${code}">
         🔍 Histórico
     </button>
 
@@ -1149,7 +1203,6 @@ actions.innerHTML = `
         🗑️ Eliminar
     </button>
 `;
-
      
 
         showToast("Licencia desasignada ✅", "success");
@@ -1159,6 +1212,7 @@ actions.innerHTML = `
         showToast("Error inesperado ❌", "error");
     }
 }
+
 const assignModalInstance = new bootstrap.Modal(document.getElementById("assignModal"));
 
 function openAssignModal(id) {
@@ -1186,35 +1240,175 @@ function renderUserResults(list) {
     const assignResults = document.getElementById("assignUserResults");
     const assignUserId = document.getElementById("assignUserId");
     const assignSubmit = document.getElementById("assignSubmit");
-    const empty = document.getElementById("assignEmptyState");
 
     assignResults.innerHTML = "";
 
-    if (!list.length) {
-        empty.classList.remove("d-none");
+    if (!list || list.length === 0) {
+        assignResults.innerHTML = `
+            <div class="text-muted small p-2">
+                No hay usuarios
+            </div>
+        `;
         return;
     }
 
-    empty.classList.add("d-none");
-
     list.forEach(u => {
+
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "list-group-item list-group-item-action";
+        b.className = "assign-user-card";
         b.textContent = u.name;
 
         b.onclick = () => {
+
             assignUserId.value = u.id;
+
+            // ✅ ACTIVAR BOTÓN (CLAVE)
             assignSubmit.disabled = false;
 
             assignResults.querySelectorAll(".active")
                 .forEach(x => x.classList.remove("active"));
+
             b.classList.add("active");
         };
 
         assignResults.appendChild(b);
     });
 }
+async function assignLicenseAjax() {
+
+    const id = document.getElementById("assignLicenseId").value;
+    const userId = document.getElementById("assignUserId").value;
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+    const fd = new FormData();
+    fd.append("id", id);
+    fd.append("userId", userId);
+    fd.append("__RequestVerificationToken", token);
+
+    try {
+
+        const res = await fetch("/License/Assign", {
+            method: "POST",
+            body: fd
+        });
+
+        if (!res.ok) {
+            showToast("Error al asignar ❌", "error");
+            return;
+        }
+
+        showToast("Asignado correctamente ✅", "success");
+
+        // cerrar modal
+        bootstrap.Modal.getInstance(document.getElementById("assignModal")).hide();
+
+        // recargar página
+        location.reload();
+
+    } catch (e) {
+        console.error(e);
+        showToast("Error inesperado ❌", "error");
+    }
+}
+// =========================
+// HISTÓRICO PRO (IGUAL QUE DEVICES)
+// =========================
+window.loadHistoryLicense = async function (licenseId, code) {
+
+    const nameEl = document.getElementById("history-license-name");
+    const timeline = document.getElementById("historyTimeline");
+    const empty = document.getElementById("historyEmpty");
+
+    if (nameEl) nameEl.innerText = code;
+
+    timeline.innerHTML = "";
+    empty.style.display = "none";
+    empty.innerText = "Sin histórico disponible";
+
+    try {
+
+        const res = await fetch(`/License/HistoryJson?licenseId=${licenseId}`);
+
+        if (!res.ok) {
+            throw new Error("Error HTTP");
+        }
+
+        const rows = await res.json();
+
+        if (!rows || rows.length === 0) {
+            empty.style.display = "block";
+            new bootstrap.Modal(document.getElementById("historyModal")).show();
+            return;
+        }
+
+        rows.forEach(r => {
+
+            const item = document.createElement("div");
+            item.className = "history-item";
+
+            const isActive = !r.endDate;
+
+item.innerHTML = `
+    <div class="history-item-inner ${isActive ? "active" : ""}">
+        
+        <div class="history-dot"></div>
+
+        <div class="history-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="history-user fw-bold">
+                    👤 ${r.userName ?? "-"}
+                </div>
+
+                ${isActive 
+                    ? `<span class="badge bg-success">Actual</span>` 
+                    : ""
+                }
+            </div>
+
+            <div class="history-dates text-muted small">
+                ${r.startDate ?? "-"} → ${r.endDate ?? "Actual"}
+            </div>
+
+        </div>
+    </div>
+`;
+            timeline.appendChild(item);
+        });
+
+        new bootstrap.Modal(document.getElementById("historyModal")).show();
+
+    } catch (e) {
+        console.error(e);
+
+        empty.style.display = "block";
+        empty.innerText = "Error cargando histórico ❌";
+
+        new bootstrap.Modal(document.getElementById("historyModal")).show();
+    }
+}
+document.getElementById("assignUserSearch")?.addEventListener("input", function () {
+
+    const texto = this.value.toLowerCase().trim();
+
+    // ✅ si no escribe nada → mostrar primeros usuarios
+    if (!texto) {
+        renderUserResults(window.usersList.slice(0, 15));
+        return;
+    }
+
+    // ✅ filtrar usuarios
+    const filtrados = window.usersList.filter(u =>
+        u.name.toLowerCase().includes(texto)
+    );
+
+    // ✅ pintar resultados
+    renderUserResults(filtrados.slice(0, 20));
+});
+
+
 
 
 

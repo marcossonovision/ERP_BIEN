@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ERP_BIEN.Data;
+﻿using ERP_BIEN.Data;
 using ERP_BIEN.Models;
 using ERP_BIEN.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERP_BIEN.Services
 {
     public class LicenseService : ILicenseService
     {
         private readonly AppDbContext _db;
-        public LicenseService(AppDbContext db) => _db = db;
+
+        public LicenseService(AppDbContext db)
+        {
+            _db = db;
+        }
 
         // ============================================================
-        // GET PAGED (LISTADO + FILTROS)
+        // GET PAGED
         // ============================================================
         public async Task<(IEnumerable<License> Items, int TotalCount)> GetPagedAsync(LicenseQueryParameters qp)
         {
@@ -26,9 +30,6 @@ namespace ERP_BIEN.Services
                 .Include(l => l.User)
                 .AsQueryable();
 
-            // ----------------------------
-            // Search general
-            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.Search))
             {
                 var s = qp.Search.Trim();
@@ -38,47 +39,26 @@ namespace ERP_BIEN.Services
                     l.Proveedor.Contains(s));
             }
 
-            // ----------------------------
-            // Filtro proveedor
-            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.SearchProveedor))
             {
                 var proveedor = qp.SearchProveedor.Trim();
                 query = query.Where(l => l.Proveedor.Contains(proveedor));
             }
 
-            // ----------------------------
-            // Filtro producto
-            // ----------------------------
             if (!string.IsNullOrWhiteSpace(qp.SearchProducto))
             {
                 var producto = qp.SearchProducto.Trim();
                 query = query.Where(l => l.Producto.Contains(producto));
             }
 
-            // ============================================================
-            // ✅ PASO 2: FILTRO ASIGNADA POR UserId (NO por l.Asignada)
-            // ============================================================
             if (!string.IsNullOrWhiteSpace(qp.SearchAsignada))
             {
-                var raw = qp.SearchAsignada.Trim().ToLowerInvariant();
+                var raw = qp.SearchAsignada.Trim().ToLower();
 
-                bool? asignada = raw switch
-                {
-                    "true" => true,
-                    "false" => false,
-                    "1" => true,
-                    "0" => false,
-                    _ => null
-                };
-
-                if (asignada.HasValue)
-                {
-                    if (asignada.Value)
-                        query = query.Where(l => l.UserId != null);
-                    else
-                        query = query.Where(l => l.UserId == null);
-                }
+                if (raw == "true")
+                    query = query.Where(l => l.UserId != null);
+                else if (raw == "false")
+                    query = query.Where(l => l.UserId == null);
             }
 
             var total = await query.CountAsync();
@@ -90,10 +70,6 @@ namespace ERP_BIEN.Services
                 .Take(qp.PageSize)
                 .ToListAsync();
 
-            // ============================================================
-            // ✅ Blindaje visual: recalcular flags según UserId
-            // (aunque en BD haya datos viejos, la UI se ve coherente)
-            // ============================================================
             foreach (var l in items)
             {
                 l.Asignada = l.UserId != null;
@@ -128,8 +104,6 @@ namespace ERP_BIEN.Services
         // ============================================================
         public async Task<bool> UpdateAsync(License license)
         {
-            // Si el license viene trackeado (lo normal cuando lo has cargado con GetByIdAsync),
-            // basta con SaveChangesAsync.
             await _db.SaveChangesAsync();
             return true;
         }
@@ -148,7 +122,7 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================================
-        // USERS (para dropdown, etc.)
+        // USERS
         // ============================================================
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
@@ -158,51 +132,21 @@ namespace ERP_BIEN.Services
                 .ToListAsync();
         }
 
-
+        // ============================================================
+        // ✅ ASSIGN (CORRECTO)
+        // ============================================================
         public async Task<bool> AssignToUserAsync(int licenseId, int userId)
         {
-            // =========================================================
-            // 1. VALIDACIÓN DE ENTRADA (OBLIGATORIO)
-            // =========================================================
-            if (licenseId <= 0)
-                throw new ArgumentException($"licenseId inválido: {licenseId}");
+            if (licenseId <= 0 || userId <= 0)
+                return false;
 
-            if (userId <= 0)
-                throw new ArgumentException($"userId inválido: {userId}");
-
-            // =========================================================
-            // 2. OBTENER LICENCIA
-            // =========================================================
             var license = await _db.Licenses
                 .FirstOrDefaultAsync(l => l.Id == licenseId);
 
             if (license == null)
-                throw new InvalidOperationException($"No existe la licencia con ID {licenseId}");
+                return false;
 
-            // =========================================================
-            // 3. YA ASIGNADA
-            // =========================================================
-            if (license.UserId != null)
-                throw new InvalidOperationException("La licencia ya está asignada.");
-
-            // =========================================================
-            // 4. CONTROL DE DISPONIBILIDAD (RF-036)
-            // =========================================================
-            var total = await _db.Licenses.CountAsync(l =>
-                l.Producto == license.Producto &&
-                l.Proveedor == license.Proveedor);
-
-            var assigned = await _db.Licenses.CountAsync(l =>
-                l.Producto == license.Producto &&
-                l.Proveedor == license.Proveedor &&
-                l.UserId != null);
-
-            if (assigned >= total)
-                throw new InvalidOperationException("No hay licencias disponibles para este producto.");
-
-            // =========================================================
-            // 5. ASIGNACIÓN
-            // =========================================================
+            // ✅ SOLO UNA ASIGNACIÓN
             license.UserId = userId;
             license.Asignada = true;
             license.Disponible = false;
@@ -213,7 +157,7 @@ namespace ERP_BIEN.Services
         }
 
         // ============================================================
-        // UNASSIGN LICENSE
+        // ✅ UNASSIGN (CORRECTO)
         // ============================================================
         public async Task<bool> UnassignAsync(int licenseId)
         {
@@ -223,19 +167,14 @@ namespace ERP_BIEN.Services
             if (license == null)
                 return false;
 
-            if (license.UserId == null)
-                return false;
-
+            // ✅ QUITAR USUARIO
             license.UserId = null;
-
-            // Flags derivados
             license.Asignada = false;
             license.Disponible = true;
 
             await _db.SaveChangesAsync();
+
             return true;
         }
-
     }
-
 }

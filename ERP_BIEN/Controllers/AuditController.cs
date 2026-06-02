@@ -17,6 +17,7 @@ namespace ERP_BIEN.Controllers
             _db = db;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(
             string user,
             string action,
@@ -26,6 +27,19 @@ namespace ERP_BIEN.Controllers
             int page = 1,
             int pageSize = 20)
         {
+            // ✅ VALIDACIÓN (QUITAR WARNING)
+            if (page <= 0)
+                page = 1;
+
+            if (pageSize <= 0)
+                pageSize = 20;
+
+            if (pageSize > 100)
+                pageSize = 100;
+
+            if (from.HasValue && to.HasValue && from > to)
+                return View(new AuditIndexViewModel()); // evita rango incorrecto
+
             var query = _db.AuditLogs.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(user))

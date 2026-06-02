@@ -21,8 +21,8 @@
     --c-info: #17A2B8;
     --border: #E6EAF2;
     /* Zebra azul claro estilo guía */
-    --row-alt: #D9F1FF;
-    --row-hover: #C7EBFF;
+    --row-alt: #F8FAFC;
+    --row-hover: #EEF5FF;
     /* Neutros */
     --muted: rgba(0,0,0,.55);
     --shadow: 0 2px 10px rgba(0,0,0,.06);
@@ -603,39 +603,23 @@ h2, h3, .page-title {
 }
 
 /* ✅ FIX: forzar cabecera PRO aunque Bootstrap pise estilos */
-.modal-pro .modal-header.modal-pro-header {
-    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
-    color: #fff !important;
-    border-bottom: 0 !important;
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2));
+    color: #fff;
+    border-bottom: 0;
 }
 
-.modal-pro .modal-footer.modal-pro-footer {
-    background: #fff !important;
-    border-top: 1px solid var(--border) !important;
-}
 
 .modal-pro .btn-close.btn-close-white {
     filter: invert(1) !important;
     opacity: .9 !important;
 }
-.modal-pro .modal-header.modal-pro-header {
-    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
-    color: #fff !important;
-}
+/* =========================
+   ANIMACIÓN MODAL
+   ========================= */
 .modal-pro-card {
     animation: fadeInUp 0.25s ease;
 }
-/* ✅ TEXTO BLANCO FORZADO EN HEADER */
-.modal-pro .modal-pro-header,
-.modal-pro .modal-pro-header * {
-    color: #fff !important;
-}
-
-    /* ✅ SUBTÍTULO MÁS SUAVE PERO BLANCO */
-    .modal-pro .modal-pro-header .small {
-        color: rgba(255,255,255,0.85) !important;
-    }
-
 
 @keyframes fadeInUp {
     from {
@@ -649,4 +633,206 @@ h2, h3, .page-title {
     }
 }
 
+/* =========================
+   TEXTO BLANCO HEADER
+   ========================= */
+.modal-pro .modal-pro-header .small {
+    color: rgba(255,255,255,0.85) !important;
+}
 
+
+/* TIMELINE */
+.history-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+        .history-timeline::before {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+    /* ITEM */
+    .history-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .history-item-inner {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    /* DOT */
+    .history-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #6c757d;
+        margin-top: 6px;
+        position: relative;
+        z-index: 2;
+    }
+    /* ACTIVO */
+    .history-item-inner.active .history-dot {
+        background: #198754;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
+    }
+    /* CARD */
+    .history-card {
+        background: #f8f9fc;
+        border-radius: 10px;
+        padding: 12px 14px;
+        width: 100%;
+        border: 1px solid #e6eaf2;
+        transition: all 0.2s ease;
+    }
+        /* HOVER */
+        .history-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+    /* TEXTO */
+    .history-user {
+        font-size: 14px;
+    }
+
+    .history-dates {
+        font-size: 12px;
+    }
+    /* =========================
+   SCROLL bonito resultados
+   ========================= */
+    .assign-results {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 320px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+        .assign-results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .assign-results::-webkit-scrollbar-thumb {
+            background: #B8C2D6;
+            border-radius: 6px;
+        }
+    /* =========================
+   CARD USUARIO
+   ========================= */
+    .assign-user-card {
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #E6EAF2;
+        background: #fff;
+        cursor: pointer;
+        transition: all .2s ease;
+        font-weight: 500;
+    }
+
+        .assign-user-card:hover {
+            background: #f1f7ff;
+            transform: translateX(4px);
+            border-color: #ccdfff;
+        }
+
+        .assign-user-card.active {
+            background: linear-gradient(135deg, #e6f0ff, #eef6ff);
+            border: 1px solid #004080;
+            box-shadow: 0 4px 12px rgba(0, 64, 128, 0.2);
+        }
+    /* =========================
+   BOTÓN DESHABILITADO PRO
+   ========================= */
+    #assignSubmit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-delete-pro {
+        background: linear-gradient(135deg, #dc3545, #b52a37);
+        color: #fff;
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-weight: 600;
+        border: none;
+        transition: all .2s ease;
+    }
+
+        .btn-delete-pro:hover {
+            background: linear-gradient(135deg, #c82333, #a71d2a);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+        }
+/* ✅ SUBTÍTULOS HEADER MODAL */
+.modal-pro .modal-pro-header .modal-subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+/* =============================
+   STATS BONITOS (PRO)
+   ============================= */
+
+.stat-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #E6EAF2;
+    padding: 18px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+    .stat-card:hover {
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+/* titulo */
+.stat-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6B7280;
+    font-weight: 700;
+}
+
+/* valor grande */
+.stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* colores por tipo */
+.stat-card.total {
+    border-left: 4px solid #003B82;
+}
+
+.stat-card.asignadas {
+    border-left: 4px solid #28A745;
+}
+
+.stat-card.libres {
+    border-left: 4px solid #6B7280;
+}
+
+.stat-card.uso {
+    border-left: 4px solid #0090E0;
+}
+.table-style tbody td {
+    padding: 14px 12px;
+}
+
+.table-style tbody tr:hover {
+    background: #EEF5FF !important;
+}

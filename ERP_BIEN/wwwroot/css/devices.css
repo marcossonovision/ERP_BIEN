@@ -187,10 +187,7 @@
     border: 1px solid #F3B3B3;
 }
 
-.history-timeline {
-    position: relative;
-    padding-left: 18px;
-}
+
 
     /* línea vertical */
     .history-timeline::before {
@@ -415,15 +412,6 @@
     border-bottom: 0;
 }
 
-.modal-pro .modal-pro-body {
-    background: #f7fbff;
-}
-
-.modal-pro .modal-pro-footer {
-    background: #fff;
-    border-top: 1px solid var(--border, #E6EAF2);
-    padding: 14px 16px;
-}
 
 /* Icono del header */
 .modal-pro-icon {
@@ -477,18 +465,13 @@
         box-shadow: 0 0 0 3px rgba(0,144,224,.15) !important;
     }
 
-.btn-next-pro {
-    background: var(--c-cyan, #0090E0) !important;
-    color: #fff !important;
-}
+
 
     .btn-next-pro:hover {
         filter: brightness(.95);
-    }
+   
 
-.modal-pro .modal-pro-body {
-    background: #f7fbff;
-}
+
 
 .modal-pro .modal-pro-footer {
     background: #fff;
@@ -561,10 +544,7 @@
     border: 0 !important;
 }
 
-.btn-next-pro {
-    background: var(--c-cyan, #0090E0) !important;
-    color: #fff !important;
-}
+
 
     .btn-next-pro:hover {
         filter: brightness(.95);
@@ -692,22 +672,7 @@
         opacity: 1;
     }
 }
-/* ✅ Permitir click en toda la fila */
-.clickable-row {
-    cursor: pointer;
-}
 
-    /* ✅ Hacer que el click suba al TR */
-    .clickable-row td {
-        pointer-events: none;
-    }
-
-    /* ✅ PERO mantener botones clicables */
-    .clickable-row button,
-    .clickable-row a,
-    .clickable-row form {
-        pointer-events: auto;
-    }
 .list-group-item.active {
     background: #0d6efd !important;
     color: white;
@@ -721,5 +686,153 @@
     #assignUserResults .list-group-item:hover {
         transform: translateX(4px);
     }
+/* TIMELINE PRO */
+.history-timeline {
+    position: relative;
+    padding-left: 30px;
+}
 
+    .history-timeline::before {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
 
+/* ITEM */
+.history-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.history-item-inner {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+/* DOT */
+.history-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #6c757d;
+    margin-top: 6px;
+}
+
+.history-item-inner.active .history-dot {
+    background: #198754;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
+}
+
+/* CARD */
+.history-card {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 12px 14px;
+    width: 100%;
+    border: 1px solid #e6eaf2;
+    transition: all 0.2s ease;
+}
+
+    .history-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+/* TEXT */
+.history-user {
+    font-size: 14px;
+}
+
+.history-dates {
+    font-size: 12px;
+}
+
+/* =========================
+   CLICK FILAS COMO LICENSES
+   ========================= */
+
+.table-style tbody tr.clickable-row {
+    cursor: pointer !important;
+    transition: background 0.2s ease;
+}
+
+    .table-style tbody tr.clickable-row td {
+        cursor: pointer !important; /* 🔥 esto arregla la manita */
+    }
+
+    .table-style tbody tr.clickable-row:hover {
+        background-color: #eaf2ff !important;
+    }
+
+    .table-style tbody tr.clickable-row.active-row {
+        background-color: #dbeafe !important;
+    }
+.modal-subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.modal-pro .modal-pro-header {
+    background: linear-gradient(135deg, var(--c-navy), var(--c-navy2)) !important;
+    color: #fff !important;
+}
+
+    .modal-pro .modal-pro-header .modal-subtitle {
+        color: rgba(255,255,255,0.85) !important;
+    }
+.clickable-row {
+    cursor: pointer;
+}
+.table-style tbody tr.clickable-row {
+    position: relative;
+    z-index: 1;
+}
+
+    .table-style tbody tr.clickable-row td {
+        position: relative;
+        z-index: 2;
+    }
+.table-shell {
+    position: relative;
+    z-index: 0;
+}
+
+.filters-shell {
+    position: relative;
+    z-index: 0;
+}
+.table-style tbody tr.device-row {
+    cursor: pointer;
+}
+/* =========================
+   MODAL BACKDROP FIX REAL
+   ========================= */
+
+.modal-backdrop.show {
+    opacity: 0.55 !important;
+}
+
+.modal-backdrop {
+    background-color: #000 !important;
+}
+/* ===== FIX FINAL MODAL ===== */
+
+/* Fondo real del modal (clave) */
+.modal-content {
+    background-color: #ffffff !important;
+}
+
+/* Tu card pro */
+.modal-pro-card {
+    background-color: #ffffff !important;
+}
+
+/* Body limpio */
+.modal-pro .modal-pro-body {
+    background-color: #ffffff !important;
+}

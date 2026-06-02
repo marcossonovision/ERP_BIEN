@@ -1,0 +1,6 @@
+projectKey=ERP-sono
+serverUrl=https://sonarqube.ortec.fr
+serverVersion=24.12.0.100206
+dashboardUrl=https://sonarqube.ortec.fr/dashboard?id=ERP-sono
+ceTaskId=42540fb0-ea3f-436b-be5a-d5a479cbf9cf
+ceTaskUrl=https://sonarqube.ortec.fr/api/ce/task?id=42540fb0-ea3f-436b-be5a-d5a479cbf9cf

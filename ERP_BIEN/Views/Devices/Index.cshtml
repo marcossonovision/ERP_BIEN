@@ -521,9 +521,11 @@
                     _ => "Device"
                 };
 
-                <tr class="device-row clickable-row"
+               <tr class="device-row clickable-row"
                 data-id="@d.Id"
-                style="cursor:pointer">
+                data-bs-toggle="modal"
+                data-bs-target="#detailsModal">
+
 
                     <!-- TIPO -->
                     <td>
@@ -890,101 +892,288 @@
   </div>
 </div>
 
-<!-- EDIT MODAL (tu modal de editar) -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" asp-action="Edit" asp-controller="Devices"
-      onsubmit="showToast('Guardando cambios...', 'info')">
+<!-- ========================= -->
+<!-- MODAL EDIT PRO -->
+<!-- ========================= -->
+<div class="modal fade modal-pro" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-pro-card">
+
+            <form method="post"
+                  asp-action="Edit"
+                  asp-controller="Devices"
+                  onsubmit="showToast('Guardando cambios...', 'info')">
+
                 @Html.AntiForgeryToken()
                 @{ RenderQpHidden(); }
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Dispositivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- HEADER -->
+                <div class="modal-header modal-pro-header">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="modal-pro-icon warning">✏️</div>
+
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">
+                                Editar dispositivo
+                            </h5>
+
+                            <div class="small opacity-75">
+                                Modifica los datos del dispositivo
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+
                 </div>
 
-                <div class="modal-body">
+                <!-- BODY -->
+                <div class="modal-body modal-pro-body">
+
                     <input type="hidden" id="edit-id" name="Id" />
 
-                    <label class="form-label">Hostname</label>
-                    <input class="form-control" id="edit-hostname" name="Hostname" required />
+                    <!-- PREVIEW -->
+                    <div class="preview-box mb-4">
 
-                    <label class="form-label mt-2">Modelo</label>
-                    <input class="form-control" id="edit-model" name="Model" />
+                        <div class="preview-title" id="edit-preview-hostname">
+                            —
+                        </div>
 
-                    <label class="form-label mt-2">SN</label>
-                    <input class="form-control" id="edit-sn" name="SN" />
+                        <div class="preview-sub text-muted" id="edit-preview-model">
+                            —
+                        </div>
 
-                    <label class="form-label mt-2">Número de dispositivo</label>
-                    <input type="number" class="form-control" id="edit-number" name="NumberOfDevice" />
+                    </div>
 
-                    <label class="form-label mt-2">Fecha fabricación</label>
-                    <input type="date" class="form-control" id="edit-manufacturing" name="ManufacturingDate" />
+                    <div class="row g-3">
 
-                    <label class="form-label mt-2">Estado</label>
-                    <select class="form-select" id="edit-status" name="Status">
-                        @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
-                        {
-                            <option value="@s">@s</option>
-                        }
-                    </select>
+                        <!-- HOSTNAME -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Hostname</label>
 
-                    <label class="form-label mt-2">Comentario</label>
-                    <textarea class="form-control" id="edit-comment" name="Comment"></textarea>
+                            <input class="form-control input-pro"
+                                   id="edit-hostname"
+                                   name="Hostname"
+                                   required />
+                        </div>
 
-                    <label class="form-label mt-2">Fecha uso</label>
-                    <input type="date" class="form-control" id="edit-use" name="UseDate" />
+                        <!-- MODELO -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Modelo</label>
 
-                    <label class="form-label mt-2">Usuario asignado</label>
-                    <select class="form-select" id="edit-userid" name="UserId">
-                        <option value="">-- Sin asignar --</option>
-                        @foreach (var u in Model.Users)
-                        {
-                            <option value="@u.Id">@u.Name @u.LastName</option>
-                        }
-                    </select>
+                            <input class="form-control input-pro"
+                                   id="edit-model"
+                                   name="Model" />
+                        </div>
+
+                        <!-- SN -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">SN</label>
+
+                            <input class="form-control input-pro"
+                                   id="edit-sn"
+                                   name="SN" />
+                        </div>
+
+                        <!-- NUMBER -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Número</label>
+
+                            <input type="number"
+                                   class="form-control input-pro"
+                                   id="edit-number"
+                                   name="NumberOfDevice" />
+                        </div>
+
+                        <!-- FABRICACIÓN -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Fabricación</label>
+
+                            <input type="date"
+                                   class="form-control input-pro"
+                                   id="edit-manufacturing"
+                                   name="ManufacturingDate" />
+                        </div>
+
+                        <!-- ESTADO -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Estado</label>
+
+                            <select class="form-select input-pro"
+                                    id="edit-status"
+                                    name="Status">
+
+                                @foreach (StatusDevice s in Enum.GetValues(typeof(StatusDevice)))
+                                {
+                                    <option value="@s">@s</option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <!-- COMENTARIO -->
+                        <div class="col-12">
+                            <label class="form-label tiny-label">Comentario</label>
+
+                            <textarea class="form-control input-pro"
+                                      id="edit-comment"
+                                      name="Comment"
+                                      rows="2"></textarea>
+                        </div>
+
+                        <!-- FECHA USO -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Fecha uso</label>
+
+                            <input type="date"
+                                   class="form-control input-pro"
+                                   id="edit-use"
+                                   name="UseDate" />
+                        </div>
+
+                        <!-- USER -->
+                        <div class="col-md-6">
+                            <label class="form-label tiny-label">Usuario</label>
+
+                            <select class="form-select input-pro"
+                                    id="edit-userid"
+                                    name="UserId">
+
+                                <option value="">-- Sin asignar --</option>
+
+                                @foreach (var u in Model.Users)
+                                {
+                                    <option value="@u.Id">
+                                        @u.Name @u.LastName
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning">Guardar cambios</button>
+                <!-- FOOTER -->
+                <div class="modal-footer modal-pro-footer d-flex justify-content-between">
+
+                    <button type="button"
+                            class="btn-pill btn-cancel-pro"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="btn-pill btn-save-pro">
+                        💾 Guardar cambios
+                    </button>
+
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
-
-<!-- DELETE MODAL -->
+<!-- DELETE MODAL PRO UNIFICADO -->
 <div class="modal fade modal-pro" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content modal-pro-card">
-            <form method="post" asp-action="Delete" asp-controller="Devices"
-                    onsubmit="showToast('Eliminando dispositivo...', 'info')">
-                @Html.AntiForgeryToken()
-                @{ RenderQpHidden(); }
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Eliminar Dispositivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <form method="post"
+                  asp-action="Delete"
+                  asp-controller="Devices"
+                  onsubmit="showToast('Eliminando dispositivo...', 'info')">
+
+                <!-- HEADER -->
+                <div class="modal-header border-0 d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="modal-pro-icon danger">
+                            🗑️
+                        </div>
+
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">
+                                Eliminar dispositivo
+                            </h5>
+
+                            <div class="modal-subtitle">
+                                Esta acción no se puede deshacer
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+
                 </div>
 
-                <div class="modal-body">
+                <!-- BODY -->
+                <div class="modal-body p-4">
+
                     <input type="hidden" id="delete-id" name="Id" />
-                    <p>¿Seguro que deseas eliminar el dispositivo <strong id="delete-name"></strong>?</p>
+
+                    <div class="modal-pro-warning mb-3">
+                        <div class="fw-semibold mb-1">
+                            ¿Seguro que deseas eliminar este dispositivo?
+                        </div>
+
+                        <div>
+                            Se eliminará permanentemente del sistema.
+                        </div>
+                    </div>
+
+                    <div class="modal-pro-target">
+
+                        <div class="text-muted mb-1">
+                            Dispositivo seleccionado
+                        </div>
+
+                        <div id="delete-name" class="fw-bold">
+                            —
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                <!-- FOOTER -->
+                <div class="modal-footer modal-pro-footer d-flex justify-content-between border-0">
+
+                    <button type="button"
+                            class="btn-pill btn-cancel-pro"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="btn-pill btn-danger-pro">
+                        🗑️ Eliminar
+                    </button>
+
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
 
 <!-- DETAILS MODAL -->
-<div class="modal fade modal-pro" id="detailsModal" tabindex="-1">
+<div class="modal fade modal-pro" id="detailsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content modal-pro-card">
 
@@ -1223,12 +1412,6 @@ const users = @Html.Raw(JsonSerializer.Serialize(
         .ToList()
 ));
 
-// ========= DETAILS click fila
-const detailsModalEl = document.getElementById('detailsModal');
-const detailsBodyEl = document.getElementById('detailsBody');
-const detailsModal = detailsModalEl ? new bootstrap.Modal(detailsModalEl) : null;
-window.currentDeviceId = null;
-
 
 // ========= EDITAR desde DETAILS
 document.getElementById('btnEditFromDetails')?.addEventListener('click', async () => {
@@ -1251,7 +1434,8 @@ document.getElementById('btnEditFromDetails')?.addEventListener('click', async (
         document.getElementById('edit-use').value = d.useDate ?? "";
         document.getElementById('edit-userid').value = d.userId ?? "";
 
-        bootstrap.Modal.getInstance(detailsModalEl)?.hide();
+        const detailsModalEl = document.getElementById('detailsModal');
+        bootstrap.Modal.getOrCreateInstance(detailsModalEl)?.hide();
         new bootstrap.Modal(document.getElementById('editModal')).show();
     } catch (e) {
         console.error(e);
@@ -1310,7 +1494,6 @@ async function loadHistory(deviceId, hostname) {
 
         if (!rows || rows.length === 0) {
             if (empty) empty.style.display = "block";
-            modal.show();
             return;
         }
 
@@ -1333,16 +1516,36 @@ async function loadHistory(deviceId, hostname) {
             if (timeline) {
                 const item = document.createElement("div");
                 item.className = "history-item";
-                item.innerHTML = `
-                    <div class="dot"></div>
-                    <div class="content">
-                        <div class="d-flex justify-content-between">
-                            <div class="fw-bold">${escapeHtml(title)}</div>
-                            <div class="text-muted small">${escapeHtml(date)}</div>
-                        </div>
-                        <div class="text-muted small">${escapeHtml(desc)}</div>
-                    </div>
-                `;
+               const isActive = !end;
+
+item.innerHTML = `
+    <div class="history-item-inner ${isActive ? "active" : ""}">
+
+        <div class="history-dot"></div>
+
+        <div class="history-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-1">
+
+                <div class="history-user fw-bold">
+                    ${escapeHtml(title)}
+                </div>
+
+                ${isActive
+                    ? `<span class="badge bg-success">Actual</span>`
+                    : `<span class="text-muted small">${escapeHtml(date)}</span>`
+                }
+
+            </div>
+
+            <div class="history-dates text-muted small">
+                ${escapeHtml(desc)}
+            </div>
+
+        </div>
+
+    </div>
+`;
                 timeline.appendChild(item);
             }
         });
@@ -1638,57 +1841,24 @@ document.addEventListener("DOMContentLoaded", function () {
     setFiltersOpen(savedState === "true");
 });
 // ===============================
-// CLICK EN FILA -> DETAILS MODAL
+// CLICK EN FILA -> DETAILS MODAL (FIX REAL)
 // ===============================
-document.addEventListener("DOMContentLoaded", () => {
 
-    const rows = document.querySelectorAll(".clickable-row");
 
-    rows.forEach(row => {
+// ===============================
+// DETAILS MODAL: cargar al abrir (Bootstrap)
+// ===============================
+document.getElementById("detailsModal")?.addEventListener("show.bs.modal", async function (event) {
 
-        row.addEventListener("click", function (e) {
+    const trigger = event.relatedTarget; // el <tr> que disparó el modal
+    const id = trigger?.getAttribute("data-id") || trigger?.dataset?.id;
 
-            // Evitar clicks en botones/formularios
-            if (
-                e.target.closest("button") ||
-                e.target.closest("form") ||
-                e.target.closest("a") ||
-                e.target.closest("input") ||
-                e.target.closest("select")
-            ) {
-                return;
-            }
+    console.log("DETAILS MODAL OPEN ✅ id=", id);
 
-            // Highlight visual
-            document.querySelectorAll(".device-row").forEach(r => {
-                r.classList.remove("active-row");
-            });
-
-            row.classList.add("active-row");
-
-            // Obtener ID
-            const id = row.dataset.id;
-
-            if (!id) {
-                console.error("Fila sin data-id");
-                return;
-            }
-
-            console.log("LOAD DETAILS:", id);
-
-            // Abrir modal
-            loadDetails(id);
-        });
-
-    });
-
-});
-async function loadDetails(id) {
-
-    const modalEl = document.getElementById("detailsModal");
     const body = document.getElementById("detailsBody");
+    if (!body) return;
 
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    window.currentDeviceId = id;
 
     body.innerHTML = `
         <div class="text-center text-muted py-4">
@@ -1697,113 +1867,71 @@ async function loadDetails(id) {
     `;
 
     try {
+        const response = await fetch(`/Devices/DetailsJson?id=${id}`);
 
-        const response = await fetch(`/Devices/DetailsJson?id=${id}`, {
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
+        const data = await response.json();
 
-        const contentType = response.headers.get("content-type");
-
-        if (!contentType.includes("application/json")) {
-
-            const txt = await response.text();
-
-            console.error("NO ES JSON:", txt);
-
-            throw new Error("El endpoint no devolvió JSON");
-        }
-
-        const d = await response.json();
-
-        console.log("DETAILS:", d);
-
-        window.currentDeviceId = id;
+        console.log("DETAILS DATA:", data);
 
         body.innerHTML = `
-            <div class="detail-hero">
-
-                <div class="d-flex justify-content-between align-items-start">
-
-                    <div>
-                        <div class="detail-name">
-                            ${d.hostname ?? "-"}
-                        </div>
-
-                        <div class="detail-domain">
-                            ${d.tipo ?? "-"}
-                        </div>
-                    </div>
-
-                    <div>
-                        ${
-                            d.status === "BuenEstado"
-                            ? `<span class="device-status-pill status-ok">
-                                    ✅ Buen estado
-                               </span>`
-                            : `<span class="device-status-pill status-bad">
-                                    ⛔ Defectuoso
-                               </span>`
-                        }
-                    </div>
-
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="fw-bold">Hostname</label>
+                    <div>${data.hostname ?? "-"}</div>
                 </div>
 
-            </div>
-
-            <div class="info-grid">
-
-                <div class="info-card">
-                    <div class="info-label">Modelo</div>
-                    <div class="info-value">${d.model ?? "-"}</div>
+                <div class="col-md-6">
+                    <label class="fw-bold">Modelo</label>
+                    <div>${data.model ?? "-"}</div>
                 </div>
 
-                <div class="info-card">
-                    <div class="info-label">SN</div>
-                    <div class="info-value">${d.sn ?? "-"}</div>
+                <div class="col-md-6">
+                    <label class="fw-bold">SN</label>
+                    <div>${data.sn ?? "-"}</div>
                 </div>
 
-                <div class="info-card">
-                    <div class="info-label">Fecha uso</div>
-                    <div class="info-value">${d.useDate ?? "-"}</div>
+                <div class="col-md-6">
+                    <label class="fw-bold">Estado</label>
+                    <div>${data.status ?? "-"}</div>
                 </div>
-
-                <div class="info-card">
-                    <div class="info-label">Fabricación</div>
-                    <div class="info-value">${d.manufacturingDate ?? "-"}</div>
-                </div>
-
-                <div class="info-card" style="grid-column:1/-1;">
-                    <div class="info-label">Usuario</div>
-                    <div class="info-value">${d.userName ?? "-"}</div>
-                </div>
-
             </div>
         `;
-
-        modal.show();
-
     }
     catch (err) {
-
         console.error("ERROR DETAILS:", err);
-
         body.innerHTML = `
-            <div class="text-center text-danger py-4">
+            <div class="text-danger text-center py-4">
                 Error cargando detalles ❌
             </div>
         `;
+    }
+});
+function updateEditPreview() {
+    const hostname = document.getElementById("edit-hostname")?.value;
+    const model = document.getElementById("edit-model")?.value;
+    const status = document.getElementById("edit-status")?.value;
 
-        modal.show();
+    document.getElementById("edit-preview-hostname").textContent =
+        hostname || "Sin hostname";
 
-        showToast("Error cargando detalles ❌", "error");
+    document.getElementById("edit-preview-model").textContent =
+        model || "Sin modelo";
+
+    const statusEl = document.getElementById("edit-preview-status");
+    if (statusEl) {
+        statusEl.innerHTML = status === "BuenEstado"
+            ? `<span class="badge bg-success">✅ Buen estado</span>`
+            : `<span class="badge bg-danger">⛔ Defectuoso</span>`;
     }
 }
+
+document.getElementById("edit-hostname")?.addEventListener("input", updateEditPreview);
+document.getElementById("edit-model")?.addEventListener("input", updateEditPreview);
+
+
+
     </script>
   
 }
