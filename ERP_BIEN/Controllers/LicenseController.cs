@@ -167,6 +167,12 @@ namespace ERP_BIEN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LicenseViewModel vm)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var lic = await _svc.GetByIdAsync(vm.Id);
             if (lic == null) return RedirectToAction(nameof(Index));
 
@@ -194,6 +200,12 @@ namespace ERP_BIEN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, int userId)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var lic = await _db.Licenses.FindAsync(id);
             if (lic == null) return NotFound();
 
@@ -233,6 +245,12 @@ namespace ERP_BIEN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unassign(int id)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var lic = await _db.Licenses.FindAsync(id);
             if (lic == null) return NotFound();
 
@@ -262,6 +280,12 @@ namespace ERP_BIEN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await _svc.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }

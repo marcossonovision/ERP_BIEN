@@ -90,6 +90,12 @@ namespace ERP_BIEN.Controllers
             string? searchDomain,
             int? searchTeamId)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _service.CreateEmployee(new User
             {
                 Name = model.Name ?? "",
@@ -120,6 +126,12 @@ namespace ERP_BIEN.Controllers
             string? searchDomain,
             int? searchTeamId)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _service.UpdateEmployee(new User
             {
                 Id = model.Id,
@@ -151,6 +163,12 @@ namespace ERP_BIEN.Controllers
             string? searchDomain,
             int? searchTeamId)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _service.DeleteEmployee(id);
 
             return RedirectToAction("Index", new
